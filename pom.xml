@@ -19,6 +19,7 @@
 		<module>annotation</module>
 		<module>common</module>
 		<module>api</module>
+		<module>gb28181-service</module>
 	</modules>
 
 	<properties>
