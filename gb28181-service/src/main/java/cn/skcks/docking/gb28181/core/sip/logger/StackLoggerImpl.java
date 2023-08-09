@@ -65,7 +65,7 @@ public class StackLoggerImpl implements StackLogger {
 
     @Override
     public void logError(String message, Exception ex) {
-//        logger.error(message);
+       logger.error(message);
     }
 
     @Override

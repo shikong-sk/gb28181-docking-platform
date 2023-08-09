@@ -25,7 +25,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 =>" + to) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 => " + to) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 
@@ -34,7 +34,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 =>" + to) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 => " + to) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 
@@ -43,7 +43,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 =>" + to) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 => " + to) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 
@@ -71,9 +71,8 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        if(sipStack instanceof SIPTransactionStack) {
-            SIPTransactionStack sipStack1 = (SIPTransactionStack) sipStack;
-            this.stackLogger = CommonLogger.getLogger(SIPTransactionStack.class);
+        if(sipStack instanceof SIPTransactionStack st) {
+            this.stackLogger = CommonLogger.getLogger(st.getClass());
         }
     }
 }
