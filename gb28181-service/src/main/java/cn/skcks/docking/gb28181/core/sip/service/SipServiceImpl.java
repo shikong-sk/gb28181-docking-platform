@@ -1,6 +1,7 @@
 package cn.skcks.docking.gb28181.core.sip.service;
 
 import cn.skcks.docking.gb28181.config.sip.SipConfig;
+import cn.skcks.docking.gb28181.core.sip.listener.SipObserver;
 import cn.skcks.docking.gb28181.core.sip.message.parser.GbStringMsgParserFactory;
 import cn.skcks.docking.gb28181.core.sip.properties.DefaultProperties;
 import gov.nist.javax.sip.SipProviderImpl;
@@ -21,6 +22,8 @@ import java.util.List;
 public class SipServiceImpl implements SipService{
     private final SipFactory sipFactory = SipFactory.getInstance();
     private final SipConfig sipConfig;
+    private final SipObserver sipObserver;
+
     private final List<SipProviderImpl> pool = new ArrayList<>(2);
     private SipStackImpl sipStack;
 
@@ -62,7 +65,7 @@ public class SipServiceImpl implements SipService{
                 ListeningPoint tcpListen = sipStack.createListeningPoint(ip, port, "TCP");
                 SipProviderImpl tcpSipProvider = (SipProviderImpl) sipStack.createSipProvider(tcpListen);
                 tcpSipProvider.setDialogErrorsAutomaticallyHandled();
-                // tcpSipProvider.addSipListener();
+                tcpSipProvider.addSipListener(sipObserver);
                 pool.add(tcpSipProvider);
                 log.info("[sip] 监听 tcp://{}:{}", ip, port);
             } catch (TransportNotSupportedException
@@ -74,7 +77,7 @@ public class SipServiceImpl implements SipService{
             try {
                 ListeningPoint udpListen = sipStack.createListeningPoint(ip, port, "UDP");
                 SipProviderImpl udpSipProvider = (SipProviderImpl) sipStack.createSipProvider(udpListen);
-                // udpSipProvider.addSipListener();
+                udpSipProvider.addSipListener(sipObserver);
                 pool.add(udpSipProvider);
                 log.info("[sip] 监听 udp://{}:{}", ip, port);
             } catch (TransportNotSupportedException
