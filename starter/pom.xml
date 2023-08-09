@@ -23,6 +23,12 @@
     <dependencies>
         <dependency>
             <groupId>cn.skcks.docking.gb28181</groupId>
+            <artifactId>gb28181-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.skcks.docking.gb28181</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
