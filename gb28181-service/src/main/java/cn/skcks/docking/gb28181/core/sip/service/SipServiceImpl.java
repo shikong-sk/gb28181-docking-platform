@@ -5,7 +5,6 @@ import cn.skcks.docking.gb28181.core.sip.message.parser.GbStringMsgParserFactory
 import cn.skcks.docking.gb28181.core.sip.properties.DefaultProperties;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
-import gov.nist.javax.sip.stack.MessageProcessorFactory;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

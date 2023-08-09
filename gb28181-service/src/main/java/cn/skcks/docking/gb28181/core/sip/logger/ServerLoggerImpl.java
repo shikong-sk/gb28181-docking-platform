@@ -25,7 +25,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 => " + to) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 =>" + to : "接收: 来自 => " + from) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 
@@ -34,7 +34,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 => " + to) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 =>" + to : "接收: 来自 => " + from) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 
@@ -43,7 +43,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + from : "接收: 来自 => " + to) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 =>" + to : "接收: 来自 => " + from) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 
