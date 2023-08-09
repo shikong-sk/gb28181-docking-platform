@@ -2,7 +2,7 @@ package cn.skcks.docking.gb28181.starter;
 
 import cn.skcks.docking.gb28181.common.json.JsonUtils;
 import cn.skcks.docking.gb28181.config.sip.SipConfig;
-import cn.skcks.docking.gb28181.core.sip.SipService;
+import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;

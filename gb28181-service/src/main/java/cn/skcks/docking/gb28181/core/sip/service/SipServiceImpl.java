@@ -1,19 +1,19 @@
-package cn.skcks.docking.gb28181.core.sip;
+package cn.skcks.docking.gb28181.core.sip.service;
 
 import cn.skcks.docking.gb28181.config.sip.SipConfig;
+import cn.skcks.docking.gb28181.core.sip.message.parser.GbStringMsgParserFactory;
 import cn.skcks.docking.gb28181.core.sip.properties.DefaultProperties;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.MessageProcessorFactory;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.sip.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TooManyListenersException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -57,11 +57,13 @@ public class SipServiceImpl implements SipService{
     public void listen(String ip, int port){
         try{
             sipStack = (SipStackImpl)sipFactory.createSipStack(DefaultProperties.getProperties("GB28181_SIP_LOG",true));
-
+            sipStack.setMessageParserFactory(new GbStringMsgParserFactory());
+            // sipStack.setMessageProcessorFactory();
             try {
                 ListeningPoint tcpListen = sipStack.createListeningPoint(ip, port, "TCP");
                 SipProviderImpl tcpSipProvider = (SipProviderImpl) sipStack.createSipProvider(tcpListen);
                 tcpSipProvider.setDialogErrorsAutomaticallyHandled();
+                // tcpSipProvider.addSipListener();
                 pool.add(tcpSipProvider);
                 log.info("[sip] 监听 tcp://{}:{}", ip, port);
             } catch (TransportNotSupportedException
@@ -73,6 +75,7 @@ public class SipServiceImpl implements SipService{
             try {
                 ListeningPoint udpListen = sipStack.createListeningPoint(ip, port, "UDP");
                 SipProviderImpl udpSipProvider = (SipProviderImpl) sipStack.createSipProvider(udpListen);
+                // udpSipProvider.addSipListener();
                 pool.add(udpSipProvider);
                 log.info("[sip] 监听 udp://{}:{}", ip, port);
             } catch (TransportNotSupportedException
