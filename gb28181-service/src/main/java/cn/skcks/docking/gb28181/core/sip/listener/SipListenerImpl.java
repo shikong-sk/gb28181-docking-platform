@@ -26,7 +26,7 @@ public class SipListenerImpl implements SipListener {
     @Async(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     public void processRequest(RequestEvent requestEvent) {
         String method = requestEvent.getRequest().getMethod();
-        log.debug("method => {}",method);
+        log.debug("传入请求 method => {}",method);
         Optional.ofNullable(processor.get(method)).ifPresent(processor -> {
             processor.process(requestEvent);
         });

@@ -103,7 +103,7 @@ public class SipUtil implements ApplicationContextAware {
             remoteAddress = request.getPeerPacketSourceAddress().getHostAddress();
             remotePort = request.getPeerPacketSourcePort();
 
-        }else {
+        } else {
             // 判断RPort是否改变，改变则说明路由nat信息变化，修改设备信息
             // 获取到通信地址等信息
             remoteAddress = request.getTopmostViaHeader().getReceived();

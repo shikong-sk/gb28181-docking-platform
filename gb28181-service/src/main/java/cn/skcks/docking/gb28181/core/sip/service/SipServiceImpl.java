@@ -65,7 +65,7 @@ public class SipServiceImpl implements SipService {
             sipStack.setMessageParserFactory(new GbStringMsgParserFactory());
             // sipStack.setMessageProcessorFactory();
             try {
-                ListeningPoint tcpListen = sipStack.createListeningPoint(ip, port, "TCP");
+                ListeningPoint tcpListen = sipStack.createListeningPoint(ip, port, ListeningPoint.TCP);
                 SipProviderImpl tcpSipProvider = (SipProviderImpl) sipStack.createSipProvider(tcpListen);
                 tcpSipProvider.setDialogErrorsAutomaticallyHandled();
                 tcpSipProvider.addSipListener(sipListener);
@@ -78,7 +78,7 @@ public class SipServiceImpl implements SipService {
             }
 
             try {
-                ListeningPoint udpListen = sipStack.createListeningPoint(ip, port, "UDP");
+                ListeningPoint udpListen = sipStack.createListeningPoint(ip, port, ListeningPoint.UDP);
                 SipProviderImpl udpSipProvider = (SipProviderImpl) sipStack.createSipProvider(udpListen);
                 udpSipProvider.addSipListener(sipListener);
                 pool.add(udpSipProvider);
