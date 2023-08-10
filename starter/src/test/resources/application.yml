@@ -1,6 +1,9 @@
 server:
   port: 28181
 
+project:
+  version: @project.version@
+
 gb28181:
   # 作为28181服务器的配置
   sip:

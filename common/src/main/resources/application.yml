@@ -1,3 +1,6 @@
 spring:
   session:
     store-type: none
+
+project:
+  version: '@project.version@'
