@@ -7,8 +7,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.sip.*;
+import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
 import javax.sip.message.Request;
+import javax.sip.message.Response;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -34,7 +36,48 @@ public class SipListenerImpl implements SipListener {
 
     @Override
     public void processResponse(ResponseEvent responseEvent) {
+        Response response = responseEvent.getResponse();
+        int status = response.getStatusCode();
 
+        // Success
+        if (((status >= Response.OK) && (status < Response.MULTIPLE_CHOICES)) || status == Response.UNAUTHORIZED) {
+            CSeqHeader cseqHeader = (CSeqHeader) responseEvent.getResponse().getHeader(CSeqHeader.NAME);
+            String method = cseqHeader.getMethod();
+            // ISIPResponseProcessor sipRequestProcessor = responseProcessorMap.get(method);
+            // if (sipRequestProcessor != null) {
+            //     sipRequestProcessor.process(responseEvent);
+            // }
+
+            // if (status != Response.UNAUTHORIZED && responseEvent.getResponse() != null && sipSubscribe.getOkSubscribesSize() > 0 ) {
+            //     CallIdHeader callIdHeader = (CallIdHeader)responseEvent.getResponse().getHeader(CallIdHeader.NAME);
+            //     if (callIdHeader != null) {
+            //         SipSubscribe.Event subscribe = sipSubscribe.getOkSubscribe(callIdHeader.getCallId());
+            //         if (subscribe != null) {
+            //             SipSubscribe.EventResult eventResult = new SipSubscribe.EventResult(responseEvent);
+            //             sipSubscribe.removeOkSubscribe(callIdHeader.getCallId());
+            //             subscribe.response(eventResult);
+            //         }
+            //     }
+            // }
+        } else if ((status >= Response.TRYING) && (status < Response.OK)) {
+            // 增加其它无需回复的响应，如101、180等
+        } else {
+            log.warn("接收到失败的response响应！status：" + status + ",message:" + response.getReasonPhrase());
+            // if (responseEvent.getResponse() != null && sipSubscribe.getErrorSubscribesSize() > 0 ) {
+            //     CallIdHeader callIdHeader = (CallIdHeader)responseEvent.getResponse().getHeader(CallIdHeader.NAME);
+            //     if (callIdHeader != null) {
+            //         SipSubscribe.Event subscribe = sipSubscribe.getErrorSubscribe(callIdHeader.getCallId());
+            //         if (subscribe != null) {
+            //             SipSubscribe.EventResult<?> eventResult = new SipSubscribe.EventResult(responseEvent);
+            //             subscribe.response(eventResult);
+            //             sipSubscribe.removeErrorSubscribe(callIdHeader.getCallId());
+            //         }
+            //     }
+            // }
+            if (responseEvent.getDialog() != null) {
+                responseEvent.getDialog().delete();
+            }
+        }
     }
 
     @Override

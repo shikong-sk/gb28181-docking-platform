@@ -59,6 +59,14 @@ public class SipServiceImpl implements SipService {
         pool.clear();
     }
 
+    @Override
+    public SipProvider getProvider(String transport, String ip) {
+        return pool.parallelStream().filter(sipProvider -> {
+            ListeningPoint listeningPoint = sipProvider.getListeningPoint();
+            return listeningPoint != null && listeningPoint.getIPAddress().equals(ip) && listeningPoint.getTransport().equalsIgnoreCase(transport);
+        }).findFirst().orElse(null);
+    }
+
     public void listen(String ip, int port){
         try{
             sipStack = (SipStackImpl)sipFactory.createSipStack(DefaultProperties.getProperties("GB28181_SIP_LOG",true));

@@ -5,6 +5,7 @@ import cn.skcks.docking.gb28181.core.sip.dto.RemoteInfo;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
 import cn.skcks.docking.gb28181.core.sip.message.auth.DigestServerAuthenticationHelper;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
+import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
 import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Authorization;
@@ -27,6 +28,7 @@ public class RegisterRequestProcessor implements MessageProcessor {
     private final static String METHOD = "REGISTER";
 
     private final SipListener sipListener;
+    private final SipMessageSender sender;
 
     private final SipConfig sipConfig;
 
@@ -56,5 +58,6 @@ public class RegisterRequestProcessor implements MessageProcessor {
 
         Response response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
         DigestServerAuthenticationHelper.generateChallenge(getHeaderFactory(),response,sipConfig.getDomain());
+        sender.send(request.getLocalAddress().getHostAddress(),response);
     }
 }
