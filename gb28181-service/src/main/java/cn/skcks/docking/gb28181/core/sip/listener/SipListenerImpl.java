@@ -1,7 +1,9 @@
 package cn.skcks.docking.gb28181.core.sip.listener;
 
 import cn.skcks.docking.gb28181.core.sip.executor.DefaultSipExecutor;
+import cn.skcks.docking.gb28181.core.sip.message.event.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -15,9 +17,11 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class SipListenerImpl implements SipListener {
+    private final SipSubscribe sipSubscribe;
     private final ConcurrentMap<String, MessageProcessor> processor = new ConcurrentHashMap<>();
     public void addProcessor(String method,MessageProcessor messageProcessor){
         log.debug("[SipListener] 注册 {} 处理器", method);
@@ -49,6 +53,8 @@ public class SipListenerImpl implements SipListener {
             // if (sipRequestProcessor != null) {
             //     sipRequestProcessor.process(responseEvent);
             // }
+
+            // if(status != Response.UNAUTHORIZED && responseEvent.getResponse() != null){}
 
             // if (status != Response.UNAUTHORIZED && responseEvent.getResponse() != null && sipSubscribe.getOkSubscribesSize() > 0 ) {
             //     CallIdHeader callIdHeader = (CallIdHeader)responseEvent.getResponse().getHeader(CallIdHeader.NAME);

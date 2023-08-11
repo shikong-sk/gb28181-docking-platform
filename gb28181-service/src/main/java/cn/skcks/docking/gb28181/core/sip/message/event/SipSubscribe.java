@@ -21,15 +21,15 @@ public class SipSubscribe {
     @Qualifier(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     private final Executor executor;
 
-    private SubmissionPublisher<SipEventItem> submissionPublisher;
+    private SubmissionPublisher<SipEventItem> publisher;
 
     @PostConstruct
     private void init(){
-        submissionPublisher = new SubmissionPublisher<>(executor, Flow.defaultBufferSize());
+        publisher = new SubmissionPublisher<>(executor, Flow.defaultBufferSize());
     }
 
     @PreDestroy
     private void destroy(){
-        submissionPublisher.close();
+        publisher.close();
     }
 }

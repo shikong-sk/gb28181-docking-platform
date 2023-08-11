@@ -117,7 +117,7 @@ public class DigestServerAuthenticationHelper {
      *
      * @return true if authentication succeded and false otherwise.
      */
-    public boolean doAuthenticateHashedPassword(Request request, String hashedPassword) {
+    public static boolean doAuthenticateHashedPassword(Request request, String hashedPassword) {
         AuthorizationHeader authHeader = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
         if ( authHeader == null ) {
             return false;
@@ -163,7 +163,7 @@ public class DigestServerAuthenticationHelper {
      *
      * @return true if authentication succeded and false otherwise.
      */
-    public boolean doAuthenticatePlainTextPassword(Request request, String pass) {
+    public static boolean doAuthenticatePlainTextPassword(Request request, String pass) {
         AuthorizationHeader authHeader = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
         if ( authHeader == null || authHeader.getRealm() == null) {
             return false;
