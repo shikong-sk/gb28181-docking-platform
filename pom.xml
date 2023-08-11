@@ -20,6 +20,7 @@
 		<module>common</module>
 		<module>api</module>
 		<module>gb28181-service</module>
+		<module>orm</module>
 	</modules>
 
 	<properties>

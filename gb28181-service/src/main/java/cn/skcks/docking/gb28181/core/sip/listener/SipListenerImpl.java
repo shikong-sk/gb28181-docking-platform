@@ -39,6 +39,8 @@ public class SipListenerImpl implements SipListener {
         Response response = responseEvent.getResponse();
         int status = response.getStatusCode();
 
+        // log.debug();
+
         // Success
         if (((status >= Response.OK) && (status < Response.MULTIPLE_CHOICES)) || status == Response.UNAUTHORIZED) {
             CSeqHeader cseqHeader = (CSeqHeader) responseEvent.getResponse().getHeader(CSeqHeader.NAME);
