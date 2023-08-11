@@ -5,7 +5,7 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.skcks.docking.gb28181.common.config.ProjectConfig;
 import cn.skcks.docking.gb28181.core.sip.dto.RemoteInfo;
-import cn.skcks.docking.gb28181.core.sip.sdp.Gb28181Sdp;
+import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.Gb28181Sdp;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Subject;

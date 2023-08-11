@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.core.sip.sdp;
+package cn.skcks.docking.gb28181.core.sip.gb28181.sdp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

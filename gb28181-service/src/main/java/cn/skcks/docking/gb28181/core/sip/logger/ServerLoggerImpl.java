@@ -9,6 +9,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 import javax.sip.SipStack;
 import java.util.Properties;
 
+@SuppressWarnings("unused")
 public class ServerLoggerImpl implements ServerLogger {
 
     private boolean showLog = true;
@@ -25,7 +26,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + to : "接收: 来自 => " + from) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 => " + to : "接收: 来自 => " + from) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 
@@ -34,7 +35,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + to : "接收: 来自 => " + from) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 => " + to : "接收: 来自 => " + from) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 
@@ -43,7 +44,7 @@ public class ServerLoggerImpl implements ServerLogger {
         if (!showLog) {
             return;
         }
-        String log = (sender ? "发送: 目标 =>" + to : "接收: 来自 => " + from) + "\r\n" + message;
+        String log = (sender ? "发送: 目标 => " + to : "接收: 来自 => " + from) + "\r\n" + message;
         this.stackLogger.logInfo(log);
     }
 

@@ -25,6 +25,8 @@
  */
 package cn.skcks.docking.gb28181.core.sip.message.auth;
 
+import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.NumberUtil;
 import gov.nist.core.InternalErrorHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -189,6 +191,7 @@ public class DigestServerAuthenticationHelper {
 
         // nonce计数器，是一个16进制的数值，表示同一nonce下客户端发送出请求的数量
         int nc = authHeader.getNonceCount();
+
         String ncStr = String.format("%08x", nc).toUpperCase();
         String A1 = String.join(":",username , realm , pass);
         String A2 = String.join(":",request.getMethod().toUpperCase() , uri.toString());
