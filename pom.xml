@@ -37,10 +37,10 @@
 
 		<!--数据库-->
 		<mysql.version>8.0.31</mysql.version>
-		<mybatis.version>3.0.1</mybatis.version>
-		<mybatis-dynamic.version>1.4.1</mybatis-dynamic.version>
-		<mybatis-generator-maven-plugin.version>1.4.1</mybatis-generator-maven-plugin.version>
-		<pagehelper.version>1.4.6</pagehelper.version>
+		<mybatis.version>3.0.2</mybatis.version>
+		<mybatis-dynamic.version>1.5.0</mybatis-dynamic.version>
+		<mybatis-generator-maven-plugin.version>1.4.2</mybatis-generator-maven-plugin.version>
+		<pagehelper.version>1.4.7</pagehelper.version>
 
 		<!--工具-->
 		<hutool.version>5.8.11</hutool.version>
@@ -71,6 +71,20 @@
 				<artifactId>lombok</artifactId>
 				<version>${lombok.version}</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
+			<dependency>
+				<groupId>org.mybatis.spring.boot</groupId>
+				<artifactId>mybatis-spring-boot-starter</artifactId>
+				<version>${mybatis.version}</version>
+			</dependency>
+
+			<!--Mybatis-DynamicSQL-->
+			<dependency>
+				<groupId>org.mybatis.dynamic-sql</groupId>
+				<artifactId>mybatis-dynamic-sql</artifactId>
+				<version>${mybatis-dynamic.version}</version>
 			</dependency>
 
 			<!--mybatis 分页器插件-->

@@ -4,6 +4,14 @@ server:
 project:
   version: @project.version@
 
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 12341234
+    url: jdbc:mysql://10.10.10.200:3306/gb28181_docking_platform?createDatabaseIfNotExist=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+
 gb28181:
   # 作为28181服务器的配置
   sip:

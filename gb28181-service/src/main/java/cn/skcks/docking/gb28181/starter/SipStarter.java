@@ -6,6 +6,7 @@ import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -14,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 @Slf4j
 @RequiredArgsConstructor
 @Component
+@DependsOn("dockingOrmInitService")
 public class SipStarter implements SmartLifecycle {
     private final SipConfig sipConfig;
     private final SipService sipService;

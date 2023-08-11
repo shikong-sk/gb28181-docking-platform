@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.skcks.docking.gb28181.orm.mybatis.operation.OperateTableMapper">
+    <update id="createDeviceTable">
+        CREATE TABLE IF NOT EXISTS `docking_device` (
+                                      `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                                      `device_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+                                      `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `manufacturer` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `model` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `firmware` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `transport` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `stream_mode` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `on_line` tinyint(1) DEFAULT '0',
+                                      `register_time` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `keepalive_time` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `create_time` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `update_time` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `port` int(11) DEFAULT NULL,
+                                      `expires` int(11) DEFAULT NULL,
+                                      `subscribe_cycle_for_catalog` int(11) DEFAULT '0',
+                                      `subscribe_cycle_for_mobile_position` int(11) DEFAULT '0',
+                                      `mobile_position_submission_interval` int(11) DEFAULT '5',
+                                      `subscribe_cycle_for_alarm` int(11) DEFAULT '0',
+                                      `host_address` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `charset` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `ssrc_check` tinyint(1) DEFAULT '0',
+                                      `geo_coord_sys` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `media_server_id` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `custom_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `sdp_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `local_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                      `as_message_channel` tinyint(1) DEFAULT '0',
+                                      `keepalive_interval_time` int(11) DEFAULT NULL,
+                                      `switch_primary_sub_stream` tinyint(1) DEFAULT '0',
+                                      `broadcast_push_after_ack` tinyint(1) DEFAULT '0',
+                                      PRIMARY KEY (`id`),
+                                      UNIQUE KEY `id` (`id`),
+                                      UNIQUE KEY `uk_device_device` (`device_id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    </update>
+</mapper>
