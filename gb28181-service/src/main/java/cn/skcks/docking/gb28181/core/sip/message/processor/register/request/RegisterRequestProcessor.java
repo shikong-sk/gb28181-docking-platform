@@ -16,7 +16,6 @@ import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Authorization;
 import gov.nist.javax.sip.header.SIPDateHeader;
 import gov.nist.javax.sip.message.SIPRequest;
-import gov.nist.javax.sip.message.SIPResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -64,16 +63,24 @@ public class RegisterRequestProcessor implements MessageProcessor {
         String deviceId = uri.getUser();
         log.debug("请求注册 设备id => {}", deviceId);
         DockingDevice device = dockingDeviceService.getDeviceInfo(deviceId);
-        if(device == null){
-            log.info("新注册的设备 deviceId => {}", deviceId);
-        }
-
+        String senderIp = request.getLocalAddress().getHostAddress();
         RemoteInfo remoteInfo = SipUtil.getRemoteInfoFromRequest(request, false);
         log.debug("远程连接信息 => {}", remoteInfo);
 
+        if(device == null){
+            log.info("新注册的设备 deviceId => {}", deviceId);
+        } else {
+            if(dockingDeviceService.isOnline(deviceId) && dockingDeviceService.hasTransaction(deviceId)){
+                SipTransactionInfo transactionInfo = dockingDeviceService.getTransaction(deviceId);
+                if(request.getCallIdHeader().getCallId().equals(transactionInfo.getCallId())){
+                    log.info("设备注册续订 deviceId => {}",deviceId);
+                    registerDevice(deviceId, device, request, senderIp,remoteInfo);
+                }
+            }
+        }
+
         String password = sipConfig.getPassword();
         Authorization authorization = request.getAuthorization();
-        String senderIp = request.getLocalAddress().getHostAddress();
         if(authorization == null && StringUtils.isNotBlank(password)){
             Response response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
             DigestServerAuthenticationHelper.generateChallenge(getHeaderFactory(),response,sipConfig.getDomain());
@@ -94,12 +101,37 @@ public class RegisterRequestProcessor implements MessageProcessor {
 
 
         log.debug("设备 deviceId => {}, 认证通过", deviceId);
+        registerDevice(deviceId, device, request, senderIp,remoteInfo);
+    }
+
+    @SneakyThrows
+    private Response generateRegisterResponse(Request request){
+        SIPRequest sipRequest = (SIPRequest) request;
+        ExpiresHeader expires = sipRequest.getExpires();
+        if(expires == null){
+            return getMessageFactory().createResponse(Response.BAD_REQUEST, request);
+        }
+
+        Response response = getMessageFactory().createResponse(Response.OK, request);
+        // 添加date头
+        SIPDateHeader dateHeader = new SIPDateHeader();
+        // GB28181 日期
+        GbSipDate gbSipDate = new GbSipDate(Calendar.getInstance(Locale.ENGLISH).getTimeInMillis());
+        dateHeader.setDate(gbSipDate);
+
+        response.addHeader(dateHeader);
+        response.addHeader(sipRequest.getContactHeader());
+        response.addHeader(expires);
+
+        return response;
+    }
+
+    private void registerDevice(String deviceId, DockingDevice device, SIPRequest request, String senderIp, RemoteInfo remoteInfo) {
         Response response = generateRegisterResponse(request);
         if(response.getStatusCode() != Response.OK){
             sender.send(senderIp, response);
             return;
         }
-
 
         if (device == null) {
             device = new DockingDevice();
@@ -137,31 +169,9 @@ public class RegisterRequestProcessor implements MessageProcessor {
             dockingDeviceService.offline(device);
         } else {
             device.setRegisterTime(DateUtil.now());
-            dockingDeviceService.online(device);
+            dockingDeviceService.online(device, response);
         }
 
         sender.send(senderIp, response);
-    }
-
-    @SneakyThrows
-    private Response generateRegisterResponse(Request request){
-        SIPRequest sipRequest = (SIPRequest) request;
-        ExpiresHeader expires = sipRequest.getExpires();
-        if(expires == null){
-            return getMessageFactory().createResponse(Response.BAD_REQUEST, request);
-        }
-
-        Response response = getMessageFactory().createResponse(Response.OK, request);
-        // 添加date头
-        SIPDateHeader dateHeader = new SIPDateHeader();
-        // GB28181 日期
-        GbSipDate gbSipDate = new GbSipDate(Calendar.getInstance(Locale.ENGLISH).getTimeInMillis());
-        dateHeader.setDate(gbSipDate);
-
-        response.addHeader(dateHeader);
-        response.addHeader(sipRequest.getContactHeader());
-        response.addHeader(expires);
-
-        return response;
     }
 }

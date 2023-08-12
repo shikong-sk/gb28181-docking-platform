@@ -26,7 +26,7 @@ public class DeviceOnlineCacheService {
     public void setOnline(String deviceId, long time, TimeUnit unit){
         String key = getKey(deviceId);
         RedisUtil.StringOps.set(key, DateUtil.now());
-        RedisUtil.KeyOps.expire(key, DeviceConstant.KEEP_ALIVE_INTERVAL * 3, DeviceConstant.UNIT);
+        RedisUtil.KeyOps.expire(key, time, unit);
     }
 
     public void setOffline(String deviceId){

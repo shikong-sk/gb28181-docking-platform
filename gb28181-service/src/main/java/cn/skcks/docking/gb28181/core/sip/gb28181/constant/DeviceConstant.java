@@ -13,6 +13,7 @@ public class DeviceConstant {
     public class Cache {
         public final static String DEVICE = "DEVICE";
         public final static String ONLINE = "ONLINE";
+        public final static String TRANSACTION = "TRANSACTION";
 
     }
 }
