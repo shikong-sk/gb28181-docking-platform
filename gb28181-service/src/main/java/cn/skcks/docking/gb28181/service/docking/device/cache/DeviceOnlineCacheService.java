@@ -2,6 +2,8 @@ package cn.skcks.docking.gb28181.service.docking.device.cache;
 
 import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.common.redis.RedisUtil;
+import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
+import cn.skcks.docking.gb28181.core.sip.gb28181.constant.DeviceConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -13,10 +15,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 public class DeviceOnlineCacheService {
-    public final static String PREFIX = "ONLINE";
-
     private String getKey(String deviceId) {
-        return StringUtils.joinWith(":", PREFIX, deviceId);
+        return CacheUtil.getKey(DeviceConstant.Cache.ONLINE,deviceId);
     }
 
     public boolean isOnline(String deviceId){
@@ -26,7 +26,7 @@ public class DeviceOnlineCacheService {
     public void setOnline(String deviceId, long time, TimeUnit unit){
         String key = getKey(deviceId);
         RedisUtil.StringOps.set(key, DateUtil.now());
-        RedisUtil.KeyOps.expire(key, time,unit);
+        RedisUtil.KeyOps.expire(key, DeviceConstant.KEEP_ALIVE_INTERVAL * 3, DeviceConstant.UNIT);
     }
 
     public void setOffline(String deviceId){

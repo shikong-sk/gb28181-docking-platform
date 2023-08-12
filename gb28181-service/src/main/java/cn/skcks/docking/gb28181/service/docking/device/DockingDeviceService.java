@@ -1,5 +1,7 @@
 package cn.skcks.docking.gb28181.service.docking.device;
 
+import cn.hutool.core.date.DateUtil;
+import cn.skcks.docking.gb28181.core.sip.gb28181.constant.DeviceConstant;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.mapper.DockingDeviceDynamicSqlSupport;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.mapper.DockingDeviceMapper;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
@@ -7,10 +9,10 @@ import cn.skcks.docking.gb28181.service.docking.device.cache.DeviceOnlineCacheSe
 import cn.skcks.docking.gb28181.service.docking.device.cache.DockingDeviceCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.mybatis.dynamic.sql.SqlBuilder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -42,7 +44,11 @@ public class DockingDeviceService {
     public void online(DockingDevice device) {
         String deviceId = device.getDeviceId();
         log.info("[设备上线] deviceId => {}, {}://{}:{}", deviceId, device.getTransport(), device.getIp(), device.getPort());
-
+        device.setUpdateTime(DateUtil.now());
+        if (device.getKeepaliveIntervalTime() == null || device.getKeepaliveIntervalTime() == 0) {
+            // 默认心跳间隔60
+            device.setKeepaliveIntervalTime(DeviceConstant.KEEP_ALIVE_INTERVAL);
+        }
         dockingDeviceMapper
                 .selectOne((s -> s.where(DockingDeviceDynamicSqlSupport.deviceId, SqlBuilder.isEqualTo(deviceId))))
                 .ifPresentOrElse((ignore -> {
