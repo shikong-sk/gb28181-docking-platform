@@ -4,7 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.config.sip.SipConfig;
 import cn.skcks.docking.gb28181.core.sip.dto.RemoteInfo;
 import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
-import cn.skcks.docking.gb28181.core.sip.gb28181.constant.DefaultConstant;
+import cn.skcks.docking.gb28181.core.sip.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sip.GbSipDate;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
 import cn.skcks.docking.gb28181.core.sip.message.auth.DigestServerAuthenticationHelper;
@@ -46,7 +46,8 @@ public class RegisterRequestProcessor implements MessageProcessor {
     private final DockingDeviceService dockingDeviceService;
 
     @PostConstruct
-    private void init(){
+    @Override
+    public void init(){
         sipListener.addProcessor(Method.REGISTER,this);
     }
 
@@ -61,7 +62,7 @@ public class RegisterRequestProcessor implements MessageProcessor {
         SipUri uri = (SipUri)address.getURI();
         String deviceId = uri.getUser();
         log.debug("请求注册 设备id => {}", deviceId);
-        DockingDevice device = dockingDeviceService.getDeviceInfo(deviceId);
+        DockingDevice device = dockingDeviceService.getDevice(deviceId);
         String senderIp = request.getLocalAddress().getHostAddress();
         RemoteInfo remoteInfo = SipUtil.getRemoteInfoFromRequest(request, false);
         log.debug("远程连接信息 => {}", remoteInfo);
@@ -135,8 +136,8 @@ public class RegisterRequestProcessor implements MessageProcessor {
         if (device == null) {
             device = new DockingDevice();
             device.setStreamMode(ListeningPoint.UDP);
-            device.setCharset(DefaultConstant.CHARSET);
-            device.setGeoCoordSys(DefaultConstant.GEO_COORD_SYS);
+            device.setCharset(GB28181Constant.CHARSET);
+            device.setGeoCoordSys(GB28181Constant.GEO_COORD_SYS);
             device.setDeviceId(deviceId);
             device.setOnLine(false);
         } else {
@@ -144,10 +145,10 @@ public class RegisterRequestProcessor implements MessageProcessor {
                 device.setStreamMode(ListeningPoint.UDP);
             }
             if (ObjectUtils.isEmpty(device.getCharset())) {
-                device.setCharset(DefaultConstant.CHARSET);
+                device.setCharset(GB28181Constant.CHARSET);
             }
             if (ObjectUtils.isEmpty(device.getGeoCoordSys())) {
-                device.setGeoCoordSys(DefaultConstant.GEO_COORD_SYS);
+                device.setGeoCoordSys(GB28181Constant.GEO_COORD_SYS);
             }
         }
 

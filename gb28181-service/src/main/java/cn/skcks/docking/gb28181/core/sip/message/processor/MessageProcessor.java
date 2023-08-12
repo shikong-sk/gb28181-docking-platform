@@ -1,6 +1,5 @@
 package cn.skcks.docking.gb28181.core.sip.message.processor;
 
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +14,10 @@ public interface MessageProcessor {
 
     class Method {
         public static final String REGISTER = "REGISTER";
+        public static final String MESSAGE = "MESSAGE";
     }
 
+    void init();
     void process(RequestEvent requestEvent);
 
     default MessageFactory getMessageFactory() {

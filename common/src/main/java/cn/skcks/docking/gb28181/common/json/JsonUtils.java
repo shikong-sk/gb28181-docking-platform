@@ -48,9 +48,9 @@ public class JsonUtils {
         }
     }
 
-    public static <T> T parse(String json, TypeReference<T> clazz) {
+    public static <T> T parse(String xml, TypeReference<T> clazz) {
         try {
-            return mapper.readValue(json, clazz);
+            return mapper.readValue(xml, clazz);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

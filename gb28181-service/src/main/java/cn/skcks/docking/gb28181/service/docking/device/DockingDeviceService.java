@@ -16,7 +16,6 @@ import org.mybatis.dynamic.sql.SqlBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.sip.message.Response;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -32,7 +31,7 @@ public class DockingDeviceService {
      * @param deviceId 设备id
      * @return 设备信息
      */
-    public DockingDevice getDeviceInfo(String deviceId) {
+    public DockingDevice getDevice(String deviceId) {
         DockingDevice device = deviceCacheService.getDevice(deviceId);
         if (device == null) {
             device = dockingDeviceMapper
@@ -65,7 +64,7 @@ public class DockingDeviceService {
                     dockingDeviceMapper.insert(device);
                 });
 
-        getDeviceInfo(deviceId);
+        getDevice(deviceId);
         onlineCacheService.setOnline(deviceId, DeviceConstant.KEEP_ALIVE_INTERVAL * 3, DeviceConstant.UNIT);
         setTransaction(deviceId, response);
     }
