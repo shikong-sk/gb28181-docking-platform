@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.config.sip.SipConfig;
 import cn.skcks.docking.gb28181.core.sip.dto.RemoteInfo;
 import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
+import cn.skcks.docking.gb28181.core.sip.gb28181.constant.DefaultConstant;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sip.GbSipDate;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
 import cn.skcks.docking.gb28181.core.sip.message.auth.DigestServerAuthenticationHelper;
@@ -134,8 +135,8 @@ public class RegisterRequestProcessor implements MessageProcessor {
         if (device == null) {
             device = new DockingDevice();
             device.setStreamMode(ListeningPoint.UDP);
-            device.setCharset("GB2312");
-            device.setGeoCoordSys("WGS84");
+            device.setCharset(DefaultConstant.CHARSET);
+            device.setGeoCoordSys(DefaultConstant.GEO_COORD_SYS);
             device.setDeviceId(deviceId);
             device.setOnLine(false);
         } else {
@@ -143,10 +144,10 @@ public class RegisterRequestProcessor implements MessageProcessor {
                 device.setStreamMode(ListeningPoint.UDP);
             }
             if (ObjectUtils.isEmpty(device.getCharset())) {
-                device.setCharset("GB2312");
+                device.setCharset(DefaultConstant.CHARSET);
             }
             if (ObjectUtils.isEmpty(device.getGeoCoordSys())) {
-                device.setGeoCoordSys("WGS84");
+                device.setGeoCoordSys(DefaultConstant.GEO_COORD_SYS);
             }
         }
 
