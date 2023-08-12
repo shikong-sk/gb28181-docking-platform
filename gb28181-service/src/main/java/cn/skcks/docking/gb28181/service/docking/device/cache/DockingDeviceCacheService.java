@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class DockingDeviceCacheService {
-    public static final String PREFIX = "DockingDevice";
+    public static final String PREFIX = "DEVICE";
 
-    public DockingDevice getDeviceInfo(String deviceId) {
+    public DockingDevice getDevice(String deviceId) {
         String key = StringUtils.joinWith(":", PREFIX, deviceId);
         String json = RedisUtil.StringOps.get(key);
         if (json == null){
@@ -23,7 +23,12 @@ public class DockingDeviceCacheService {
         return JsonUtils.parse(json, DockingDevice.class);
     }
 
-    public void cacheDeviceInfo(String deviceId,DockingDevice device) {
+    public void removeDevice(String deviceId) {
+        String key = StringUtils.joinWith(":", PREFIX, deviceId);
+        RedisUtil.KeyOps.delete(key);
+    }
+
+    public void cacheDevice(String deviceId, DockingDevice device) {
         String key = StringUtils.joinWith(":", PREFIX, deviceId);
         RedisUtil.StringOps.set(key,JsonUtils.toCompressJson(device));
     }

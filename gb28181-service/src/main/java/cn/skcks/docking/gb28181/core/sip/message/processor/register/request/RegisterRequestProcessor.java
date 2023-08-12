@@ -132,7 +132,9 @@ public class RegisterRequestProcessor implements MessageProcessor {
         device.setExpires(expires);
         // expires == 0 时 注销
         if (expires == 0) {
+            device.setOnLine(false);
             log.info("设备注销 deviceId => {}", deviceId);
+            dockingDeviceService.offline(device);
         } else {
             device.setRegisterTime(DateUtil.now());
             dockingDeviceService.online(device);
