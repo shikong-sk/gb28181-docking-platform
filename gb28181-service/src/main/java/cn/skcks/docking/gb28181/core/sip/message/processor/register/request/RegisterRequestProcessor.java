@@ -39,8 +39,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 @Component
 public class RegisterRequestProcessor implements MessageProcessor {
-    private final static String METHOD = "REGISTER";
-
     private final SipListener sipListener;
     private final SipMessageSender sender;
     private final SipConfig sipConfig;
@@ -48,7 +46,7 @@ public class RegisterRequestProcessor implements MessageProcessor {
 
     @PostConstruct
     private void init(){
-        sipListener.addProcessor(METHOD,this);
+        sipListener.addProcessor(Method.REGISTER,this);
     }
 
     @SneakyThrows

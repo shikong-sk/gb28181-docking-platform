@@ -13,6 +13,10 @@ import javax.sip.message.MessageFactory;
 public interface MessageProcessor {
     Logger log = LoggerFactory.getLogger(MessageProcessor.class);
 
+    class Method {
+        public static final String REGISTER = "REGISTER";
+    }
+
     void process(RequestEvent requestEvent);
 
     default MessageFactory getMessageFactory() {
