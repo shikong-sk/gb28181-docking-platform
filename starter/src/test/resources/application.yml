@@ -5,6 +5,19 @@ project:
   version: @project.version@
 
 spring:
+  data:
+    redis:
+      # [必须修改] Redis服务器IP, REDIS安装在本机的,使用127.0.0.1
+      #    host: 192.168.1.241
+      host: 10.10.10.200
+      # [必须修改] 端口号
+      port: 16379
+      # [可选] 数据库 DB
+      database: 10
+      # [可选] 访问密码,若你的redis服务器没有设置密码，就不需要用密码去连接
+      password: 12341234
+      # [可选] 超时时间
+      timeout: 10000
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver

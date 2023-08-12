@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.core.sip.message.processor.request;
+package cn.skcks.docking.gb28181.core.sip.message.processor.register.request;
 
 import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.config.sip.SipConfig;
@@ -11,10 +11,9 @@ import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
 import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
-import cn.skcks.docking.gb28181.service.docking.DockingDeviceService;
+import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Authorization;
-import gov.nist.javax.sip.header.SIPDate;
 import gov.nist.javax.sip.header.SIPDateHeader;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -23,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -32,12 +30,11 @@ import javax.sip.RequestEvent;
 import javax.sip.address.Address;
 import javax.sip.header.ExpiresHeader;
 import javax.sip.header.FromHeader;
+import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
-import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -66,8 +63,8 @@ public class RegisterRequestProcessor implements MessageProcessor {
         SipUri uri = (SipUri)address.getURI();
         String deviceId = uri.getUser();
         log.debug("请求注册 设备id => {}", deviceId);
-        DockingDevice deviceInfo = dockingDeviceService.getDeviceInfo(deviceId);
-        if(deviceInfo == null){
+        DockingDevice device = dockingDeviceService.getDeviceInfo(deviceId);
+        if(device == null){
             log.info("新注册的设备 deviceId => {}", deviceId);
         }
 
@@ -104,38 +101,41 @@ public class RegisterRequestProcessor implements MessageProcessor {
         }
 
 
-        if (deviceInfo == null) {
-            deviceInfo = new DockingDevice();
-            deviceInfo.setStreamMode(ListeningPoint.UDP);
-            deviceInfo.setCharset("GB2312");
-            deviceInfo.setGeoCoordSys("WGS84");
-            deviceInfo.setDeviceId(deviceId);
-            deviceInfo.setOnLine(false);
+        if (device == null) {
+            device = new DockingDevice();
+            device.setStreamMode(ListeningPoint.UDP);
+            device.setCharset("GB2312");
+            device.setGeoCoordSys("WGS84");
+            device.setDeviceId(deviceId);
+            device.setOnLine(false);
         } else {
-            if (ObjectUtils.isEmpty(deviceInfo.getStreamMode())) {
-                deviceInfo.setStreamMode(ListeningPoint.UDP);
+            if (ObjectUtils.isEmpty(device.getStreamMode())) {
+                device.setStreamMode(ListeningPoint.UDP);
             }
-            if (ObjectUtils.isEmpty(deviceInfo.getCharset())) {
-                deviceInfo.setCharset("GB2312");
+            if (ObjectUtils.isEmpty(device.getCharset())) {
+                device.setCharset("GB2312");
             }
-            if (ObjectUtils.isEmpty(deviceInfo.getGeoCoordSys())) {
-                deviceInfo.setGeoCoordSys("WGS84");
+            if (ObjectUtils.isEmpty(device.getGeoCoordSys())) {
+                device.setGeoCoordSys("WGS84");
             }
         }
 
-        deviceInfo.setIp(remoteInfo.getIp());
-        deviceInfo.setPort(remoteInfo.getPort());
-        deviceInfo.setHostAddress(remoteInfo.getIp().concat(":").concat(String.valueOf(remoteInfo.getPort())));
-        deviceInfo.setLocalIp(senderIp);
+        device.setIp(remoteInfo.getIp());
+        device.setPort(remoteInfo.getPort());
+        device.setHostAddress(remoteInfo.getIp().concat(":").concat(String.valueOf(remoteInfo.getPort())));
+        device.setLocalIp(senderIp);
+        ViaHeader viaHeader = request.getTopmostViaHeader();
+        String transport = viaHeader.getTransport();
+        device.setTransport(ListeningPoint.TCP.equalsIgnoreCase(transport) ? ListeningPoint.TCP : ListeningPoint.UDP);
 
         int expires = request.getExpires().getExpires();
-        deviceInfo.setExpires(expires);
+        device.setExpires(expires);
         // expires == 0 时 注销
         if (expires == 0) {
             log.info("设备注销 deviceId => {}", deviceId);
         } else {
-            deviceInfo.setRegisterTime(DateUtil.now());
-            SipTransactionInfo sipTransactionInfo = new SipTransactionInfo((SIPResponse)response);
+            device.setRegisterTime(DateUtil.now());
+            dockingDeviceService.online(device);
         }
 
         sender.send(senderIp, response);
