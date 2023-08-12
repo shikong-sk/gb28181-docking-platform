@@ -1,5 +1,6 @@
 package cn.skcks.docking.gb28181.core.sip.message.processor.message.request;
 
+import cn.skcks.docking.gb28181.common.json.ResponseStatus;
 import cn.skcks.docking.gb28181.common.xml.XmlUtils;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.request.dto.MessageDto;
@@ -55,12 +56,15 @@ public class MessageRequestProcessor implements MessageProcessor {
             return;
         }
 
+        Response response;
         if(messageDto.getCmdType().equalsIgnoreCase(CmdType.KEEPALIVE)){
-            Response response = response(request,Response.OK,"OK");
+            response = response(request, Response.OK, "OK");
             // 更新设备在线状态
             deviceService.online(device, response);
-            sender.send(senderIp,response);
+        } else {
+            response = response(request, Response.NOT_IMPLEMENTED, ResponseStatus.NOT_IMPLEMENTED.getMessage());
         }
+        sender.send(senderIp,response);
     }
 
     @SneakyThrows
