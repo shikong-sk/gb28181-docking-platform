@@ -2,7 +2,9 @@ package cn.skcks.docking.gb28181.common.json;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Data
 @SuppressWarnings("unused")
 @Schema(title = "返回结果")

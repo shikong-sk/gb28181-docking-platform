@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "media")
-public class MediaConfig {
+public class ZlmMediaConfig {
     private String url;
+    private String id;
+    private String secret;
 }
