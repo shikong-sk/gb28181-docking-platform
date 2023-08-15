@@ -21,14 +21,18 @@
 		<module>api</module>
 		<module>gb28181-service</module>
 		<module>orm</module>
+		<module>zlmediakit-service</module>
 	</modules>
 
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>17</java.version>
+		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
 
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<java.version>17</java.version>
 		<springboot.version>3.1.2</springboot.version>
 
 		<!--Java Bean-->
@@ -46,7 +50,7 @@
 		<hutool.version>5.8.11</hutool.version>
 
 		<!--SpringDoc-->
-		<springdoc.version>2.0.2</springdoc.version>
+		<springdoc.version>2.2.0</springdoc.version>
 	</properties>
 
 
