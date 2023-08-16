@@ -3,7 +3,6 @@ package cn.skcks.docking.gb28181.common.config;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -18,6 +17,8 @@ public class ProjectConfig {
 
     @PostConstruct
     private void init(){
-        log.info("项目版本号 {}", version);
+        if(version != null){
+            log.info("项目版本号 {}", version);
+        }
     }
 }
