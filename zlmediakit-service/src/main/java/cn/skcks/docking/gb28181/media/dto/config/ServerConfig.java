@@ -11,4 +11,10 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "ffmpeg.")
     private FFMpegConfig ffmpeg;
+
+    @JsonUnwrapped(prefix = "general.")
+    private GeneralConfig general;
+
+    @JsonUnwrapped(prefix = "hls.")
+    private HlsConfig hls;
 }

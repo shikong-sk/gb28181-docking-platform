@@ -55,4 +55,9 @@ public class JsonResponse<T> {
     public static <T> JsonResponse<T> build(T data, int status, String msg) {
         return new JsonResponse<>(status, msg, data);
     }
+
+    @Override
+    public String toString(){
+        return JsonUtils.toJson(this);
+    }
 }
