@@ -6,10 +6,9 @@ import lombok.Data;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class FFMpegConfig {
-    private String bin;
-    private String cmd;
-    private String log;
-    private Integer restartSec;
-    private String snap;
+public class ClusterConfig {
+    private String originUrl;
+
+    private String retryCount;
+    private String timeoutSec;
 }

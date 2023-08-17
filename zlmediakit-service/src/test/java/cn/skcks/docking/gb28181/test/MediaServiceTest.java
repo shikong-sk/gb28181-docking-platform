@@ -29,10 +29,11 @@ public class MediaServiceTest {
 
     @Test
     void context(){
-        ResponseEntity<String> entity = zlMediaHttpService.getServerConfigResponseEntity(config.getSecret());
+        String secret = config.getSecret();
+        ResponseEntity<String> entity = zlMediaHttpService.getServerConfigResponseEntity(secret);
         log.info("{}", entity.getBody());
 
-        JsonResponse<List<ServerConfig>> test = zlMediaHttpService.getServerConfig(config.getSecret());
+        JsonResponse<List<ServerConfig>> test = zlMediaHttpService.getServerConfig(secret);
         log.info("{}", test);
     }
 }

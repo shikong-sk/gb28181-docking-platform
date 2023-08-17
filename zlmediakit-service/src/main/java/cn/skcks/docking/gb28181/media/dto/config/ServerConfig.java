@@ -17,4 +17,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "hls.")
     private HlsConfig hls;
+
+    @JsonUnwrapped(prefix = "cluster.")
+    private ClusterConfig cluster;
 }

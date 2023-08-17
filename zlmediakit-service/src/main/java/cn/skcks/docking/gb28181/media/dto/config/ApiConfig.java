@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class ApiConfig {
-    private String apiDebug;
+    private Integer apiDebug;
     private String secret;
+    private String defaultSnap;
+    private String snapRoot;
 }
