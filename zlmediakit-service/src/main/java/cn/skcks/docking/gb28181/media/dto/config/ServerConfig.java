@@ -53,4 +53,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "shell.")
     private ShellConfig shell;
+
+    @JsonUnwrapped(prefix = "srt.")
+    private SrtConfig srtConfig;
 }
