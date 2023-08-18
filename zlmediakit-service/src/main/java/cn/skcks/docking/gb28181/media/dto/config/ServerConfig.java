@@ -50,4 +50,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "rtsp.")
     private RtspConfig rtsp;
+
+    @JsonUnwrapped(prefix = "shell.")
+    private ShellConfig shell;
 }
