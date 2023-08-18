@@ -32,4 +32,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "protocol.")
     private ProtocolConfig protocol;
+
+    @JsonUnwrapped(prefix = "record.")
+    private RecordConfig record;
 }
