@@ -21,7 +21,7 @@ public enum ResponseStatus {
     private final String msg;
 
     @JsonCreator
-    public ResponseStatus fromCode(int code){
+    public static ResponseStatus fromCode(int code){
         for (ResponseStatus status : values()) {
             if (status.getCode() == code) {
                 return status;

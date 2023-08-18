@@ -14,11 +14,11 @@ public class ZlmResponse<T> {
     @Schema(title = "状态码")
     private ResponseStatus code;
 
-    @Schema(title = "响应消息")
-    private String msg;
-
     @Schema(title = "响应数据")
     private T data;
+
+    @Schema(title = "响应消息")
+    private String msg;
 
     @Override
     public String toString(){

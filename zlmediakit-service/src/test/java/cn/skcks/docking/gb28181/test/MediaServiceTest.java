@@ -7,6 +7,7 @@ import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
+import cn.skcks.docking.gb28181.media.dto.response.ZlmResponseConvertor;
 import cn.skcks.docking.gb28181.media.proxy.ZlmMediaHttpService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,12 @@ public class MediaServiceTest {
         log.info("{}", entity.getBody());
 
         ZlmResponse<List<ServerConfig>> test = zlMediaHttpService.getServerConfig(secret);
-        log.info("{}", test);
-        log.info("{}",test.getCode().getMsg());
+        JsonResponse<List<ServerConfig>> jsonResponse = ZlmResponseConvertor.INSTANCE.toJsonResponse(test);
+        log.info("{}", jsonResponse);
+
+        ZlmResponse<List<ServerConfig>> zlmResponse = ZlmResponseConvertor.INSTANCE.toZlmResponse(jsonResponse);
+        log.info("{}", zlmResponse);
+        log.info("{}", zlmResponse.getCode().getMsg());
     }
 
     @Test
