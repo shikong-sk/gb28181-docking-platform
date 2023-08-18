@@ -1,5 +1,6 @@
 package cn.skcks.docking.gb28181.media.dto.response;
 
+import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.json.JsonUtils;
 import cn.skcks.docking.gb28181.media.dto.status.ResponseStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,5 +24,9 @@ public class ZlmResponse<T> {
     @Override
     public String toString(){
         return JsonUtils.toJson(this);
+    }
+
+    public JsonResponse<T> getJsonResponse(){
+        return ZlmResponseConvertor.INSTANCE.toJsonResponse(this);
     }
 }

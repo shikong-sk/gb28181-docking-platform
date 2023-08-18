@@ -43,7 +43,7 @@ public class MediaServiceTest {
         log.info("{}", entity.getBody());
 
         ZlmResponse<List<ServerConfig>> test = zlMediaHttpService.getServerConfig(secret);
-        JsonResponse<List<ServerConfig>> jsonResponse = ZlmResponseConvertor.INSTANCE.toJsonResponse(test);
+        JsonResponse<List<ServerConfig>> jsonResponse = test.getJsonResponse();
         log.info("{}", jsonResponse);
 
         ZlmResponse<List<ServerConfig>> zlmResponse = ZlmResponseConvertor.INSTANCE.toZlmResponse(jsonResponse);
