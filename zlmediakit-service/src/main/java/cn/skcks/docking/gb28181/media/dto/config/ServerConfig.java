@@ -35,4 +35,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "record.")
     private RecordConfig record;
+
+    @JsonUnwrapped(prefix = "rtc.")
+    private RtcConfig rtc;
 }
