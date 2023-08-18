@@ -29,4 +29,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "multicast.")
     private MulticastConfig multicast;
+
+    @JsonUnwrapped(prefix = "protocol.")
+    private ProtocolConfig protocol;
 }
