@@ -3,4 +3,4 @@ spring:
     store-type: none
 
 project:
-  version: '@project.version@'
+  version: @project.version@

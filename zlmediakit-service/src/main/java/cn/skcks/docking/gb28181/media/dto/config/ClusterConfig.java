@@ -8,7 +8,6 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ClusterConfig {
     private String originUrl;
-
     private String retryCount;
     private String timeoutSec;
 }

@@ -9,6 +9,9 @@ public class ServerConfig {
     @JsonUnwrapped(prefix = "api.")
     private ApiConfig api;
 
+    @JsonUnwrapped(prefix = "cluster.")
+    private ClusterConfig cluster;
+
     @JsonUnwrapped(prefix = "ffmpeg.")
     private FFMpegConfig ffmpeg;
 
@@ -18,6 +21,5 @@ public class ServerConfig {
     @JsonUnwrapped(prefix = "hls.")
     private HlsConfig hls;
 
-    @JsonUnwrapped(prefix = "cluster.")
-    private ClusterConfig cluster;
+
 }
