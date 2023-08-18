@@ -1,6 +1,5 @@
 package cn.skcks.docking.gb28181.media.proxy;
 
-import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import org.springframework.http.ResponseEntity;
