@@ -21,5 +21,6 @@ public class ServerConfig {
     @JsonUnwrapped(prefix = "hls.")
     private HlsConfig hls;
 
-
+    @JsonUnwrapped(prefix = "hook.")
+    private HookConfig hook;
 }
