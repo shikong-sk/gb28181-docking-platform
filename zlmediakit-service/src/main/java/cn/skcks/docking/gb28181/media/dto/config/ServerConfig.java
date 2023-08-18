@@ -41,4 +41,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "rtmp.")
     private RtmpConfig rtmp;
+
+    @JsonUnwrapped(prefix = "rtp.")
+    private RtpConfig rtp;
 }
