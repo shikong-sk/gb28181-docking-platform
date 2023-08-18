@@ -23,4 +23,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "hook.")
     private HookConfig hook;
+
+    @JsonUnwrapped(prefix = "http.")
+    private HttpConfig http;
 }
