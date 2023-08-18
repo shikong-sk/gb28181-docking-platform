@@ -26,4 +26,7 @@ public class ServerConfig {
 
     @JsonUnwrapped(prefix = "http.")
     private HttpConfig http;
+
+    @JsonUnwrapped(prefix = "multicast.")
+    private MulticastConfig multicast;
 }
