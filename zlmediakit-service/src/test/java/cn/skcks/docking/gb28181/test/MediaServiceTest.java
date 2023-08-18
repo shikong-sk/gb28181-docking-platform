@@ -6,6 +6,7 @@ import cn.hutool.core.date.ZoneUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
+import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.proxy.ZlmMediaHttpService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -40,8 +41,9 @@ public class MediaServiceTest {
         ResponseEntity<String> entity = zlMediaHttpService.getServerConfigResponseEntity(secret);
         log.info("{}", entity.getBody());
 
-        JsonResponse<List<ServerConfig>> test = zlMediaHttpService.getServerConfig(secret);
+        ZlmResponse<List<ServerConfig>> test = zlMediaHttpService.getServerConfig(secret);
         log.info("{}", test);
+        log.info("{}",test.getCode().getMsg());
     }
 
     @Test
