@@ -12,8 +12,8 @@ public class ZlmProxy {
     private final ZlmMediaHttpClient exchange;
 
     @Bean
-    public ZlmMediaHttpService zlMediaHttpService(){
-        return ZlmMediaHttpService.builder()
+    public ZlmMediaService zlMediaHttpService(){
+        return ZlmMediaService.builder()
                 .secret(mediaConfig.getSecret())
                 .exchange(exchange)
                 .build();
