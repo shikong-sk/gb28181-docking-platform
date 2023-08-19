@@ -3,6 +3,7 @@ package cn.skcks.docking.gb28181.media.dto.response;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.json.JsonUtils;
 import cn.skcks.docking.gb28181.media.dto.status.ResponseStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class ZlmResponse<T> {
         return JsonUtils.toJson(this);
     }
 
+    @JsonIgnore
     public JsonResponse<T> getJsonResponse(){
         return ZlmResponseConvertor.INSTANCE.toJsonResponse(this);
     }
