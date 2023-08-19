@@ -67,7 +67,7 @@ public class MediaServiceTest {
 
     @Test
     void testApi(){
-        log.info("{}",zlMediaHttpService.getApiList());
+        log.info("{}", zlMediaHttpService.getApiList());
     }
 
     @Test
