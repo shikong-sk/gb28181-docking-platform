@@ -1,5 +1,6 @@
 package cn.skcks.docking.gb28181.test;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
@@ -7,6 +8,7 @@ import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponseConvertor;
 import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
+import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +73,16 @@ public class MediaServiceTest {
         Thread.sleep(500);
         CloseRtpServer closeRtpServer = new CloseRtpServer(streamId);
         log.info("{}", zlMediaHttpService.closeRtpServer(closeRtpServer));
+    }
+
+    @Test
+    void version(){
+        ZlmResponse<VersionResp> versionResp = zlMediaHttpService.version();
+        log.info("{}", versionResp);
+        Date date = versionResp.getData().getBuildTime();
+        log.info("{}", date);
+        log.info("{}", LocalDateTimeUtil.of(date.toInstant(), TimeZone.getTimeZone("GMT+8")));
+        log.info("{}", LocalDateTimeUtil.of(date.toInstant(), TimeZone.getTimeZone("UTC")));
     }
 
     @Test

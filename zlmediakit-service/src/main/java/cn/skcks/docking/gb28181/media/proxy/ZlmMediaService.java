@@ -7,9 +7,11 @@ import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServerResp;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServerResp;
+import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -43,5 +45,9 @@ public class ZlmMediaService {
 
     public CloseRtpServerResp closeRtpServer(CloseRtpServer params){
         return exchange.closeRtpServer(secret, params);
+    }
+
+    public ZlmResponse<VersionResp> version(){
+        return exchange.version(secret);
     }
 }

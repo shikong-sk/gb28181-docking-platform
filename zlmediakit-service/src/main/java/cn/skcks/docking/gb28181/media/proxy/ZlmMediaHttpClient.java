@@ -6,6 +6,7 @@ import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServerResp;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServerResp;
+import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,4 +37,7 @@ public interface ZlmMediaHttpClient {
 
     @PostMapping("/index/api/closeRtpServer")
     CloseRtpServerResp closeRtpServer(@RequestParam String secret, @RequestBody CloseRtpServer params);
+
+    @GetMapping("/index/api/version")
+    ZlmResponse<VersionResp> version(@RequestParam String secret);
 }
