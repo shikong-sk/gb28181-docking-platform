@@ -1,8 +1,13 @@
 package cn.skcks.docking.gb28181.test;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.core.net.url.UrlBuilder;
+import cn.hutool.core.net.url.UrlPath;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.json.JsonUtils;
+import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
+import cn.skcks.docking.gb28181.media.dto.config.FFMpegConfig;
 import cn.skcks.docking.gb28181.media.dto.config.HookConfig;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
 import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxy;
@@ -14,10 +19,12 @@ import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.RtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.StartSendRtp;
+import cn.skcks.docking.gb28181.media.dto.snap.Snap;
 import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -39,6 +47,8 @@ import java.util.*;
 public class MediaServiceTest {
     @Autowired
     private ZlmMediaService zlmMediaService;
+    @Autowired
+    private ZlmMediaConfig config;
 
     @Test
     void test(){
@@ -142,6 +152,28 @@ public class MediaServiceTest {
         String key = Optional.ofNullable(data).orElse(new AddStreamPusherProxyResp()).getKey();
         ZlmResponse<DelStreamPusherProxyResp> delStreamPusherProxyRespZlmResponse = zlmMediaService.delStreamPusherProxy(key);
         log.info("{}",delStreamPusherProxyRespZlmResponse);
+    }
+
+    @Test
+    @SneakyThrows
+    void snapTest(){
+        Snap snap = new Snap();
+        // String url = UrlBuilder.of(config.getUrl())
+        //         .setScheme("rtmp")
+        //         .setPath(UrlPath.of("/live/test", null)).build();
+        // log.info("url => {}", url);
+        snap.setUrl("rtmp://127.0.0.1:1935/live/test");
+        snap.setTimeoutSec(180);
+        snap.setExpireSec(5);
+        ResponseEntity<byte[]> response = zlmMediaService.getSnap(snap);
+        log.info("{}", Objects.requireNonNull(response.getBody()).length);
+        log.info("base64 snap => \n{}",Base64.encode(response.getBody()));
+    }
+
+    @Test
+    void restartServer(){
+        ZlmResponse<Void> response = zlmMediaService.restartServer();
+        log.info("{}", response);
     }
 
     @Test

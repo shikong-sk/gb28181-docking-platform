@@ -6,6 +6,7 @@ import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxyResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.DelStreamPusherProxyResp;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.rtp.*;
+import cn.skcks.docking.gb28181.media.dto.snap.Snap;
 import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -58,4 +59,10 @@ public interface ZlmMediaHttpClient {
 
     @PostMapping("/index/api/stopSendRtp")
     ZlmResponse<Void> stopSendRtp(@RequestParam String secret, @RequestBody StopSendRtp params);
+
+    @PostMapping("/index/api/getSnap")
+    ResponseEntity<byte[]> getSnap(@RequestParam String secret, @RequestBody Snap params);
+
+    @GetMapping("/index/api/restartServer")
+    ZlmResponse<Void> restartServer(@RequestParam String secret);
 }
