@@ -1,9 +1,12 @@
 package cn.skcks.docking.gb28181.test;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
+import cn.skcks.docking.gb28181.media.dto.config.HookConfig;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
+import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxy;
+import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxyResp;
+import cn.skcks.docking.gb28181.media.dto.proxy.DelStreamPusherProxyResp;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponseConvertor;
 import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
@@ -32,7 +35,7 @@ import java.util.*;
 @ExtendWith(SpringExtension.class)
 public class MediaServiceTest {
     @Autowired
-    private ZlmMediaService zlMediaHttpService;
+    private ZlmMediaService zlmMediaService;
 
     @Test
     void test(){
@@ -50,10 +53,10 @@ public class MediaServiceTest {
 
     @Test
     void context(){
-        ResponseEntity<String> entity = zlMediaHttpService.getServerConfigResponseEntity();
+        ResponseEntity<String> entity = zlmMediaService.getServerConfigResponseEntity();
         log.info("{}", entity.getBody());
 
-        ZlmResponse<List<ServerConfig>> test = zlMediaHttpService.getServerConfig();
+        ZlmResponse<List<ServerConfig>> test = zlmMediaService.getServerConfig();
         JsonResponse<List<ServerConfig>> jsonResponse = test.getJsonResponse();
         log.info("{}", jsonResponse);
 
@@ -65,19 +68,19 @@ public class MediaServiceTest {
     @Test
     @SneakyThrows
     void testApi(){
-        log.info("{}", zlMediaHttpService.getApiList());
+        log.info("{}", zlmMediaService.getApiList());
         int port = 60000;
         String streamId = "testStream";
         OpenRtpServer openRtpServer = new OpenRtpServer(port,0,streamId);
-        log.info("{}", zlMediaHttpService.openRtpServer(openRtpServer));
+        log.info("{}", zlmMediaService.openRtpServer(openRtpServer));
         Thread.sleep(500);
         CloseRtpServer closeRtpServer = new CloseRtpServer(streamId);
-        log.info("{}", zlMediaHttpService.closeRtpServer(closeRtpServer));
+        log.info("{}", zlmMediaService.closeRtpServer(closeRtpServer));
     }
 
     @Test
     void version(){
-        ZlmResponse<VersionResp> versionResp = zlMediaHttpService.version();
+        ZlmResponse<VersionResp> versionResp = zlmMediaService.version();
         log.info("{}", versionResp);
         Date date = versionResp.getData().getBuildTime();
         log.info("{}", date);
@@ -87,20 +90,51 @@ public class MediaServiceTest {
 
     @Test
     void configTest(){
-        ZlmResponse<List<ServerConfig>> resp = zlMediaHttpService.getServerConfig();
+        ZlmResponse<List<ServerConfig>> resp = zlmMediaService.getServerConfig();
         log.info("{}", resp);
         ServerConfig config = resp.getData().get(0);
         config.getApi().setApiDebug(0);
-        log.info("{}", zlMediaHttpService.setServerConfig(config));
+        log.info("{}", zlmMediaService.setServerConfig(config));
 
-        resp = zlMediaHttpService.getServerConfig();
+        resp = zlmMediaService.getServerConfig();
         log.info("{}", resp);
         config.getApi().setApiDebug(1);
-        log.info("{}", zlMediaHttpService.setServerConfig(config));
+        log.info("{}", zlmMediaService.setServerConfig(config));
 
-        resp = zlMediaHttpService.getServerConfig();
+        resp = zlmMediaService.getServerConfig();
         log.info("{}", resp);
 
-        log.info("{}", zlMediaHttpService.setServerConfig(config));
+        log.info("{}", zlmMediaService.setServerConfig(config));
+    }
+
+    @Test
+    void emptyHookConfigTest(){
+        ZlmResponse<List<ServerConfig>> resp = zlmMediaService.getServerConfig();
+        log.info("{}", resp);
+        ServerConfig config = resp.getData().get(0);
+        config.setHook(new HookConfig());
+        log.info("{}", zlmMediaService.setServerConfig(config));
+        log.info("{}", zlmMediaService.getServerConfig());
+    }
+
+    /**
+     * <p>先清空 hook 后</p>
+     * <p>再使用 ffmpeg 或其他推流工具</p>
+     * <p>推流到 zlm 服务的 /live/test 再执行此测试</p>
+     */
+    @Test
+    void streamPusherProxyTest(){
+        AddStreamPusherProxy addStreamPusherProxy = new AddStreamPusherProxy();
+        addStreamPusherProxy.setSchema("rtmp");
+        addStreamPusherProxy.setApp("live");
+        addStreamPusherProxy.setStream("test");
+        addStreamPusherProxy.setDstUrl("rtmp://127.0.0.1/live/test2");
+
+        ZlmResponse<AddStreamPusherProxyResp> addStreamPusherProxyRespZlmResponse = zlmMediaService.addStreamPusherProxy(addStreamPusherProxy);
+        log.info("{}", addStreamPusherProxyRespZlmResponse);
+        AddStreamPusherProxyResp data = addStreamPusherProxyRespZlmResponse.getData();
+        String key = Optional.ofNullable(data).orElse(new AddStreamPusherProxyResp()).getKey();
+        ZlmResponse<DelStreamPusherProxyResp> delStreamPusherProxyRespZlmResponse = zlmMediaService.delStreamPusherProxy(key);
+        log.info("{}",delStreamPusherProxyRespZlmResponse);
     }
 }

@@ -1,6 +1,9 @@
 package cn.skcks.docking.gb28181.media.proxy;
 
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
+import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxy;
+import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxyResp;
+import cn.skcks.docking.gb28181.media.dto.proxy.DelStreamPusherProxyResp;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServerResp;
@@ -40,4 +43,10 @@ public interface ZlmMediaHttpClient {
 
     @GetMapping("/index/api/version")
     ZlmResponse<VersionResp> version(@RequestParam String secret);
+
+    @PostMapping("/index/api/addStreamPusherProxy")
+    ZlmResponse<AddStreamPusherProxyResp> addStreamPusherProxy(@RequestParam String secret, @RequestBody AddStreamPusherProxy params);
+
+    @PostMapping("/index/api/delStreamPusherProxy")
+    ZlmResponse<DelStreamPusherProxyResp> delStreamPusherProxy(@RequestParam String secret, @RequestParam String key);
 }
