@@ -154,6 +154,10 @@ public class MediaServiceTest {
         log.info("{}",delStreamPusherProxyRespZlmResponse);
     }
 
+    /**
+     * <p>使用 ffmpeg 或其他推流工具</p>
+     * <p>推流到 zlm 服务的 /live/test 再执行此测试</p>
+     */
     @Test
     @SneakyThrows
     void snapTest(){
