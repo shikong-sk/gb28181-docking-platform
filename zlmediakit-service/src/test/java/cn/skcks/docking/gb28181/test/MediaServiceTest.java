@@ -2,6 +2,7 @@ package cn.skcks.docking.gb28181.test;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
+import cn.skcks.docking.gb28181.common.json.JsonUtils;
 import cn.skcks.docking.gb28181.media.dto.config.HookConfig;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
 import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxy;
@@ -11,6 +12,8 @@ import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponseConvertor;
 import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
+import cn.skcks.docking.gb28181.media.dto.rtp.RtpServer;
+import cn.skcks.docking.gb28181.media.dto.rtp.StartSendRtp;
 import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
 import lombok.SneakyThrows;
@@ -73,7 +76,10 @@ public class MediaServiceTest {
         String streamId = "testStream";
         OpenRtpServer openRtpServer = new OpenRtpServer(port,0,streamId);
         log.info("{}", zlmMediaService.openRtpServer(openRtpServer));
-        Thread.sleep(500);
+
+        ZlmResponse<List<RtpServer>> listRtpServer = zlmMediaService.listRtpServer();
+        log.info("{}", listRtpServer.getData());
+
         CloseRtpServer closeRtpServer = new CloseRtpServer(streamId);
         log.info("{}", zlmMediaService.closeRtpServer(closeRtpServer));
     }
@@ -136,5 +142,12 @@ public class MediaServiceTest {
         String key = Optional.ofNullable(data).orElse(new AddStreamPusherProxyResp()).getKey();
         ZlmResponse<DelStreamPusherProxyResp> delStreamPusherProxyRespZlmResponse = zlmMediaService.delStreamPusherProxy(key);
         log.info("{}",delStreamPusherProxyRespZlmResponse);
+    }
+
+    @Test
+    void simpleTest(){
+        StartSendRtp startSendRtp = new StartSendRtp();
+        startSendRtp.setUdp(true);
+        log.info("{}",JsonUtils.toJson(startSendRtp));
     }
 }

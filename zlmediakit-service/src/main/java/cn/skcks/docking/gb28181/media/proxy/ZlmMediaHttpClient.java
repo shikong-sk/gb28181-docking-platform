@@ -5,10 +5,7 @@ import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxy;
 import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxyResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.DelStreamPusherProxyResp;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
-import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
-import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServerResp;
-import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
-import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServerResp;
+import cn.skcks.docking.gb28181.media.dto.rtp.*;
 import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +38,9 @@ public interface ZlmMediaHttpClient {
     @PostMapping("/index/api/closeRtpServer")
     CloseRtpServerResp closeRtpServer(@RequestParam String secret, @RequestBody CloseRtpServer params);
 
+    @GetMapping("/index/api/listRtpServer")
+    ZlmResponse<List<RtpServer>> listRtpServer(@RequestParam String secret);
+
     @GetMapping("/index/api/version")
     ZlmResponse<VersionResp> version(@RequestParam String secret);
 
@@ -49,4 +49,13 @@ public interface ZlmMediaHttpClient {
 
     @PostMapping("/index/api/delStreamPusherProxy")
     ZlmResponse<DelStreamPusherProxyResp> delStreamPusherProxy(@RequestParam String secret, @RequestParam String key);
+
+    @PostMapping("/index/api/startSendRtp")
+    StartSendRtpResp startSendRtp(@RequestParam String secret, @RequestBody StartSendRtp params);
+
+    @PostMapping("/index/api/startSendRtpPassive")
+    StartSendRtpResp startSendRtpPassive(@RequestParam String secret, @RequestBody StartSendRtpPassive params);
+
+    @PostMapping("/index/api/stopSendRtp")
+    ZlmResponse<Void> stopSendRtp(@RequestParam String secret, @RequestBody StopSendRtp params);
 }
