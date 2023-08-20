@@ -1,6 +1,8 @@
 package cn.skcks.docking.gb28181.media.proxy;
 
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
+import cn.skcks.docking.gb28181.media.dto.media.GetMediaList;
+import cn.skcks.docking.gb28181.media.dto.media.MediaResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.rtp.*;
@@ -69,4 +71,7 @@ public interface ZlmMediaHttpClient {
 
     @GetMapping("/index/api/delStreamProxy")
     ZlmResponse<DelStreamProxyResp> delStreamProxy(@RequestParam String secret, @RequestParam String key);
+
+    @PostMapping("/index/api/getMediaList")
+    ZlmResponse<List<MediaResp>> getMediaList(@RequestParam String secret,@RequestBody GetMediaList params);
 }

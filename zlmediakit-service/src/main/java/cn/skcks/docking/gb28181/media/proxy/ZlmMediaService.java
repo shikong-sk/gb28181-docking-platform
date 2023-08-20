@@ -1,6 +1,8 @@
 package cn.skcks.docking.gb28181.media.proxy;
 
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
+import cn.skcks.docking.gb28181.media.dto.media.GetMediaList;
+import cn.skcks.docking.gb28181.media.dto.media.MediaResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.rtp.*;
@@ -86,7 +88,7 @@ public class ZlmMediaService {
      * <p>(可以使用close_streams接口关闭源直播流也可以停止推流)</p>
      * @param key addStreamPusherProxy 接口返回的key
      */
-    public ZlmResponse<DelStreamPusherProxyResp> delStreamPusherProxy(@RequestParam String key) {
+    public ZlmResponse<DelStreamPusherProxyResp> delStreamPusherProxy(String key) {
         return exchange.delStreamPusherProxy(secret, key);
     }
 
@@ -143,6 +145,13 @@ public class ZlmMediaService {
      */
     public ZlmResponse<DelStreamProxyResp> delStreamProxy(String key){
         return exchange.delStreamProxy(secret, key);
+    }
+
+    /**
+     * 功能：获取流列表，可选筛选参数
+     */
+    public ZlmResponse<List<MediaResp>> getMediaList(GetMediaList params){
+        return exchange.getMediaList(secret, params);
     }
 }
 

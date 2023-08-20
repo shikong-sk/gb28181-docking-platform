@@ -10,6 +10,8 @@ import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
 import cn.skcks.docking.gb28181.media.dto.config.FFMpegConfig;
 import cn.skcks.docking.gb28181.media.dto.config.HookConfig;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
+import cn.skcks.docking.gb28181.media.dto.media.GetMediaList;
+import cn.skcks.docking.gb28181.media.dto.media.MediaResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponseConvertor;
@@ -200,5 +202,15 @@ public class MediaServiceTest {
 
         ZlmResponse<DelStreamProxyResp> delStreamProxyRespZlmResponse = zlmMediaService.delStreamProxy(key);
         log.info("{}", delStreamProxyRespZlmResponse);
+    }
+
+    @Test
+    void getMediaListTest() {
+        ZlmResponse<List<MediaResp>> mediaList = zlmMediaService.getMediaList(GetMediaList.builder().build());
+        List<MediaResp> data = mediaList.getData();
+        log.info("流数量 => {}", data.size());
+        data.forEach((item) -> {
+            log.info("\n{}", JsonUtils.toJson(item));
+        });
     }
 }
