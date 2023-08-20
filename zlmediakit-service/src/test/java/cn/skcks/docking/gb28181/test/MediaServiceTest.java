@@ -10,9 +10,7 @@ import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
 import cn.skcks.docking.gb28181.media.dto.config.FFMpegConfig;
 import cn.skcks.docking.gb28181.media.dto.config.HookConfig;
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
-import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxy;
-import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxyResp;
-import cn.skcks.docking.gb28181.media.dto.proxy.DelStreamPusherProxyResp;
+import cn.skcks.docking.gb28181.media.dto.proxy.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponseConvertor;
 import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
@@ -185,5 +183,22 @@ public class MediaServiceTest {
         StartSendRtp startSendRtp = new StartSendRtp();
         startSendRtp.setUdp(true);
         log.info("{}",JsonUtils.toJson(startSendRtp));
+    }
+
+    @Test
+    void streamProxyTest(){
+        AddStreamProxy addStreamProxy = AddStreamProxy.builder()
+                .app("proxy")
+                .stream("test")
+                .url("rtmp://127.0.0.1:1935/live/test")
+                .build();
+
+        ZlmResponse<AddStreamProxyResp> addedStreamProxy = zlmMediaService.addStreamProxy(addStreamProxy);
+        log.info("{}", addedStreamProxy);
+        String key = Optional.ofNullable(addedStreamProxy.getData()).orElse(new AddStreamProxyResp()).getKey();
+        log.info("{}", key);
+
+        ZlmResponse<DelStreamProxyResp> delStreamProxyRespZlmResponse = zlmMediaService.delStreamProxy(key);
+        log.info("{}", delStreamProxyRespZlmResponse);
     }
 }

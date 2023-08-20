@@ -1,9 +1,7 @@
 package cn.skcks.docking.gb28181.media.proxy;
 
 import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
-import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxy;
-import cn.skcks.docking.gb28181.media.dto.proxy.AddStreamPusherProxyResp;
-import cn.skcks.docking.gb28181.media.dto.proxy.DelStreamPusherProxyResp;
+import cn.skcks.docking.gb28181.media.dto.proxy.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.rtp.*;
 import cn.skcks.docking.gb28181.media.dto.snap.Snap;
@@ -131,6 +129,20 @@ public class ZlmMediaService {
      */
     public ZlmResponse<Void> restartServer(){
         return exchange.restartServer(secret);
+    }
+
+    /**
+     * 功能：动态添加rtsp/rtmp/hls/http-ts/http-flv拉流代理(只支持H264/H265/aac/G711/opus负载)
+     */
+    public ZlmResponse<AddStreamProxyResp> addStreamProxy(AddStreamProxy params){
+        return exchange.addStreamProxy(secret, params);
+    }
+
+    /**
+     * 功能：关闭拉流代理
+     */
+    public ZlmResponse<DelStreamProxyResp> delStreamProxy(String key){
+        return exchange.delStreamProxy(secret, key);
     }
 }
 
