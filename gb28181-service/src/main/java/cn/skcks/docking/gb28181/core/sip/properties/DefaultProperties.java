@@ -11,7 +11,7 @@ import java.util.Properties;
  */
 public class DefaultProperties {
 
-    public static Properties getProperties(String name, boolean sipLog) {
+    public static Properties getProperties(String name) {
         Properties properties = new Properties();
         properties.setProperty("javax.sip.STACK_NAME", name);
 //        properties.setProperty("javax.sip.IP_ADDRESS", ip);
@@ -49,14 +49,9 @@ public class DefaultProperties {
          * sip_server_log.log 和 sip_debug_log.log ERROR, INFO, WARNING, OFF, DEBUG, TRACE
          */
         Logger logger = LoggerFactory.getLogger(SipConfig.class);
-        if (sipLog) {
-            properties.setProperty("gov.nist.javax.sip.STACK_LOGGER", "cn.skcks.docking.gb28181.core.sip.logger.StackLoggerImpl");
-            properties.setProperty("gov.nist.javax.sip.SERVER_LOGGER", "cn.skcks.docking.gb28181.core.sip.logger.ServerLoggerImpl");
-            properties.setProperty("gov.nist.javax.sip.LOG_MESSAGE_CONTENT", "true");
-            logger.info("[SIP日志]已开启");
-        }else {
-            logger.info("[SIP日志]已关闭");
-        }
+        properties.setProperty("gov.nist.javax.sip.STACK_LOGGER", "cn.skcks.docking.gb28181.core.sip.logger.StackLoggerImpl");
+        properties.setProperty("gov.nist.javax.sip.SERVER_LOGGER", "cn.skcks.docking.gb28181.core.sip.logger.ServerLoggerImpl");
+        properties.setProperty("gov.nist.javax.sip.LOG_MESSAGE_CONTENT", "true");
         return properties;
     }
 }

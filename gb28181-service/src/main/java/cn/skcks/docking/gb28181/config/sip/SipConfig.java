@@ -14,7 +14,6 @@ import java.util.List;
 @Order(0)
 @Data
 public class SipConfig {
-
 	private List<String> ip;
 
 	private List<String> showIp;

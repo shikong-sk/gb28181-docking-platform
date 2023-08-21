@@ -1,6 +1,8 @@
 package cn.skcks.docking.gb28181.core.sip.logger;
 
+import cn.skcks.docking.gb28181.config.sip.SipConfig;
 import gov.nist.core.StackLogger;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

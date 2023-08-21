@@ -69,7 +69,7 @@ public class SipServiceImpl implements SipService {
 
     public void listen(String ip, int port){
         try{
-            sipStack = (SipStackImpl)sipFactory.createSipStack(DefaultProperties.getProperties("GB28181_SIP_LOG",true));
+            sipStack = (SipStackImpl)sipFactory.createSipStack(DefaultProperties.getProperties("GB28181_SIP"));
             sipStack.setMessageParserFactory(new GbStringMsgParserFactory());
             // sipStack.setMessageProcessorFactory();
             try {

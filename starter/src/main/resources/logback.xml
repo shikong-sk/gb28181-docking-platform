@@ -49,5 +49,6 @@
         <!--<appender-ref ref="file" />-->
     </root>
 
+    <logger name="cn.skcks.docking.gb28181.core.sip.logger" level="INFO" />
     <logger name="cn.skcks.docking.gb28181" level="DEBUG" />
 </configuration>
