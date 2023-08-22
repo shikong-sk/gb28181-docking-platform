@@ -3,7 +3,7 @@ package cn.skcks.docking.gb28181.core.sip.message.processor.message.request;
 import cn.skcks.docking.gb28181.common.json.ResponseStatus;
 import cn.skcks.docking.gb28181.common.xml.XmlUtils;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.CmdType;
-import cn.skcks.docking.gb28181.core.sip.message.processor.message.request.dto.MessageDto;
+import cn.skcks.docking.gb28181.core.sip.message.processor.message.request.dto.MessageDTO;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
@@ -43,7 +43,7 @@ public class MessageRequestProcessor implements MessageProcessor {
         String deviceId = SipUtil.getUserIdFromFromHeader(request);
         CallIdHeader callIdHeader = request.getCallIdHeader();
 
-        MessageDto messageDto = XmlUtils.parse(request.getRawContent(), MessageDto.class, GB28181Constant.CHARSET);
+        MessageDTO messageDto = XmlUtils.parse(request.getRawContent(), MessageDTO.class, GB28181Constant.CHARSET);
         log.debug("接收到的消息 => {}", messageDto);
 
         DockingDevice device = deviceService.getDevice(deviceId);

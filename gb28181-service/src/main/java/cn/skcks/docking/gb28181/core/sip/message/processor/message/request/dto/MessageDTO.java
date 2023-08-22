@@ -6,7 +6,7 @@ import lombok.Data;
 
 @JacksonXmlRootElement(localName = "xml")
 @Data
-public class MessageDto {
+public class MessageDTO {
     private String cmdType;
 
     @JacksonXmlProperty(localName = "SN")

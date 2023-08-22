@@ -1,5 +1,6 @@
 package cn.skcks.docking.gb28181.common.xml;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -7,12 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 import java.nio.charset.Charset;
 
 @SuppressWarnings({"unused"})
 public class XmlUtils {
-    private static final ObjectMapper mapper = new XmlMapper();
+    private static final XmlMapper mapper = new XmlMapper();
     static {
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -25,6 +27,8 @@ public class XmlUtils {
         mapper.configure(JsonReadFeature.ALLOW_SINGLE_QUOTES.mappedFeature(), true);
         // 大驼峰 (首字母大写)
         mapper.setPropertyNamingStrategy(new PropertyNamingStrategies.UpperCamelCaseStrategy());
+        // 添加 xml 头部声明
+        mapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
     }
 
     public static String toXml(Object obj) {
