@@ -13,6 +13,7 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 @Tag(name="历史录像")
 @RestController
@@ -27,8 +28,10 @@ public class RecordController {
     }
 
     @GetJson("/getInfo")
-    public JsonResponse<Void> getInfo(@ParameterObject @Validated GetInfoDTO dto){
+    public DeferredResult<JsonResponse<Void>> getInfo(@ParameterObject @Validated GetInfoDTO dto){
         recordService.requestRecordInfo(dto.getDeviceId());
-        return JsonResponse.success(null);
+        DeferredResult<JsonResponse<Void>> result = new DeferredResult<>();
+        result.setResult(JsonResponse.success(null));
+        return result;
     }
 }

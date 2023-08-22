@@ -1,7 +1,7 @@
 package cn.skcks.docking.gb28181.core.sip.listener;
 
 import cn.skcks.docking.gb28181.core.sip.executor.DefaultSipExecutor;
-import cn.skcks.docking.gb28181.core.sip.message.event.SipSubscribe;
+import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
