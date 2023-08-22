@@ -10,8 +10,6 @@ import cn.skcks.docking.gb28181.media.dto.snap.Snap;
 import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -152,6 +150,14 @@ public class ZlmMediaService {
      */
     public ZlmResponse<List<MediaResp>> getMediaList(GetMediaList params){
         return exchange.getMediaList(secret, params);
+    }
+
+    /**
+     * 功能：获取rtp代理时的某路ssrc rtp信息
+     * @param streamId RTP的ssrc，16进制字符串或者是流的id(openRtpServer接口指定)
+     */
+    public GetRtpInfoResp getRtpInfo(String streamId){
+        return exchange.getRtpInfo(secret, streamId);
     }
 }
 

@@ -74,4 +74,7 @@ public interface ZlmMediaHttpClient {
 
     @PostMapping("/index/api/getMediaList")
     ZlmResponse<List<MediaResp>> getMediaList(@RequestParam String secret,@RequestBody GetMediaList params);
+
+    @GetMapping("/index/api/getRtpInfo")
+    GetRtpInfoResp getRtpInfo(@RequestParam String secret,@RequestParam("stream_id") String streamId);
 }

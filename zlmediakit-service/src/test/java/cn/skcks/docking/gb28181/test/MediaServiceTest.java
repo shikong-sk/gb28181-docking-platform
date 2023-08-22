@@ -12,10 +12,7 @@ import cn.skcks.docking.gb28181.media.dto.media.MediaResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponseConvertor;
-import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
-import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
-import cn.skcks.docking.gb28181.media.dto.rtp.RtpServer;
-import cn.skcks.docking.gb28181.media.dto.rtp.StartSendRtp;
+import cn.skcks.docking.gb28181.media.dto.rtp.*;
 import cn.skcks.docking.gb28181.media.dto.snap.Snap;
 import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
@@ -207,5 +204,11 @@ public class MediaServiceTest {
         data.forEach((item) -> {
             log.info("\n{}", JsonUtils.toJson(item));
         });
+    }
+
+    @Test
+    void getRtcInfo(){
+        GetRtpInfoResp rtpInfo = zlmMediaService.getRtpInfo("test");
+        log.info("{}", rtpInfo);
     }
 }
