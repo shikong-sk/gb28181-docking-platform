@@ -1,9 +1,8 @@
 package cn.skcks.docking.gb28181.service.record;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.skcks.docking.gb28181.common.xml.XmlUtils;
-import cn.skcks.docking.gb28181.core.sip.message.processor.record.dto.RecordInfoRequestDTO;
+import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.query.dto.RecordInfoRequestDTO;
 import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
