@@ -87,9 +87,8 @@ public class RecordService {
             public void onNext(RecordInfoResponseDTO item) {
                 sum.set(item.getSumNum());
                 getNum.getAndAdd(item.getRecordList().size());
-                log.info("{}", item);
                 list.addAll(item.getRecordList());
-                log.info("{}/{}", getNum.get(), sum.get());
+                log.info("获取订阅 => {}, {}/{}", key, getNum.get(), sum.get());
                 if (getNum.get() >= sum.get()) {
                     onComplete();
                 } else {
