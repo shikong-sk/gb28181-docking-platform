@@ -63,8 +63,8 @@ public class DockingDeviceService {
                 }),()->{
                     dockingDeviceMapper.insert(device);
                 });
-
-        getDevice(deviceId);
+        deviceCacheService.removeDevice(deviceId);
+        deviceCacheService.cacheDevice(deviceId,device);
         onlineCacheService.setOnline(deviceId, DeviceConstant.KEEP_ALIVE_INTERVAL * 3, DeviceConstant.UNIT);
         setTransaction(deviceId, response);
     }

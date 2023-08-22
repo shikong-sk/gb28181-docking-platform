@@ -101,7 +101,7 @@ public class RegisterRequestProcessor implements MessageProcessor {
 
 
         log.debug("设备 deviceId => {}, 认证通过", deviceId);
-        registerDevice(deviceId, device, request, senderIp,remoteInfo);
+        registerDevice(deviceId, device, request, senderIp, remoteInfo);
     }
 
     @SneakyThrows
