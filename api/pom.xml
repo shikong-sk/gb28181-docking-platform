@@ -20,6 +20,19 @@
 
     <dependencies>
         <dependency>
+            <groupId>cn.skcks.docking.gb28181</groupId>
+            <artifactId>gb28181-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.skcks.docking.gb28181</groupId>
+            <artifactId>annotation</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
