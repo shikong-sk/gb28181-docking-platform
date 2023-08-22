@@ -29,4 +29,9 @@ public class RecordInfoSubscribe implements GenericSubscribe<RecordInfoResponseD
     public void addSubscribe(String key, Flow.Subscriber<RecordInfoResponseDTO> subscribe) {
         Helper.addSubscribe(publishers, key, subscribe);
     }
+
+    @Override
+    public void delPublisher(String key) {
+        Helper.delPublisher(publishers, key);
+    }
 }

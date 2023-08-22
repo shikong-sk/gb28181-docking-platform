@@ -15,11 +15,17 @@ public interface GenericSubscribe<T> {
     SubmissionPublisher<T> getPublisher(String key);
 
     void addSubscribe(String key,Flow.Subscriber<T> subscribe);
+    void delPublisher(String key);
 
     class Helper {
         public static <T> void close(Map<String,SubmissionPublisher<T>> publishers){
             publishers.values().forEach(SubmissionPublisher::close);
             publishers.clear();
+        }
+
+        public static <T> void delPublisher(Map<String, SubmissionPublisher<T>> publishers, String key){
+            SubmissionPublisher<T> publisher = publishers.remove(key);
+            publisher.close();
         }
 
         public static <T> void addPublisher(Executor executor, Map<String, SubmissionPublisher<T>> publishers, String key){

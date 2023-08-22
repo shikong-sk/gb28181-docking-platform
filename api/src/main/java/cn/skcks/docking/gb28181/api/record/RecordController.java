@@ -5,6 +5,7 @@ import cn.skcks.docking.gb28181.annotation.web.methods.GetJson;
 import cn.skcks.docking.gb28181.api.record.dto.GetInfoDTO;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.config.SwaggerConfig;
+import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoItemDTO;
 import cn.skcks.docking.gb28181.service.record.RecordService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
+
+import java.util.List;
 
 @Tag(name="历史录像")
 @RestController
@@ -28,10 +31,7 @@ public class RecordController {
     }
 
     @GetJson("/getInfo")
-    public DeferredResult<JsonResponse<Void>> getInfo(@ParameterObject @Validated GetInfoDTO dto){
-        recordService.requestRecordInfo(dto.getDeviceId());
-        DeferredResult<JsonResponse<Void>> result = new DeferredResult<>();
-        result.setResult(JsonResponse.success(null));
-        return result;
+    public DeferredResult<JsonResponse<List<RecordInfoItemDTO>>> getInfo(@ParameterObject @Validated GetInfoDTO dto){
+        return recordService.requestRecordInfo(dto.getDeviceId());
     }
 }
