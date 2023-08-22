@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name="历史录像")
@@ -26,7 +27,7 @@ public class RecordController {
     }
 
     @GetJson("/getInfo")
-    public JsonResponse<Void> getInfo(@ParameterObject GetInfoDTO dto){
+    public JsonResponse<Void> getInfo(@ParameterObject @Validated GetInfoDTO dto){
         recordService.requestRecordInfo(dto.getDeviceId());
         return JsonResponse.success(null);
     }
