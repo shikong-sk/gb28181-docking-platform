@@ -12,6 +12,10 @@ import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
 import cn.skcks.docking.gb28181.service.ssrc.SsrcService;
+import gov.nist.javax.sdp.fields.SDPField;
+import gov.nist.javax.sdp.fields.SDPFormat;
+import gov.nist.javax.sdp.fields.SDPObject;
+import gov.nist.javax.sdp.parser.SDPParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -74,6 +78,8 @@ public class PlayService {
         StringBuilder sb = new StringBuilder();
         sb.append("v=0\r\n");
         sb.append("o=").append(channelId).append(" 0 0 IN IP4 ").append(ip).append("\r\n");
+
+        // new SDPField();
 
         return result;
 //        zlmMediaService.getRtpInfo();
