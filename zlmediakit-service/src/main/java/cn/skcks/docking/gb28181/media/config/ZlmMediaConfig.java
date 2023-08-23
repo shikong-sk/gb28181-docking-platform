@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "media")
 public class ZlmMediaConfig {
     private String url;
+    private String ip;
     private String id;
     private String secret;
 }

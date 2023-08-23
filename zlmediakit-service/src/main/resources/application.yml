@@ -2,6 +2,7 @@ project:
   version: @project.version@
 
 media:
+  ip: 10.10.10.200
   url: 'http://10.10.10.200:5080'
 #  url: 'http://10.10.10.200:12580/anything/'
   id: amrWMKmbKqoBjRQ9

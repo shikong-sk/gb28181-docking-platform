@@ -3,6 +3,7 @@ package cn.skcks.docking.gb28181.service.play;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.redis.RedisUtil;
 import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
+import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
 import cn.skcks.docking.gb28181.media.dto.rtp.GetRtpInfoResp;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServerResp;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class PlayService {
     private static final String PREFIX = "RealTimePlay";
+    private final ZlmMediaConfig mediaConfig;
     private final DockingDeviceService deviceService;
     private final ZlmMediaService zlmMediaService;
     private final SsrcService ssrcService;
@@ -67,6 +69,11 @@ public class PlayService {
             result.setResult(JsonResponse.error(openRtpServerResp.getCode().getMsg()));
             return result;
         }
+
+        String ip = mediaConfig.getIp();
+        StringBuilder sb = new StringBuilder();
+        sb.append("v=0\r\n");
+        sb.append("o=").append(channelId).append(" 0 0 IN IP4 ").append(ip).append("\r\n");
 
         return result;
 //        zlmMediaService.getRtpInfo();
