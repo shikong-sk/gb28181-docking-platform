@@ -1,6 +1,7 @@
 package cn.skcks.docking.gb28181.core.sip.message.subscribe;
 
-import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoResponseDTO;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -18,6 +19,11 @@ public interface GenericSubscribe<T> {
     void delPublisher(String key);
 
     class Helper {
+        public final static String SEPARATOR = ":";
+        public static String getKey(String prefix,String... ids){
+            return StringUtils.joinWith(SEPARATOR, (Object[]) ArrayUtils.addFirst(ids,prefix));
+        }
+
         public static <T> void close(Map<String,SubmissionPublisher<T>> publishers){
             publishers.values().forEach(SubmissionPublisher::close);
             publishers.clear();

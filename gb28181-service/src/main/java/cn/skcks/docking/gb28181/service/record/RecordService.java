@@ -3,13 +3,13 @@ package cn.skcks.docking.gb28181.service.record;
 import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.xml.XmlUtils;
-import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.query.dto.RecordInfoRequestDTO;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoItemDTO;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoResponseDTO;
 import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
+import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
@@ -69,7 +69,7 @@ public class RecordService {
                 null,
                 callId);
 
-        String key = CacheUtil.getKey(CmdType.RECORD_INFO, deviceId, sn);
+        String key = GenericSubscribe.Helper.getKey(CmdType.RECORD_INFO, deviceId, sn);
         subscribe.getRecordInfoSubscribe().addPublisher(key);
         sender.send(senderIp, request);
         List<RecordInfoItemDTO> list = new ArrayList<>();
