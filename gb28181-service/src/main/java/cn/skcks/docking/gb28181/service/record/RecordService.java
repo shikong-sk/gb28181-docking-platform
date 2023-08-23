@@ -83,8 +83,8 @@ public class RecordService {
         subscribe.getRecordInfoSubscribe().addPublisher(key);
         sender.send(senderIp, request);
         List<RecordInfoItemDTO> list = new ArrayList<>();
-        AtomicLong sum = new AtomicLong(0);
-        AtomicLong getNum = new AtomicLong(0);
+        AtomicLong atomicSum = new AtomicLong(0);
+        AtomicLong atomicNum = new AtomicLong(0);
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         final ScheduledFuture<?>[] schedule = new ScheduledFuture<?>[1];
         Flow.Subscriber<RecordInfoResponseDTO> subscriber = new Flow.Subscriber<>() {
@@ -99,11 +99,18 @@ public class RecordService {
 
             @Override
             public void onNext(RecordInfoResponseDTO item) {
-                sum.set(item.getSumNum());
-                getNum.getAndAdd(item.getRecordList().size());
+                atomicSum.set(item.getSumNum());
+                atomicNum.getAndAdd(item.getRecordList().size());
                 list.addAll(item.getRecordList());
-                log.info("获取订阅 => {}, {}/{}", key, getNum.get(), sum.get());
-                if (getNum.get() >= sum.get()) {
+                long num = atomicNum.get();
+                long sum = atomicSum.get();
+                if(num > sum){
+                    log.warn("检测到 设备 => {}, 未按规范实现, 订阅 => {}, 期望总数为 => {}, 已接收数量 => {}", deviceId, key, atomicSum.get(), atomicNum.get());
+                } else {
+                    log.info("获取订阅 => {}, {}/{}", key, atomicNum.get(), atomicSum.get());
+                }
+
+                if (num >= sum) {
                     // 针对某些不按规范的设备
                     // 如果已获取数量 >= 约定的总数
                     // 就执行定时任务, 若 500ms 内未收到新的数据视为已结束

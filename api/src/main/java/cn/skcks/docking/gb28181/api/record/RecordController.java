@@ -5,7 +5,6 @@ import cn.skcks.docking.gb28181.annotation.web.methods.GetJson;
 import cn.skcks.docking.gb28181.api.record.dto.GetInfoDTO;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.config.SwaggerConfig;
-import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoItemDTO;
 import cn.skcks.docking.gb28181.service.record.RecordService;
 import cn.skcks.docking.gb28181.service.record.vo.RecordInfoItemVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,17 +20,17 @@ import java.util.List;
 
 @Tag(name="历史录像")
 @RestController
-@JsonMapping("/record")
+@JsonMapping("/device/record")
 @RequiredArgsConstructor
 public class RecordController {
     private final RecordService recordService;
 
     @Bean
     public GroupedOpenApi recordApi() {
-        return SwaggerConfig.api("Record", "/record");
+        return SwaggerConfig.api("Record", "/device/record");
     }
 
-    @GetJson("/getInfo")
+    @GetJson("/getInfoList")
     public DeferredResult<JsonResponse<List<RecordInfoItemVO>>> getInfo(@ParameterObject @Validated GetInfoDTO dto){
         return recordService.requestRecordInfo(dto.getDeviceId(), dto.getTimeout(), dto.getDate());
     }
