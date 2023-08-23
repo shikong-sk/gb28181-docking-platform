@@ -34,6 +34,7 @@ import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.util.Calendar;
+import java.util.EventObject;
 import java.util.Locale;
 
 @Slf4j
@@ -48,12 +49,13 @@ public class RegisterRequestProcessor implements MessageProcessor {
     @PostConstruct
     @Override
     public void init(){
-        sipListener.addProcessor(Method.REGISTER,this);
+        sipListener.addRequestProcessor(Method.REGISTER,this);
     }
 
     @SneakyThrows
     @Override
-    public void process(RequestEvent requestEvent) {
+    public void process(EventObject eventObject) {
+        RequestEvent requestEvent = (RequestEvent) eventObject;
         SIPRequest request = (SIPRequest)requestEvent.getRequest();
         FromHeader fromHeader = request.getFrom();
         Address address = fromHeader.getAddress();

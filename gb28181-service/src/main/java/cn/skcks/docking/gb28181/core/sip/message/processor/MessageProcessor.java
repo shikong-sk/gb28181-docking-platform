@@ -4,10 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sip.PeerUnavailableException;
-import javax.sip.RequestEvent;
 import javax.sip.SipFactory;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
+import java.util.EventObject;
 
 public interface MessageProcessor {
     Logger log = LoggerFactory.getLogger(MessageProcessor.class);
@@ -15,10 +15,12 @@ public interface MessageProcessor {
     class Method {
         public static final String REGISTER = "REGISTER";
         public static final String MESSAGE = "MESSAGE";
+
+        public static final String INVITE = "INVITE";
     }
 
     void init();
-    void process(RequestEvent requestEvent);
+    void process(EventObject requestEvent);
 
     default MessageFactory getMessageFactory() {
         try {

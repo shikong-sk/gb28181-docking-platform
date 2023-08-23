@@ -15,7 +15,7 @@ public class SsrcField extends SDPField {
         super(SSRC_FIELD);
     }
 
-    private long ssrc;
+    private String ssrc;
 
     @Override
     public String encode() {

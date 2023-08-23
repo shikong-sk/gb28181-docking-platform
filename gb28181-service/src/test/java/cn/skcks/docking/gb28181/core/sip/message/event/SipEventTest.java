@@ -167,7 +167,7 @@ public class SipEventTest {
 
 
         // GB28181Description description = (GB28181Description) description;
-        description.setSsrcField(new SsrcField(12345678));
+        description.setSsrcField(new SsrcField("12345678"));
         SessionDescription sessionDescription = description;
         sessionDescription.setSessionName(SdpFactory.getInstance().createSessionName("PlayBack"));
         log.info("\n{}", sessionDescription);
@@ -181,7 +181,7 @@ public class SipEventTest {
         int rtpPort = 5080;
         String rtpIp = "10.10.10.20";
         long ssrc = RandomUtil.randomLong(10000000,100000000);
-        GB28181Description description = MediaSdpHelper.build(MediaSdpHelper.Action.PLAY, deviceId, channel, Connection.IP4, rtpIp, rtpPort, ssrc, StreamMode.UDP, SdpFactory.getInstance().createTimeDescription());
+        GB28181Description description = MediaSdpHelper.build(MediaSdpHelper.Action.PLAY, deviceId, channel, Connection.IP4, rtpIp, rtpPort, String.valueOf(ssrc), StreamMode.UDP, SdpFactory.getInstance().createTimeDescription());
         log.info("\n{}", description);
     }
 }

@@ -22,18 +22,25 @@ import java.util.concurrent.ConcurrentMap;
 @Slf4j
 public class SipListenerImpl implements SipListener {
     private final SipSubscribe sipSubscribe;
-    private final ConcurrentMap<String, MessageProcessor> processor = new ConcurrentHashMap<>();
-    public void addProcessor(String method,MessageProcessor messageProcessor){
-        log.debug("[SipListener] 注册 {} 处理器", method);
-        processor.put(method, messageProcessor);
+    private final ConcurrentMap<String, MessageProcessor> requestProcessor = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, MessageProcessor> responseProcessor = new ConcurrentHashMap<>();
+    public void addRequestProcessor(String method, MessageProcessor messageProcessor){
+        log.debug("[SipListener] 注册 {} 请求处理器", method);
+        requestProcessor.put(method, messageProcessor);
     }
+
+    public void addResponseProcessor(String method, MessageProcessor messageProcessor){
+        log.debug("[SipListener] 注册 {} 响应处理器", method);
+        responseProcessor.put(method, messageProcessor);
+    }
+
 
     @Override
     @Async(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     public void processRequest(RequestEvent requestEvent) {
         String method = requestEvent.getRequest().getMethod();
         log.debug("传入请求 method => {}",method);
-        Optional.ofNullable(processor.get(method)).ifPresent(processor -> {
+        Optional.ofNullable(requestProcessor.get(method)).ifPresent(processor -> {
             processor.process(requestEvent);
         });
     }
@@ -42,13 +49,16 @@ public class SipListenerImpl implements SipListener {
     public void processResponse(ResponseEvent responseEvent) {
         Response response = responseEvent.getResponse();
         int status = response.getStatusCode();
-
         // log.debug();
 
         // Success
         if (((status >= Response.OK) && (status < Response.MULTIPLE_CHOICES)) || status == Response.UNAUTHORIZED) {
             CSeqHeader cseqHeader = (CSeqHeader) responseEvent.getResponse().getHeader(CSeqHeader.NAME);
             String method = cseqHeader.getMethod();
+            log.debug("传入响应 method => {}",method);
+            Optional.ofNullable(responseProcessor.get(method)).ifPresent(processor -> {
+                processor.process(responseEvent);
+            });
             // ISIPResponseProcessor sipRequestProcessor = responseProcessorMap.get(method);
             // if (sipRequestProcessor != null) {
             //     sipRequestProcessor.process(responseEvent);

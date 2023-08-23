@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import javax.sip.RequestEvent;
 import javax.sip.header.CallIdHeader;
 import javax.sip.message.Response;
+import java.util.EventObject;
 import java.util.Optional;
 
 @Slf4j
@@ -39,11 +40,12 @@ public class MessageRequestProcessor implements MessageProcessor {
     @PostConstruct
     @Override
     public void init() {
-        sipListener.addProcessor(Method.MESSAGE, this);
+        sipListener.addRequestProcessor(Method.MESSAGE, this);
     }
 
     @Override
-    public void process(RequestEvent requestEvent) {
+    public void process(EventObject eventObject) {
+        RequestEvent requestEvent = (RequestEvent) eventObject;
         SIPRequest request = (SIPRequest)requestEvent.getRequest();
         String deviceId = SipUtil.getUserIdFromFromHeader(request);
         CallIdHeader callIdHeader = request.getCallIdHeader();

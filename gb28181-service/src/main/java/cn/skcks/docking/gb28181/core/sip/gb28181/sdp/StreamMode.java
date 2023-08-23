@@ -16,7 +16,7 @@ public enum StreamMode {
     private final String mode;
 
     @JsonCreator
-    public static StreamMode fromCode(String mode) {
+    public static StreamMode of(String mode) {
         for (StreamMode m : values()) {
             if (m.getMode().equalsIgnoreCase(mode)) {
                 return m;

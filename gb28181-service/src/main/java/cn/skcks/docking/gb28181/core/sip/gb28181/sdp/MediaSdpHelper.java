@@ -52,8 +52,10 @@ public class MediaSdpHelper {
     }
 
     @SneakyThrows
-    public static GB28181Description build(Action action, String deviceId, String channelId, String netType, String rtpIp, int rtpPort, long ssrc, StreamMode streamMode, TimeDescription timeDescription){
-        GB28181Description description = GB28181Description.Convertor.convert((SessionDescriptionImpl) SdpFactory.getInstance().createSessionDescription(action.getAction()));
+    public static GB28181Description build(Action action, String deviceId, String channelId, String netType, String rtpIp, int rtpPort, String ssrc, StreamMode streamMode, TimeDescription timeDescription){
+        GB28181Description description = new GB28181Description();
+        description.setSessionName(SdpFactory.getInstance().createSessionName(action.getAction()));
+
         Version version = SdpFactory.getInstance().createVersion(0);
         description.setVersion(version);
 
@@ -95,19 +97,19 @@ public class MediaSdpHelper {
     }
 
     @SneakyThrows
-    public static GB28181Description play(Action action, String deviceId, String channelId, String netType, String rtpIp, int rtpPort, long ssrc, StreamMode streamMode){
+    public static GB28181Description play(String deviceId, String channelId, String netType, String rtpIp, int rtpPort, String ssrc, StreamMode streamMode){
         TimeDescription timeDescription = SdpFactory.getInstance().createTimeDescription();
-        return build(action, deviceId, channelId, netType, rtpIp, rtpPort, ssrc, streamMode, timeDescription);
+        return build(Action.PLAY, deviceId, channelId, netType, rtpIp, rtpPort, ssrc, streamMode, timeDescription);
     }
 
     @SneakyThrows
-    public static GB28181Description playback(Action action, String deviceId, String channelId, String netType, String rtpIp, int rtpPort, long ssrc, StreamMode streamMode, Date start, Date end) {
+    public static GB28181Description playback(String deviceId, String channelId, String netType, String rtpIp, int rtpPort, String ssrc, StreamMode streamMode, Date start, Date end) {
         TimeField timeField = new TimeField();
         timeField.setStart(start);
         timeField.setStop(end);
         TimeDescription timeDescription = SdpFactory.getInstance().createTimeDescription(timeField);
 
-        GB28181Description description = build(action, deviceId, channelId, netType, rtpIp, rtpPort, ssrc, streamMode, timeDescription);
+        GB28181Description description = build(Action.PLAY_BACK, deviceId, channelId, netType, rtpIp, rtpPort, ssrc, streamMode, timeDescription);
 
         URIField uriField = new URIField();
         uriField.setURI(StringUtils.joinWith(":", channelId, "0"));

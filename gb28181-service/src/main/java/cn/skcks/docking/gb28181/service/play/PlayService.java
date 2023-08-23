@@ -3,6 +3,13 @@ package cn.skcks.docking.gb28181.service.play;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.redis.RedisUtil;
 import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
+import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.GB28181Description;
+import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.MediaSdpHelper;
+import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.StreamMode;
+import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
+import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
+import cn.skcks.docking.gb28181.core.sip.service.SipService;
+import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
 import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
 import cn.skcks.docking.gb28181.media.dto.rtp.GetRtpInfoResp;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
@@ -12,16 +19,18 @@ import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
 import cn.skcks.docking.gb28181.service.ssrc.SsrcService;
-import gov.nist.javax.sdp.fields.SDPField;
-import gov.nist.javax.sdp.fields.SDPFormat;
-import gov.nist.javax.sdp.fields.SDPObject;
-import gov.nist.javax.sdp.parser.SDPParser;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import javax.sdp.Connection;
 import javax.sip.ListeningPoint;
+import javax.sip.SipProvider;
+import javax.sip.header.CallIdHeader;
+import javax.sip.message.Request;
 import java.text.MessageFormat;
 import java.util.concurrent.TimeUnit;
 
@@ -30,16 +39,19 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class PlayService {
     private static final String PREFIX = "RealTimePlay";
-    private final ZlmMediaConfig mediaConfig;
+    private final ZlmMediaConfig zlmMediaConfig;
     private final DockingDeviceService deviceService;
     private final ZlmMediaService zlmMediaService;
     private final SsrcService ssrcService;
+    private final SipService sipService;
+    private final SipMessageSender sender;
 
     /**
      *
      * @param deviceId 设备id
      * @param channelId 通道id
      */
+    @SneakyThrows
     public DeferredResult<JsonResponse<String>> realTimePlay(String deviceId, String channelId, long timeout){
         DeferredResult<JsonResponse<String>> result = new DeferredResult<>(TimeUnit.SECONDS.toMillis(timeout));
         DockingDevice device = deviceService.getDevice(deviceId);
@@ -69,18 +81,25 @@ public class PlayService {
         openRtpServer.setStreamId(streamId);
         openRtpServer.setTcpMode(streamMode);
         OpenRtpServerResp openRtpServerResp = zlmMediaService.openRtpServer(openRtpServer);
+        log.info("openRtpServerResp => {}", openRtpServerResp);
         if(!openRtpServerResp.getCode().equals(ResponseStatus.Success)){
             result.setResult(JsonResponse.error(openRtpServerResp.getCode().getMsg()));
             return result;
         }
 
-        String ip = mediaConfig.getIp();
-        StringBuilder sb = new StringBuilder();
-        sb.append("v=0\r\n");
-        sb.append("o=").append(channelId).append(" 0 0 IN IP4 ").append(ip).append("\r\n");
+        String ip = zlmMediaConfig.getIp();
+        int port = openRtpServerResp.getPort();
+        String ssrc = ssrcService.getPlaySsrc();
+        GB28181Description description = MediaSdpHelper.play(deviceId, channelId, Connection.IP4, ip, port, ssrc, StreamMode.of(device.getStreamMode()));
 
-        // new SDPField();
+        String transport = device.getTransport();
+        String senderIp = device.getLocalIp();
+        SipProvider provider = sipService.getProvider(transport, senderIp);
+        CallIdHeader callId = provider.getNewCallId();
+        Request request = SipRequestBuilder.createInviteRequest(device, channelId, description.toString(), SipUtil.generateViaTag(), SipUtil.generateFromTag(), null, ssrc, callId);
+        sender.send(senderIp, request);
 
+        result.setResult(JsonResponse.success(StringUtils.joinWith("/", zlmMediaConfig.getUrl(),"rtp", streamId + ".live.flv")));
         return result;
 //        zlmMediaService.getRtpInfo();
 //        GetMediaList getMediaList = new GetMediaList();

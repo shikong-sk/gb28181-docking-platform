@@ -7,10 +7,7 @@ import lombok.SneakyThrows;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-import javax.sdp.Connection;
-import javax.sdp.Origin;
-import javax.sdp.SessionDescription;
-import javax.sdp.URI;
+import javax.sdp.*;
 import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = false)
@@ -22,6 +19,10 @@ public class GB28181Description extends SessionDescriptionImpl implements Sessio
         @SneakyThrows
        public static GB28181Description convert(SessionDescriptionImpl sessionDescription){
             GB28181Description gb28181Description = new GB28181Description();
+            SessionName sessionName = sessionDescription.getSessionName();
+            if(sessionName != null){
+                gb28181Description.setSessionName(sessionName);
+            }
             gb28181Description.setMediaDescriptions(sessionDescription.getMediaDescriptions(true));
             gb28181Description.setBandwidths(sessionDescription.getBandwidths(true));
 
