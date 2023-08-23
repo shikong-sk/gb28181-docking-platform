@@ -1,6 +1,10 @@
 package cn.skcks.docking.gb28181.core.sip.message.event;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.GB28181Description;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.MediaSdpHelper;
+import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.SsrcField;
+import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.StreamMode;
 import gov.nist.core.NameValue;
 import gov.nist.core.Separators;
 import gov.nist.javax.sdp.MediaDescriptionImpl;
@@ -12,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import javax.sdp.*;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -119,12 +124,13 @@ public class SipEventTest {
     @Test
     @SneakyThrows
     public void sdpTest() {
-        SessionDescription sessionDescription = SdpFactory.getInstance().createSessionDescription("Play");
+        GB28181Description description = GB28181Description.Convertor.convert((SessionDescriptionImpl) SdpFactory.getInstance().createSessionDescription("Play"));
+
         Version version = SdpFactory.getInstance().createVersion(0);
-        sessionDescription.setVersion(version);
+        description.setVersion(version);
 
         Connection connectionField = SdpFactory.getInstance().createConnection(ConnectionField.IN, Connection.IP4, "10.10.10.20");
-        sessionDescription.setConnection(connectionField);
+        description.setConnection(connectionField);
 
         MediaDescription mediaDescription = SdpFactory.getInstance().createMediaDescription("video", 6666, 0, SdpConstants.RTP_AVP, MediaSdpHelper.RTPMAP.keySet().toArray(new String[0]));
         mediaDescription.addAttribute((AttributeField)SdpFactory.getInstance().createAttribute("recvonly",null));
@@ -143,18 +149,39 @@ public class SipEventTest {
         mediaDescription.addAttribute((AttributeField)SdpFactory.getInstance().createAttribute("setup","active"));
         mediaDescription.addAttribute((AttributeField)SdpFactory.getInstance().createAttribute("connection","new"));
 
-        sessionDescription.setMediaDescriptions(new Vector<>() {{
+        description.setMediaDescriptions(new Vector<>() {{
             add(mediaDescription);
         }});
 
         TimeDescription timeDescription = SdpFactory.getInstance().createTimeDescription();
-        sessionDescription.setTimeDescriptions(new Vector<>(){{add(timeDescription);}});
+        description.setTimeDescriptions(new Vector<>(){{add(timeDescription);}});
 
         // channelId
         Origin origin = SdpFactory.getInstance().createOrigin("44050100001310000006", 0, 0, ConnectionField.IN, Connection.IP4, "10.10.10.20");
-        sessionDescription.setOrigin(origin);
+        description.setOrigin(origin);
         // mediaDescription.setPreconditionFields();
 
+        URIField uriField = new URIField();
+        uriField.setURI("44050100001310000006:0");
+        description.setURI(uriField);
+
+
+        // GB28181Description description = (GB28181Description) description;
+        description.setSsrcField(new SsrcField(12345678));
+        SessionDescription sessionDescription = description;
+        sessionDescription.setSessionName(SdpFactory.getInstance().createSessionName("PlayBack"));
         log.info("\n{}", sessionDescription);
+    }
+
+    @Test
+    @SneakyThrows
+    void mediaSdpHelperTest(){
+        String deviceId = "44050100001110000006";
+        String channel = "44050100001310000006";
+        int rtpPort = 5080;
+        String rtpIp = "10.10.10.20";
+        long ssrc = RandomUtil.randomLong(10000000,100000000);
+        GB28181Description description = MediaSdpHelper.build(MediaSdpHelper.Action.PLAY, deviceId, channel, Connection.IP4, rtpIp, rtpPort, ssrc, StreamMode.UDP, SdpFactory.getInstance().createTimeDescription());
+        log.info("\n{}", description);
     }
 }
