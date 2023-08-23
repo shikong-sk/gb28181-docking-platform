@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -113,7 +114,7 @@ public class RecordService {
             public void onComplete() {
                 schedule[0].cancel(true);
                 subscribe.getRecordInfoSubscribe().delPublisher(key);
-                result.setResult(JsonResponse.success(list));
+                result.setResult(JsonResponse.success(sortedRecordList(list)));
                 log.debug("订阅结束 => {}", key);
             }
         };
@@ -121,10 +122,14 @@ public class RecordService {
         subscribe.getRecordInfoSubscribe().addSubscribe(key, subscriber);
 
         result.onTimeout(()->{
-            result.setResult(JsonResponse.success(list,"查询超时, 结果可能不完整"));
+            result.setResult(JsonResponse.success(sortedRecordList(list),"查询超时, 结果可能不完整"));
             subscribe.getRecordInfoSubscribe().delPublisher(key);
         });
 
         return result;
+    }
+
+    private List<RecordInfoItemDTO> sortedRecordList(List<RecordInfoItemDTO> list){
+        return list.stream().sorted((a,b)-> DateUtil.compare(a.getStartTime(),b.getStartTime())).collect(Collectors.toList());
     }
 }
