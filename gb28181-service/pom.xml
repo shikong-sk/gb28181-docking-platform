@@ -20,6 +20,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>cn.skcks.docking</groupId>
+            <artifactId>zlmediakit-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>cn.skcks.docking.gb28181</groupId>
             <artifactId>orm</artifactId>
             <version>${project.version}</version>
