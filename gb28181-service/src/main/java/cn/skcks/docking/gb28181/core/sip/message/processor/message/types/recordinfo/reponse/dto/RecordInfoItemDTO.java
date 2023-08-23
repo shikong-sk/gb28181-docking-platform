@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import jakarta.validation.constraints.Min;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,7 +30,7 @@ public class RecordInfoItemDTO {
     private Date endTime;
 
     @Min(value = 0)
-    private Integer Secrecy = 0;
+    private Integer secrecy = 0;
 
     private String type = "all";
 

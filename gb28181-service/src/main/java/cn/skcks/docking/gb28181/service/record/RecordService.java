@@ -16,6 +16,8 @@ import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
+import cn.skcks.docking.gb28181.service.record.convertor.RecordConvertor;
+import cn.skcks.docking.gb28181.service.record.vo.RecordInfoItemVO;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import javax.sip.SipProvider;
 import javax.sip.header.CallIdHeader;
 import javax.sip.message.Request;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -40,10 +43,16 @@ public class RecordService {
     private final SipMessageSender sender;
     private final SipSubscribe subscribe;
 
+    /**
+     *
+     * @param deviceId 设备id
+     * @param timeout 超时时间
+     * @param date 查询日期
+     */
     @SneakyThrows
-    public DeferredResult<JsonResponse<List<RecordInfoItemDTO>>> requestRecordInfo(String deviceId) {
-        log.info("TimeUnit.SECONDS.toMillis(30) {}",TimeUnit.SECONDS.toMillis(30));
-        DeferredResult<JsonResponse<List<RecordInfoItemDTO>>> result = new DeferredResult<>(TimeUnit.SECONDS.toMillis(30));
+    public DeferredResult<JsonResponse<List<RecordInfoItemVO>>> requestRecordInfo(String deviceId, long timeout, Date date) {
+        log.info("查询 设备 => {} {} 的历史媒体记录, 超时时间 {} 秒", deviceId, DateUtil.formatDate(date), timeout);
+        DeferredResult<JsonResponse<List<RecordInfoItemVO>>> result = new DeferredResult<>(TimeUnit.SECONDS.toMillis(timeout));
 
         DockingDevice device = deviceService.getDevice(deviceId);
         if (device == null) {
@@ -59,8 +68,8 @@ public class RecordService {
         String sn = String.valueOf((int) (Math.random() * 9 + 1) * 100000);
         RecordInfoRequestDTO dto = RecordInfoRequestDTO.builder()
                 .deviceId(deviceId)
-                .startTime(DateUtil.beginOfDay(DateUtil.offsetDay(DateUtil.date(),-1)))
-                .endTime(DateUtil.endOfDay(DateUtil.offsetDay(DateUtil.date(),-1)))
+                .startTime(DateUtil.beginOfDay(date))
+                .endTime(DateUtil.endOfDay(date))
                 .sn(sn)
                 .build();
         Request request = SipRequestBuilder.createMessageRequest(device,
@@ -115,15 +124,17 @@ public class RecordService {
             public void onComplete() {
                 schedule[0].cancel(true);
                 subscribe.getRecordInfoSubscribe().delPublisher(key);
-                result.setResult(JsonResponse.success(sortedRecordList(list)));
+                result.setResult(JsonResponse.success(RecordConvertor.INSTANCE.dto2Vo(sortedRecordList(list))));
                 log.debug("订阅结束 => {}", key);
             }
         };
 
         subscribe.getRecordInfoSubscribe().addSubscribe(key, subscriber);
 
-        result.onTimeout(()->{
-            result.setResult(JsonResponse.build(ResponseStatus.PARTIAL_CONTENT, sortedRecordList(list),"查询超时, 结果可能不完整"));
+        result.onTimeout(() -> {
+            result.setResult(JsonResponse.build(ResponseStatus.PARTIAL_CONTENT,
+                    RecordConvertor.INSTANCE.dto2Vo(sortedRecordList(list)),
+                    "查询超时, 结果可能不完整"));
             subscribe.getRecordInfoSubscribe().delPublisher(key);
         });
 

@@ -7,6 +7,7 @@ import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.config.SwaggerConfig;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoItemDTO;
 import cn.skcks.docking.gb28181.service.record.RecordService;
+import cn.skcks.docking.gb28181.service.record.vo.RecordInfoItemVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -31,7 +32,7 @@ public class RecordController {
     }
 
     @GetJson("/getInfo")
-    public DeferredResult<JsonResponse<List<RecordInfoItemDTO>>> getInfo(@ParameterObject @Validated GetInfoDTO dto){
-        return recordService.requestRecordInfo(dto.getDeviceId());
+    public DeferredResult<JsonResponse<List<RecordInfoItemVO>>> getInfo(@ParameterObject @Validated GetInfoDTO dto){
+        return recordService.requestRecordInfo(dto.getDeviceId(), dto.getTimeout(), dto.getDate());
     }
 }
