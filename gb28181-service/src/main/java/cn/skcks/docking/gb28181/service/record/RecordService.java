@@ -2,6 +2,7 @@ package cn.skcks.docking.gb28181.service.record;
 
 import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
+import cn.skcks.docking.gb28181.common.json.ResponseStatus;
 import cn.skcks.docking.gb28181.common.xml.XmlUtils;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.query.dto.RecordInfoRequestDTO;
@@ -58,8 +59,8 @@ public class RecordService {
         String sn = String.valueOf((int) (Math.random() * 9 + 1) * 100000);
         RecordInfoRequestDTO dto = RecordInfoRequestDTO.builder()
                 .deviceId(deviceId)
-                .startTime(DateUtil.beginOfDay(DateUtil.date()))
-                .endTime(DateUtil.endOfDay(DateUtil.date()))
+                .startTime(DateUtil.beginOfDay(DateUtil.offsetDay(DateUtil.date(),-1)))
+                .endTime(DateUtil.endOfDay(DateUtil.offsetDay(DateUtil.date(),-1)))
                 .sn(sn)
                 .build();
         Request request = SipRequestBuilder.createMessageRequest(device,
@@ -122,7 +123,7 @@ public class RecordService {
         subscribe.getRecordInfoSubscribe().addSubscribe(key, subscriber);
 
         result.onTimeout(()->{
-            result.setResult(JsonResponse.success(sortedRecordList(list),"查询超时, 结果可能不完整"));
+            result.setResult(JsonResponse.build(ResponseStatus.PARTIAL_CONTENT, sortedRecordList(list),"查询超时, 结果可能不完整"));
             subscribe.getRecordInfoSubscribe().delPublisher(key);
         });
 

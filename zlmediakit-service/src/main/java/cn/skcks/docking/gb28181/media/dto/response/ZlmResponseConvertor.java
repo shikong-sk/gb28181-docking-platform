@@ -10,7 +10,7 @@ public interface ZlmResponseConvertor {
     ZlmResponseConvertor INSTANCE = Mappers.getMapper(ZlmResponseConvertor.class);
 
     default <T> JsonResponse<T> toJsonResponse(ZlmResponse<T> response){
-        return JsonResponse.build(response.getData(), response.getCode().getCode(), response.getMsg());
+        return JsonResponse.build(response.getCode().getCode(), response.getData(), response.getMsg());
     }
     default <T> ZlmResponse<T> toZlmResponse(JsonResponse<T> response){
         return new ZlmResponse<>(ResponseStatus.fromCode(response.getCode()), response.getData(), response.getMsg());

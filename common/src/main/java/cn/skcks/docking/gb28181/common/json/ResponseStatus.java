@@ -13,6 +13,7 @@ public enum ResponseStatus {
     CREATED(201, "Created"),
     ACCEPTED(202, "Accepted"),
     NO_CONTENT(204, "No Content"),
+    PARTIAL_CONTENT(206, "Partial Content"),
     MOVED_PERMANENTLY(301, "Moved Permanently"),
     FOUND(302, "Found"),
     SEE_OTHER(303, "See Other"),

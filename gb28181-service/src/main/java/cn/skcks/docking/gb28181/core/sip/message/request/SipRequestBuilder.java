@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
+import cn.skcks.docking.gb28181.core.sip.message.MessageHelper;
 
 import javax.sip.InvalidArgumentException;
 import javax.sip.PeerUnavailableException;
@@ -39,22 +40,22 @@ public class SipRequestBuilder implements ApplicationContextAware {
 
     @SneakyThrows
     private static SipURI getSipURI(String id,String address){
-        return getSipFactory().createAddressFactory().createSipURI(id, address);
+        return MessageHelper.createSipURI(id, address);
     }
 
     @SneakyThrows
     private static Address getAddress(SipURI uri){
-        return getSipFactory().createAddressFactory().createAddress(uri);
+        return MessageHelper.createAddress(uri);
     }
 
     @SneakyThrows
     private static FromHeader getFromHeader(Address fromAddress,String fromTag){
-        return getSipFactory().createHeaderFactory().createFromHeader(fromAddress, fromTag);
+        return MessageHelper.createFromHeader(fromAddress, fromTag);
     }
 
     @SneakyThrows
     private static ToHeader getToHeader(Address toAddress,String toTag){
-        return getSipFactory().createHeaderFactory().createToHeader(toAddress, toTag);
+        return MessageHelper.createToHeader(toAddress, toTag);
     }
 
     @SneakyThrows
@@ -77,11 +78,11 @@ public class SipRequestBuilder implements ApplicationContextAware {
         List<ViaHeader> viaHeaders = getDeviceViaHeaders(device, viaTag);
         // from
         SipURI fromSipURI = getSipURI(sipConfig.getId(), sipConfig.getDomain());
-        Address fromAddress = getAddress(fromSipURI);
+        Address fromAddress = MessageHelper.createAddress(fromSipURI);
         FromHeader fromHeader = getFromHeader(fromAddress, fromTag);
         // to
         SipURI toSipURI = getSipURI(device.getDeviceId(), device.getHostAddress());
-        Address toAddress = getAddress(toSipURI);
+        Address toAddress = MessageHelper.createAddress(toSipURI);
         ToHeader toHeader = getToHeader(toAddress, toTag);
 
         // Forwards
@@ -108,11 +109,11 @@ public class SipRequestBuilder implements ApplicationContextAware {
 
         // from
         SipURI fromSipURI = getSipURI(sipConfig.getId(), sipConfig.getDomain());
-        Address fromAddress = getAddress(fromSipURI);
+        Address fromAddress = MessageHelper.createAddress(fromSipURI);
         FromHeader fromHeader = getFromHeader(fromAddress, fromTag); // 必须要有标记，否则无法创建会话，无法回应ack
         // to
         SipURI toSipURI = getSipURI(channelId, device.getHostAddress());
-        Address toAddress = getAddress(toSipURI);
+        Address toAddress = MessageHelper.createAddress(toSipURI);
         ToHeader toHeader = getToHeader(toAddress, null);
 
         // Forwards
@@ -124,8 +125,8 @@ public class SipRequestBuilder implements ApplicationContextAware {
 
         request.addHeader(SipUtil.createUserAgentHeader());
 
-        Address concatAddress = getAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
-        // Address concatAddress = getAddress(getSipURI(sipConfig.getId(), device.getHost().getIp()+":"+device.getHost().getPort()));
+        Address concatAddress = MessageHelper.createAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
+        // Address concatAddress = MessageHelper.createAddress(getSipURI(sipConfig.getId(), device.getHost().getIp()+":"+device.getHost().getPort()));
         request.addHeader(getSipFactory().createHeaderFactory().createContactHeader(concatAddress));
         // Subject
         SubjectHeader subjectHeader = getSipFactory().createHeaderFactory().createSubjectHeader(String.format("%s:%s,%s:%s", channelId, ssrc, sipConfig.getId(), 0));
@@ -146,11 +147,11 @@ public class SipRequestBuilder implements ApplicationContextAware {
         viaHeaders.add(viaHeader);
         // from
         SipURI fromSipURI = getSipURI(sipConfig.getId(), sipConfig.getDomain());
-        Address fromAddress = getAddress(fromSipURI);
+        Address fromAddress = MessageHelper.createAddress(fromSipURI);
         FromHeader fromHeader = getFromHeader(fromAddress, fromTag); // 必须要有标记，否则无法创建会话，无法回应ack
         // to
         SipURI toSipURI = getSipURI(channelId, device.getHostAddress());
-        Address toAddress = getAddress(toSipURI);
+        Address toAddress = MessageHelper.createAddress(toSipURI);
         ToHeader toHeader = getToHeader(toAddress, null);
 
         // Forwards
@@ -160,8 +161,8 @@ public class SipRequestBuilder implements ApplicationContextAware {
         CSeqHeader cSeqHeader = getSipFactory().createHeaderFactory().createCSeqHeader(getCSeq(), Request.INVITE);
         request = getSipFactory().createMessageFactory().createRequest(requestLine, Request.INVITE, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwards);
 
-        Address concatAddress = getAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
-        // Address concatAddress = getAddress(getSipURI(sipConfig.getId(), device.getHost().getIp()+":"+device.getHost().getPort()));
+        Address concatAddress = MessageHelper.createAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
+        // Address concatAddress = MessageHelper.createAddress(getSipURI(sipConfig.getId(), device.getHost().getIp()+":"+device.getHost().getPort()));
         request.addHeader(getSipFactory().createHeaderFactory().createContactHeader(concatAddress));
 
         request.addHeader(SipUtil.createUserAgentHeader());
@@ -185,11 +186,11 @@ public class SipRequestBuilder implements ApplicationContextAware {
         viaHeaders.add(viaHeader);
         // from
         SipURI fromSipURI = getSipURI(sipConfig.getId(), sipConfig.getDomain());
-        Address fromAddress = getAddress(fromSipURI);
+        Address fromAddress = MessageHelper.createAddress(fromSipURI);
         FromHeader fromHeader = getFromHeader(fromAddress, transactionInfo.getFromTag());
         // to
         SipURI toSipURI = getSipURI(channelId, device.getHostAddress());
-        Address toAddress = getAddress(toSipURI);
+        Address toAddress = MessageHelper.createAddress(toSipURI);
         ToHeader toHeader = getToHeader(toAddress, transactionInfo.getToTag());
 
         // Forwards
@@ -202,7 +203,7 @@ public class SipRequestBuilder implements ApplicationContextAware {
 
         request.addHeader(SipUtil.createUserAgentHeader());
 
-        Address concatAddress = getAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
+        Address concatAddress = MessageHelper.createAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
         request.addHeader(getSipFactory().createHeaderFactory().createContactHeader(concatAddress));
 
         request.addHeader(SipUtil.createUserAgentHeader());
@@ -222,11 +223,11 @@ public class SipRequestBuilder implements ApplicationContextAware {
         viaHeaders.add(viaHeader);
         // from
         SipURI fromSipURI = getSipURI(sipConfig.getId(), sipConfig.getDomain());
-        Address fromAddress = getAddress(fromSipURI);
+        Address fromAddress = MessageHelper.createAddress(fromSipURI);
         FromHeader fromHeader = getFromHeader(fromAddress, requestOld == null ? SipUtil.generateFromTag() : requestOld.getFromTag());
         // to
         SipURI toSipURI = getSipURI(device.getDeviceId(), device.getHostAddress());
-        Address toAddress = getAddress(toSipURI);
+        Address toAddress = MessageHelper.createAddress(toSipURI);
         ToHeader toHeader = getToHeader(toAddress, requestOld == null ? null : requestOld.getToTag());
 
         // Forwards
@@ -239,7 +240,7 @@ public class SipRequestBuilder implements ApplicationContextAware {
                 toHeader, viaHeaders, maxForwards);
 
 
-        Address concatAddress = getAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
+        Address concatAddress = MessageHelper.createAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
         request.addHeader(getSipFactory().createHeaderFactory().createContactHeader(concatAddress));
 
         // Expires
@@ -275,11 +276,11 @@ public class SipRequestBuilder implements ApplicationContextAware {
         viaHeaders.add(viaHeader);
         // from
         SipURI fromSipURI = getSipURI(sipConfig.getId(), sipConfig.getDomain());
-        Address fromAddress = getAddress(fromSipURI);
+        Address fromAddress = MessageHelper.createAddress(fromSipURI);
         FromHeader fromHeader = getFromHeader(fromAddress, transactionInfo.getFromTag());
         // to
         SipURI toSipURI = getSipURI(channelId, device.getHostAddress());
-        Address toAddress = getAddress(toSipURI);
+        Address toAddress = MessageHelper.createAddress(toSipURI);
         ToHeader toHeader = getToHeader(toAddress, transactionInfo.getToTag());
 
         // Forwards
@@ -292,7 +293,7 @@ public class SipRequestBuilder implements ApplicationContextAware {
 
         request.addHeader(SipUtil.createUserAgentHeader());
 
-        Address concatAddress = getAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
+        Address concatAddress = MessageHelper.createAddress(getSipURI(sipConfig.getId(), device.getLocalIp() + ":" + sipConfig.getPort()));
         request.addHeader(getSipFactory().createHeaderFactory().createContactHeader(concatAddress));
 
         request.addHeader(SipUtil.createUserAgentHeader());
@@ -323,7 +324,7 @@ public class SipRequestBuilder implements ApplicationContextAware {
 
         request.addHeader(SipUtil.createUserAgentHeader());
 
-        Address concatAddress = getAddress(getSipURI(sipConfig.getId(), localIp + ":" + sipConfig.getPort()));
+        Address concatAddress = MessageHelper.createAddress(getSipURI(sipConfig.getId(), localIp + ":" + sipConfig.getPort()));
         request.addHeader(getSipFactory().createHeaderFactory().createContactHeader(concatAddress));
 
         request.addHeader(SipUtil.createUserAgentHeader());
