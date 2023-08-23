@@ -26,7 +26,7 @@ import javax.sip.header.CallIdHeader;
 import javax.sip.message.Request;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Flow;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -40,7 +40,8 @@ public class RecordService {
 
     @SneakyThrows
     public DeferredResult<JsonResponse<List<RecordInfoItemDTO>>> requestRecordInfo(String deviceId) {
-        DeferredResult<JsonResponse<List<RecordInfoItemDTO>>> result = new DeferredResult<>(30 * 1000L);
+        log.info("TimeUnit.SECONDS.toMillis(30) {}",TimeUnit.SECONDS.toMillis(30));
+        DeferredResult<JsonResponse<List<RecordInfoItemDTO>>> result = new DeferredResult<>(TimeUnit.SECONDS.toMillis(30));
 
         DockingDevice device = deviceService.getDevice(deviceId);
         if (device == null) {
@@ -73,7 +74,9 @@ public class RecordService {
         List<RecordInfoItemDTO> list = new ArrayList<>();
         AtomicLong sum = new AtomicLong(0);
         AtomicLong getNum = new AtomicLong(0);
-        subscribe.getRecordInfoSubscribe().addSubscribe(key, new Flow.Subscriber<>() {
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        final ScheduledFuture<?>[] schedule = new ScheduledFuture<?>[1];
+        Flow.Subscriber<RecordInfoResponseDTO> subscriber = new Flow.Subscriber<>() {
             Flow.Subscription subscription;
 
             @Override
@@ -90,10 +93,15 @@ public class RecordService {
                 list.addAll(item.getRecordList());
                 log.info("获取订阅 => {}, {}/{}", key, getNum.get(), sum.get());
                 if (getNum.get() >= sum.get()) {
-                    onComplete();
-                } else {
-                    subscription.request(1);
+                    // 针对某些不按规范的设备
+                    // 如果已获取数量 >= 约定的总数
+                    // 就执行定时任务, 若 500ms 内未收到新的数据视为已结束
+                    if(schedule[0] != null){
+                        schedule[0].cancel(true);
+                    }
+                    schedule[0] = scheduledExecutorService.schedule(this::onComplete, 500, TimeUnit.MILLISECONDS);
                 }
+                subscription.request(1);
             }
 
             @Override
@@ -103,11 +111,14 @@ public class RecordService {
 
             @Override
             public void onComplete() {
+                schedule[0].cancel(true);
                 subscribe.getRecordInfoSubscribe().delPublisher(key);
                 result.setResult(JsonResponse.success(list));
                 log.debug("订阅结束 => {}", key);
             }
-        });
+        };
+
+        subscribe.getRecordInfoSubscribe().addSubscribe(key, subscriber);
 
         result.onTimeout(()->{
             result.setResult(JsonResponse.success(list,"查询超时, 结果可能不完整"));

@@ -4,10 +4,10 @@ import cn.skcks.docking.gb28181.common.json.ResponseStatus;
 import cn.skcks.docking.gb28181.common.xml.XmlUtils;
 import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.CmdType;
-import cn.skcks.docking.gb28181.core.sip.message.processor.message.request.dto.MessageDTO;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
+import cn.skcks.docking.gb28181.core.sip.message.processor.message.request.dto.MessageDTO;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoResponseDTO;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import javax.sip.RequestEvent;
 import javax.sip.header.CallIdHeader;
 import javax.sip.message.Response;
-import java.util.concurrent.SubmissionPublisher;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,8 +72,9 @@ public class MessageRequestProcessor implements MessageProcessor {
             response = ok;
             RecordInfoResponseDTO dto = XmlUtils.parse(content, RecordInfoResponseDTO.class, GB28181Constant.CHARSET);
             String key = CacheUtil.getKey(CmdType.RECORD_INFO, dto.getDeviceId(), dto.getSn());
-            SubmissionPublisher<RecordInfoResponseDTO> publisher = subscribe.getRecordInfoSubscribe().getPublisher(key);
-            publisher.submit(dto);
+            Optional.ofNullable(subscribe.getRecordInfoSubscribe().getPublisher(key)).ifPresentOrElse(publisher->{
+                publisher.submit(dto);
+            },()-> log.warn("对应订阅 {} 已结束, 异常数据 => {}",key, dto));
         } else {
             response = response(request, Response.NOT_IMPLEMENTED, ResponseStatus.NOT_IMPLEMENTED.getMessage());
         }
