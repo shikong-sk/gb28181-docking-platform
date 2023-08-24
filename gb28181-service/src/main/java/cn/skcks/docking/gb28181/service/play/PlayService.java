@@ -61,7 +61,7 @@ public class PlayService {
             return result;
         }
 
-        String streamId = CacheUtil.getKey(deviceId,channelId);
+        String streamId = MediaSdpHelper.getStreamId(deviceId,channelId);
         String key = CacheUtil.getKey(PREFIX, streamId);
         if(RedisUtil.KeyOps.hasKey(key)){
             String url = RedisUtil.StringOps.get(key);

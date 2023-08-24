@@ -3,7 +3,6 @@ package cn.skcks.docking.gb28181.core.sip.gb28181.sdp;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import gov.nist.core.Separators;
-import gov.nist.javax.sdp.SessionDescriptionImpl;
 import gov.nist.javax.sdp.fields.AttributeField;
 import gov.nist.javax.sdp.fields.ConnectionField;
 import gov.nist.javax.sdp.fields.TimeField;
@@ -11,12 +10,20 @@ import gov.nist.javax.sdp.fields.URIField;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sdp.*;
 import java.util.*;
 
+@Slf4j
 public class MediaSdpHelper {
+    public final static String SEPARATOR = "_";
+    public static String getStreamId(String prefix,String... ids){
+        return StringUtils.joinWith(SEPARATOR, (Object[]) ArrayUtils.addFirst(ids,prefix));
+    }
+
     public static final Map<String, String> RTPMAP = new HashMap<>() {{
         put("96", "PS/90000");
         put("126", "H264/90000");
@@ -53,6 +60,7 @@ public class MediaSdpHelper {
 
     @SneakyThrows
     public static GB28181Description build(Action action, String deviceId, String channelId, String netType, String rtpIp, int rtpPort, String ssrc, StreamMode streamMode, TimeDescription timeDescription){
+        log.debug("{} {} {} {} {} {} {} {} {}",action, deviceId, channelId, netType, rtpIp, rtpPort, ssrc, streamMode, timeDescription);
         GB28181Description description = new GB28181Description();
         description.setSessionName(SdpFactory.getInstance().createSessionName(action.getAction()));
 

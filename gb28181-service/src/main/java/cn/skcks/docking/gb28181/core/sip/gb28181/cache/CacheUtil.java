@@ -11,5 +11,5 @@ public class CacheUtil {
         return StringUtils.joinWith(SEPARATOR, (Object[]) ArrayUtils.addFirst(ids,prefix));
     }
 
-    public final static String SIP_C_SEQ_PREFIX = "SIP_C_SEQ_";
+    public final static String SIP_C_SEQ_PREFIX = "SIP_C_SEQ";
 }
