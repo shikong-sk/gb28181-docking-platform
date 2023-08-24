@@ -6,8 +6,11 @@ import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.GB28181Description;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.MediaSdpHelper;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.StreamMode;
+import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
 import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
+import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
+import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
 import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
@@ -45,9 +48,10 @@ public class PlayService {
     private final SsrcService ssrcService;
     private final SipService sipService;
     private final SipMessageSender sender;
+    private final SipSubscribe subscribe;
 
     /**
-     *
+     * 实时视频点播
      * @param deviceId 设备id
      * @param channelId 通道id
      */
@@ -99,6 +103,8 @@ public class PlayService {
         Request request = SipRequestBuilder.createInviteRequest(device, channelId, description.toString(), SipUtil.generateViaTag(), SipUtil.generateFromTag(), null, ssrc, callId);
         sender.send(senderIp, request);
 
+        String subscribeKey = GenericSubscribe.Helper.getKey(MessageProcessor.Method.INVITE, deviceId, streamId);
+//        subscribe.getInviteSubscribe().addPublisher(subscribeKey);
         result.setResult(JsonResponse.success(StringUtils.joinWith("/", zlmMediaConfig.getUrl(),"rtp", streamId + ".live.flv")));
         return result;
 //        zlmMediaService.getRtpInfo();
