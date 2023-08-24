@@ -24,12 +24,13 @@ public class SipListenerImpl implements SipListener {
     private final SipSubscribe sipSubscribe;
     private final ConcurrentMap<String, MessageProcessor> requestProcessor = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, MessageProcessor> responseProcessor = new ConcurrentHashMap<>();
-    public void addRequestProcessor(String method, MessageProcessor messageProcessor){
+
+    public void addRequestProcessor(String method, MessageProcessor messageProcessor) {
         log.debug("[SipListener] 注册 {} 请求处理器", method);
         requestProcessor.put(method, messageProcessor);
     }
 
-    public void addResponseProcessor(String method, MessageProcessor messageProcessor){
+    public void addResponseProcessor(String method, MessageProcessor messageProcessor) {
         log.debug("[SipListener] 注册 {} 响应处理器", method);
         responseProcessor.put(method, messageProcessor);
     }
@@ -39,7 +40,7 @@ public class SipListenerImpl implements SipListener {
     @Async(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     public void processRequest(RequestEvent requestEvent) {
         String method = requestEvent.getRequest().getMethod();
-        log.debug("传入请求 method => {}",method);
+        log.debug("传入请求 method => {}", method);
         Optional.ofNullable(requestProcessor.get(method)).ifPresent(processor -> {
             processor.process(requestEvent);
         });
@@ -49,49 +50,20 @@ public class SipListenerImpl implements SipListener {
     public void processResponse(ResponseEvent responseEvent) {
         Response response = responseEvent.getResponse();
         int status = response.getStatusCode();
-        // log.debug();
+        CSeqHeader cseqHeader = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+        String method = cseqHeader.getMethod();
+        log.debug("{} {}", method, response);
 
         // Success
         if (((status >= Response.OK) && (status < Response.MULTIPLE_CHOICES)) || status == Response.UNAUTHORIZED) {
-            CSeqHeader cseqHeader = (CSeqHeader) responseEvent.getResponse().getHeader(CSeqHeader.NAME);
-            String method = cseqHeader.getMethod();
-            log.debug("传入响应 method => {}",method);
+            log.debug("传入响应 method => {}", method);
             Optional.ofNullable(responseProcessor.get(method)).ifPresent(processor -> {
                 processor.process(responseEvent);
             });
-            // ISIPResponseProcessor sipRequestProcessor = responseProcessorMap.get(method);
-            // if (sipRequestProcessor != null) {
-            //     sipRequestProcessor.process(responseEvent);
-            // }
-
-            // if(status != Response.UNAUTHORIZED && responseEvent.getResponse() != null){}
-
-            // if (status != Response.UNAUTHORIZED && responseEvent.getResponse() != null && sipSubscribe.getOkSubscribesSize() > 0 ) {
-            //     CallIdHeader callIdHeader = (CallIdHeader)responseEvent.getResponse().getHeader(CallIdHeader.NAME);
-            //     if (callIdHeader != null) {
-            //         SipSubscribe.Event subscribe = sipSubscribe.getOkSubscribe(callIdHeader.getCallId());
-            //         if (subscribe != null) {
-            //             SipSubscribe.EventResult eventResult = new SipSubscribe.EventResult(responseEvent);
-            //             sipSubscribe.removeOkSubscribe(callIdHeader.getCallId());
-            //             subscribe.response(eventResult);
-            //         }
-            //     }
-            // }
         } else if ((status >= Response.TRYING) && (status < Response.OK)) {
             // 增加其它无需回复的响应，如101、180等
         } else {
             log.warn("接收到失败的response响应！status：" + status + ",message:" + response.getReasonPhrase());
-            // if (responseEvent.getResponse() != null && sipSubscribe.getErrorSubscribesSize() > 0 ) {
-            //     CallIdHeader callIdHeader = (CallIdHeader)responseEvent.getResponse().getHeader(CallIdHeader.NAME);
-            //     if (callIdHeader != null) {
-            //         SipSubscribe.Event subscribe = sipSubscribe.getErrorSubscribe(callIdHeader.getCallId());
-            //         if (subscribe != null) {
-            //             SipSubscribe.EventResult<?> eventResult = new SipSubscribe.EventResult(responseEvent);
-            //             subscribe.response(eventResult);
-            //             sipSubscribe.removeErrorSubscribe(callIdHeader.getCallId());
-            //         }
-            //     }
-            // }
             if (responseEvent.getDialog() != null) {
                 responseEvent.getDialog().delete();
             }

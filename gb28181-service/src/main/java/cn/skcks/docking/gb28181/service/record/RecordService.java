@@ -81,7 +81,6 @@ public class RecordService {
 
         String key = GenericSubscribe.Helper.getKey(CmdType.RECORD_INFO, deviceId, sn);
         subscribe.getRecordInfoSubscribe().addPublisher(key);
-        sender.send(senderIp, request);
         List<RecordInfoItemDTO> list = new ArrayList<>();
         AtomicLong atomicSum = new AtomicLong(0);
         AtomicLong atomicNum = new AtomicLong(0);
@@ -135,9 +134,8 @@ public class RecordService {
                 log.debug("订阅结束 => {}", key);
             }
         };
-
         subscribe.getRecordInfoSubscribe().addSubscribe(key, subscriber);
-
+        sender.send(senderIp, request);
         result.onTimeout(() -> {
             result.setResult(JsonResponse.build(ResponseStatus.PARTIAL_CONTENT,
                     RecordConvertor.INSTANCE.dto2Vo(sortedRecordList(list)),

@@ -1,8 +1,8 @@
 package cn.skcks.docking.gb28181.core.sip.message.subscribe;
 
-import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
 import cn.skcks.docking.gb28181.core.sip.executor.DefaultSipExecutor;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoResponseDTO;
+import gov.nist.javax.sip.message.SIPResponse;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
@@ -21,7 +21,7 @@ public class SipSubscribe {
     @Qualifier(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     private final Executor executor;
     private GenericSubscribe<RecordInfoResponseDTO> recordInfoSubscribe;
-    private GenericSubscribe<SipTransactionInfo> inviteSubscribe;
+    private GenericSubscribe<SIPResponse> inviteSubscribe;
 
     @PostConstruct
     private void init() {

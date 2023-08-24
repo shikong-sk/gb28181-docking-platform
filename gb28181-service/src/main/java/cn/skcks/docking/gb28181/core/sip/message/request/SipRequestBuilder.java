@@ -176,7 +176,7 @@ public class SipRequestBuilder implements ApplicationContextAware {
         return request;
     }
 
-    public static Request createByteRequest(DockingDevice device, String channelId, SipTransactionInfo transactionInfo) throws ParseException, InvalidArgumentException, PeerUnavailableException {
+    public static Request createByeRequest(DockingDevice device, String channelId, SipTransactionInfo transactionInfo) throws ParseException, InvalidArgumentException, PeerUnavailableException {
         Request request = null;
         // 请求行
         SipURI requestLine = getSipURI(channelId, device.getHostAddress());

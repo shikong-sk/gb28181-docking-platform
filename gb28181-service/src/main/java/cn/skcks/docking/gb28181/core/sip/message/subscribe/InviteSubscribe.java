@@ -1,6 +1,6 @@
 package cn.skcks.docking.gb28181.core.sip.message.subscribe;
 
-import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
+import gov.nist.javax.sip.message.SIPResponse;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
@@ -10,9 +10,9 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 
 @RequiredArgsConstructor
-public class InviteSubscribe implements GenericSubscribe<SipTransactionInfo> {
+public class InviteSubscribe implements GenericSubscribe<SIPResponse> {
     private final Executor executor;
-    private static final Map<String, SubmissionPublisher<SipTransactionInfo>> publishers = new ConcurrentHashMap<>();
+    private static final Map<String, SubmissionPublisher<SIPResponse>> publishers = new ConcurrentHashMap<>();
 
     public void close() {
         Helper.close(publishers);
@@ -22,11 +22,11 @@ public class InviteSubscribe implements GenericSubscribe<SipTransactionInfo> {
         Helper.addPublisher(executor, publishers, key);
     }
 
-    public SubmissionPublisher<SipTransactionInfo> getPublisher(String key) {
+    public SubmissionPublisher<SIPResponse> getPublisher(String key) {
         return Helper.getPublisher(publishers, key);
     }
 
-    public void addSubscribe(String key, Flow.Subscriber<SipTransactionInfo> subscribe) {
+    public void addSubscribe(String key, Flow.Subscriber<SIPResponse> subscribe) {
         Helper.addSubscribe(publishers, key, subscribe);
     }
 

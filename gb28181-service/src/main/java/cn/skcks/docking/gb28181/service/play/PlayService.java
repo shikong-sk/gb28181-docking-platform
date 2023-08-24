@@ -1,7 +1,9 @@
 package cn.skcks.docking.gb28181.service.play;
 
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
+import cn.skcks.docking.gb28181.common.json.JsonUtils;
 import cn.skcks.docking.gb28181.common.redis.RedisUtil;
+import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
 import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.GB28181Description;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.MediaSdpHelper;
@@ -14,6 +16,7 @@ import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
 import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
+import cn.skcks.docking.gb28181.media.dto.rtp.CloseRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.GetRtpInfoResp;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServer;
 import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServerResp;
@@ -22,6 +25,7 @@ import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
 import cn.skcks.docking.gb28181.service.ssrc.SsrcService;
+import gov.nist.javax.sip.message.SIPResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +38,15 @@ import javax.sip.ListeningPoint;
 import javax.sip.SipProvider;
 import javax.sip.header.CallIdHeader;
 import javax.sip.message.Request;
+import javax.sip.message.Response;
 import java.text.MessageFormat;
+import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PlayService {
-    private static final String PREFIX = "RealTimePlay";
     private final ZlmMediaConfig zlmMediaConfig;
     private final DockingDeviceService deviceService;
     private final ZlmMediaService zlmMediaService;
@@ -49,6 +54,10 @@ public class PlayService {
     private final SipService sipService;
     private final SipMessageSender sender;
     private final SipSubscribe subscribe;
+
+    private String videoUrl(String streamId){
+        return StringUtils.joinWith("/", zlmMediaConfig.getUrl(),"rtp", streamId + ".live.flv");
+    }
 
     /**
      * 实时视频点播
@@ -66,10 +75,9 @@ public class PlayService {
         }
 
         String streamId = MediaSdpHelper.getStreamId(deviceId,channelId);
-        String key = CacheUtil.getKey(PREFIX, streamId);
+        String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY.getAction(), deviceId, channelId);
         if(RedisUtil.KeyOps.hasKey(key)){
-            String url = RedisUtil.StringOps.get(key);
-            result.setResult(JsonResponse.success(url));
+            result.setResult(JsonResponse.success(videoUrl(streamId)));
             return result;
         }
 
@@ -101,15 +109,83 @@ public class PlayService {
         SipProvider provider = sipService.getProvider(transport, senderIp);
         CallIdHeader callId = provider.getNewCallId();
         Request request = SipRequestBuilder.createInviteRequest(device, channelId, description.toString(), SipUtil.generateViaTag(), SipUtil.generateFromTag(), null, ssrc, callId);
+        String subscribeKey = GenericSubscribe.Helper.getKey(MessageProcessor.Method.INVITE, callId.getCallId());
+        subscribe.getInviteSubscribe().addPublisher(subscribeKey);
+        Flow.Subscriber<SIPResponse> subscriber = new Flow.Subscriber<>() {
+            private Flow.Subscription subscription;
+            @Override
+            public void onSubscribe(Flow.Subscription subscription) {
+                this.subscription = subscription;
+                log.info("订阅 {} {}",MessageProcessor.Method.INVITE,subscribeKey);
+                subscription.request(1);
+            }
+
+            @Override
+            public void onNext(SIPResponse item) {
+                int statusCode = item.getStatusCode();
+                log.debug("{} 收到订阅消息 {}", subscribeKey, item);
+                if(statusCode == Response.TRYING){
+                    log.info("订阅 {} {} 尝试连接流媒体服务", MessageProcessor.Method.INVITE,subscribeKey);
+                    subscription.request(1);
+                } else if(statusCode>=Response.OK && statusCode < Response.MULTIPLE_CHOICES){
+                    log.info("订阅 {} {} 流媒体服务连接成功, 开始推送视频流", MessageProcessor.Method.INVITE,subscribeKey);
+                    RedisUtil.StringOps.set(key, JsonUtils.toCompressJson(new SipTransactionInfo(item)));
+                    RedisUtil.StringOps.set(CacheUtil.getKey(key,"ssrc"), ssrc);
+                    result.setResult(JsonResponse.success(videoUrl(streamId)));
+                    onComplete();
+                } else {
+                    log.info("订阅 {} {} 连接流媒体服务时出现异常, 终止订阅", MessageProcessor.Method.INVITE,subscribeKey);
+                    RedisUtil.KeyOps.delete(key);
+                    RedisUtil.KeyOps.delete(CacheUtil.getKey(key,"ssrc"));
+                    result.setResult(JsonResponse.error("连接流媒体服务失败"));
+                    ssrcService.releaseSsrc(zlmMediaConfig.getId(), ssrc);
+                    onComplete();
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
+            }
+        };
+        subscribe.getInviteSubscribe().addSubscribe(subscribeKey, subscriber);
+        sender.send(senderIp, request);
+        result.onTimeout(()->{
+            subscribe.getInviteSubscribe().delPublisher(subscribeKey);
+            result.setResult(JsonResponse.error("点播超时"));
+        });
+        return result;
+    }
+
+    @SneakyThrows
+    public JsonResponse<Void> realTimeStop(String deviceId, String channelId){
+        DockingDevice device = deviceService.getDevice(deviceId);
+        if (device == null) {
+            log.info("未能找到 编码为 => {} 的设备", deviceId);
+            return JsonResponse.error(null, "未找到设备");
+        }
+
+        String streamId = MediaSdpHelper.getStreamId(deviceId,channelId);
+        String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY.getAction(), deviceId, channelId);
+        String ssrcKey = CacheUtil.getKey(key,"ssrc");
+        zlmMediaService.closeRtpServer(new CloseRtpServer(streamId));
+        SipTransactionInfo transactionInfo = JsonUtils.parse(RedisUtil.StringOps.get(key), SipTransactionInfo.class);
+        if(transactionInfo == null){
+            return JsonResponse.error("未找到连接信息");
+        }
+        Request request = SipRequestBuilder.createByeRequest(device, channelId, transactionInfo);
+        String senderIp = device.getLocalIp();
         sender.send(senderIp, request);
 
-        String subscribeKey = GenericSubscribe.Helper.getKey(MessageProcessor.Method.INVITE, deviceId, streamId);
-//        subscribe.getInviteSubscribe().addPublisher(subscribeKey);
-        result.setResult(JsonResponse.success(StringUtils.joinWith("/", zlmMediaConfig.getUrl(),"rtp", streamId + ".live.flv")));
-        return result;
-//        zlmMediaService.getRtpInfo();
-//        GetMediaList getMediaList = new GetMediaList();
-//        getMediaList.set
-//        zlmMediaService.getMediaList()
+        String ssrc = RedisUtil.StringOps.get(ssrcKey);
+        ssrcService.releaseSsrc(zlmMediaConfig.getId(),ssrc);
+        RedisUtil.KeyOps.delete(ssrcKey);
+        RedisUtil.KeyOps.delete(key);
+        return JsonResponse.success(null);
     }
 }
