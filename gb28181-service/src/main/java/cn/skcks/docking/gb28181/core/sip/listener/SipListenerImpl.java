@@ -47,6 +47,7 @@ public class SipListenerImpl implements SipListener {
     }
 
     @Override
+    @Async(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     public void processResponse(ResponseEvent responseEvent) {
         Response response = responseEvent.getResponse();
         int status = response.getStatusCode();
