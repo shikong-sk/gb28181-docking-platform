@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk
+FROM eclipse-temurin:17-jre
 
 MAINTAINER Shikong <919411476@qq.com>
 

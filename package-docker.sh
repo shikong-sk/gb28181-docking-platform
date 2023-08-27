@@ -10,5 +10,5 @@ docker run --name maven --rm \
 	-w /usr/src/mymaven \
 	maven:3.9.3-eclipse-temurin-17 \
 	mvn clean package -DskipTests -Pdocker
-docker save skcks.cn/gb28181-docking-platform -o gb28181.docking.platform.image
+docker save skcks.cn/gb28181-docking-platform -o gb28181-docking-platform.image
 ls -lh *.image
