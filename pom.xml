@@ -179,29 +179,6 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<groupId>com.spotify</groupId>
-					<artifactId>dockerfile-maven-plugin</artifactId>
-					<version>${docker.maven.plugin.version}</version>
-					<executions>
-						<execution>
-							<id>default</id>
-							<goals>
-								<goal>build</goal>
-								<goal>push</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<skip>${skip.docker}</skip>
-						<repository>skcks.cn/gb28181-docking-platform</repository>
-						<tag>${project.version}</tag>
-						<buildArgs>
-							<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-						</buildArgs>
-					</configuration>
-				</plugin>
-
-				<plugin>
 					<groupId>org.mybatis.generator</groupId>
 					<artifactId>mybatis-generator-maven-plugin</artifactId>
 					<version>${mybatis-generator-maven-plugin.version}</version>
@@ -228,6 +205,29 @@
 							<version>${mysql.version}</version>
 						</dependency>
 					</dependencies>
+				</plugin>
+
+				<plugin>
+					<groupId>com.spotify</groupId>
+					<artifactId>dockerfile-maven-plugin</artifactId>
+					<version>${docker.maven.plugin.version}</version>
+					<executions>
+						<execution>
+							<id>default</id>
+							<goals>
+								<goal>build</goal>
+								<goal>push</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<skip>${skip.docker}</skip>
+						<repository>skcks.cn/gb28181-docking-platform</repository>
+						<tag>${project.version}</tag>
+						<buildArgs>
+							<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+						</buildArgs>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
