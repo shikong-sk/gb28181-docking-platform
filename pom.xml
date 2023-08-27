@@ -52,8 +52,36 @@
 
 		<!--SpringDoc-->
 		<springdoc.version>2.2.0</springdoc.version>
+
+		<!--Docker打包配置-->
+<!--		<docker.repository.url>10.10.10.200:5000</docker.repository.url>-->
+<!--		<docker.registry.name>skcks.cn</docker.registry.name>-->
+<!--		<docker.registry.username>XXX</docker.registry.username>-->
+<!--		<docker.registry.password>XXX</docker.registry.password>-->
+		<docker.maven.plugin.version>1.4.13</docker.maven.plugin.version>
 	</properties>
 
+	<profiles>
+		<profile>
+			<id>jar</id>
+			<properties>
+					<skip.docker>true</skip.docker>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+
+		<profile>
+			<id>docker</id>
+			<properties>
+				<skip.docker>false</skip.docker>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
@@ -150,6 +178,29 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>com.spotify</groupId>
+					<artifactId>dockerfile-maven-plugin</artifactId>
+					<version>${docker.maven.plugin.version}</version>
+					<executions>
+						<execution>
+							<id>default</id>
+							<goals>
+								<goal>build</goal>
+								<goal>push</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<skip>${skip.docker}</skip>
+						<repository>skcks.cn/gb28181-docking-platform</repository>
+						<tag>${project.version}</tag>
+						<buildArgs>
+							<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+						</buildArgs>
+					</configuration>
+				</plugin>
+
 				<plugin>
 					<groupId>org.mybatis.generator</groupId>
 					<artifactId>mybatis-generator-maven-plugin</artifactId>
