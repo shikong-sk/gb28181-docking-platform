@@ -1,5 +1,5 @@
 #!/bin/bash
-# 用户缓存打包过程下载的依赖
+# 用于缓存打包过程下载的依赖
 mkdir repository
 curDir=`pwd`
 docker run --name maven --rm \
