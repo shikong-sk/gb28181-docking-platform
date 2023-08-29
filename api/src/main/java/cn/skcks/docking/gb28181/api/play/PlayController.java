@@ -18,14 +18,14 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 @Tag(name="播放")
 @RestController
-@JsonMapping("/device/play")
+@JsonMapping("/api/device/play")
 @RequiredArgsConstructor
 public class PlayController {
     private final PlayService playService;
 
     @Bean
     public GroupedOpenApi playApi() {
-        return SwaggerConfig.api("Play", "/device/play");
+        return SwaggerConfig.api("Play", "/api/device/play");
     }
 
     @GetJson("/realTimePlay")

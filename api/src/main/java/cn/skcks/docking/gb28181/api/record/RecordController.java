@@ -20,14 +20,14 @@ import java.util.List;
 
 @Tag(name="历史录像")
 @RestController
-@JsonMapping("/device/record")
+@JsonMapping("/api/device/record")
 @RequiredArgsConstructor
 public class RecordController {
     private final RecordService recordService;
 
     @Bean
     public GroupedOpenApi recordApi() {
-        return SwaggerConfig.api("Record", "/device/record");
+        return SwaggerConfig.api("Record", "/api/device/record");
     }
 
     @GetJson("/getInfoList")
