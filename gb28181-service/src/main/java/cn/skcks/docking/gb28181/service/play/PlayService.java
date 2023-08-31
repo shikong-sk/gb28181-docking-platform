@@ -215,6 +215,116 @@ public class PlayService {
             result.setResult(JsonResponse.success(videoUrl(streamId)));
             return result;
         }
+
+        GetRtpInfoResp rtpInfo = zlmMediaService.getRtpInfo(streamId);
+        if(rtpInfo.getExist()){
+            result.setResult(JsonResponse.error(MessageFormat.format("流 {0} 已存在", streamId)));
+            return result;
+        }
+
+        int streamMode = device.getStreamMode() == null || device.getStreamMode().equalsIgnoreCase(ListeningPoint.UDP) ? 0 : 1;
+        OpenRtpServer openRtpServer = new OpenRtpServer();
+        openRtpServer.setPort(0);
+        openRtpServer.setStreamId(streamId);
+        openRtpServer.setTcpMode(streamMode);
+        OpenRtpServerResp openRtpServerResp = zlmMediaService.openRtpServer(openRtpServer);
+        log.info("openRtpServerResp => {}", openRtpServerResp);
+        if(!openRtpServerResp.getCode().equals(ResponseStatus.Success)){
+            result.setResult(JsonResponse.error(openRtpServerResp.getCode().getMsg()));
+            return result;
+        }
+
+        String ip = zlmMediaConfig.getIp();
+        int port = openRtpServerResp.getPort();
+        String ssrc = ssrcService.getPlaySsrc();
+        GB28181Description description = MediaSdpHelper.playback(deviceId, channelId, Connection.IP4, ip, port, ssrc, StreamMode.of(device.getStreamMode()),startTime,endTime);
+
+        String transport = device.getTransport();
+        String senderIp = device.getLocalIp();
+        SipProvider provider = sipService.getProvider(transport, senderIp);
+        CallIdHeader callId = provider.getNewCallId();
+
+        Request request = SipRequestBuilder.createInviteRequest(device, channelId, description.toString(), SipUtil.generateViaTag(), SipUtil.generateFromTag(), null, ssrc, callId);
+        String subscribeKey = GenericSubscribe.Helper.getKey(MessageProcessor.Method.INVITE, callId.getCallId());
+        subscribe.getInviteSubscribe().addPublisher(subscribeKey);
+        Flow.Subscriber<SIPResponse> subscriber = new Flow.Subscriber<>() {
+            private Flow.Subscription subscription;
+            @Override
+            public void onSubscribe(Flow.Subscription subscription) {
+                this.subscription = subscription;
+                log.info("订阅 {} {}",MessageProcessor.Method.INVITE,subscribeKey);
+                subscription.request(1);
+            }
+
+            @Override
+            public void onNext(SIPResponse item) {
+                int statusCode = item.getStatusCode();
+                log.debug("{} 收到订阅消息 {}", subscribeKey, item);
+                if(statusCode == Response.TRYING){
+                    log.info("订阅 {} {} 尝试连接流媒体服务", MessageProcessor.Method.INVITE,subscribeKey);
+                    subscription.request(1);
+                } else if(statusCode>=Response.OK && statusCode < Response.MULTIPLE_CHOICES){
+                    log.info("订阅 {} {} 流媒体服务连接成功, 开始推送视频流", MessageProcessor.Method.INVITE,subscribeKey);
+                    RedisUtil.StringOps.set(key, JsonUtils.toCompressJson(new SipTransactionInfo(item)));
+                    RedisUtil.StringOps.set(CacheUtil.getKey(key,"ssrc"), ssrc);
+                    result.setResult(JsonResponse.success(videoUrl(streamId)));
+                    onComplete();
+                } else {
+                    log.info("订阅 {} {} 连接流媒体服务时出现异常, 终止订阅", MessageProcessor.Method.INVITE,subscribeKey);
+                    RedisUtil.KeyOps.delete(key);
+                    RedisUtil.KeyOps.delete(CacheUtil.getKey(key,"ssrc"));
+                    result.setResult(JsonResponse.error("连接流媒体服务失败"));
+                    ssrcService.releaseSsrc(zlmMediaConfig.getId(), ssrc);
+                    onComplete();
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
+            }
+        };
+        subscribe.getInviteSubscribe().addSubscribe(subscribeKey, subscriber);
+        sender.send(senderIp, request);
+        result.onTimeout(()->{
+            subscribe.getInviteSubscribe().delPublisher(subscribeKey);
+            result.setResult(JsonResponse.error("点播超时"));
+        });
         return result;
     }
+
+    @SneakyThrows
+    public JsonResponse<Void> recordStop(String deviceId, String channelId, Date startTime, Date endTime){
+        DockingDevice device = deviceService.getDevice(deviceId);
+        if (device == null) {
+            log.info("未能找到 编码为 => {} 的设备", deviceId);
+            return JsonResponse.error(null, "未找到设备");
+        }
+
+        long start = startTime.toInstant().getEpochSecond();
+        long end = endTime.toInstant().getEpochSecond();
+        String streamId = MediaSdpHelper.getStreamId(deviceId,channelId,String.valueOf(start), String.valueOf(end));
+        String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY_BACK.getAction(), deviceId, channelId);
+        String ssrcKey = CacheUtil.getKey(key,"ssrc");
+        zlmMediaService.closeRtpServer(new CloseRtpServer(streamId));
+        SipTransactionInfo transactionInfo = JsonUtils.parse(RedisUtil.StringOps.get(key), SipTransactionInfo.class);
+        if(transactionInfo == null){
+            return JsonResponse.error("未找到连接信息");
+        }
+        Request request = SipRequestBuilder.createByeRequest(device, channelId, transactionInfo);
+        String senderIp = device.getLocalIp();
+        sender.send(senderIp, request);
+
+        String ssrc = RedisUtil.StringOps.get(ssrcKey);
+        ssrcService.releaseSsrc(zlmMediaConfig.getId(),ssrc);
+        RedisUtil.KeyOps.delete(ssrcKey);
+        RedisUtil.KeyOps.delete(key);
+        return JsonResponse.success(null);
+    }
+
 }
