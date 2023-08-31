@@ -40,6 +40,7 @@ import javax.sip.header.CallIdHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 
@@ -59,6 +60,17 @@ public class PlayService {
         return StringUtils.joinWith("/", zlmMediaConfig.getUrl(),"rtp", streamId + ".live.flv");
     }
 
+    private DeferredResult<JsonResponse<String>> makeResult(String deviceId, String channelId, long timeout, DockingDevice device) {
+        DeferredResult<JsonResponse<String>> result = new DeferredResult<>(TimeUnit.SECONDS.toMillis(timeout));
+        if (device == null) {
+            log.info("未能找到 编码为 => {} 的设备", deviceId);
+            result.setResult(JsonResponse.error(null, "未找到设备"));
+            return result;
+        }
+
+        return result;
+    }
+
     /**
      * 实时视频点播
      * @param deviceId 设备id
@@ -66,24 +78,22 @@ public class PlayService {
      */
     @SneakyThrows
     public DeferredResult<JsonResponse<String>> realTimePlay(String deviceId, String channelId, long timeout){
-        DeferredResult<JsonResponse<String>> result = new DeferredResult<>(TimeUnit.SECONDS.toMillis(timeout));
         DockingDevice device = deviceService.getDevice(deviceId);
-        if (device == null) {
-            log.info("未能找到 编码为 => {} 的设备", deviceId);
-            result.setResult(JsonResponse.error(null, "未找到设备"));
+        DeferredResult<JsonResponse<String>> result = makeResult(deviceId,channelId,timeout, device);
+        if(result.hasResult()){
             return result;
         }
 
         String streamId = MediaSdpHelper.getStreamId(deviceId,channelId);
         String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY.getAction(), deviceId, channelId);
-        if(RedisUtil.KeyOps.hasKey(key)){
+        if (RedisUtil.KeyOps.hasKey(key)) {
             result.setResult(JsonResponse.success(videoUrl(streamId)));
             return result;
         }
 
         GetRtpInfoResp rtpInfo = zlmMediaService.getRtpInfo(streamId);
         if(rtpInfo.getExist()){
-            result.setResult(JsonResponse.error(MessageFormat.format("实时流 {0} 已存在", streamId)));
+            result.setResult(JsonResponse.error(MessageFormat.format("流 {0} 已存在", streamId)));
             return result;
         }
 
@@ -187,5 +197,24 @@ public class PlayService {
         RedisUtil.KeyOps.delete(ssrcKey);
         RedisUtil.KeyOps.delete(key);
         return JsonResponse.success(null);
+    }
+
+    @SneakyThrows
+    public DeferredResult<JsonResponse<String>> recordPlay(String deviceId, String channelId, Date startTime, Date endTime, long timeout){
+        DockingDevice device = deviceService.getDevice(deviceId);
+        long start = startTime.toInstant().getEpochSecond();
+        long end = endTime.toInstant().getEpochSecond();
+        String streamId = MediaSdpHelper.getStreamId(deviceId,channelId,String.valueOf(start), String.valueOf(end));
+        DeferredResult<JsonResponse<String>> result = makeResult(deviceId,channelId,timeout,device);
+        if(result.hasResult()){
+            return result;
+        }
+
+        String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY_BACK.getAction(), deviceId, channelId);
+        if(RedisUtil.KeyOps.hasKey(key)){
+            result.setResult(JsonResponse.success(videoUrl(streamId)));
+            return result;
+        }
+        return result;
     }
 }
