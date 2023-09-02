@@ -139,14 +139,12 @@ public class PlayService {
                     subscription.request(1);
                 } else if(statusCode>=Response.OK && statusCode < Response.MULTIPLE_CHOICES){
                     log.info("订阅 {} {} 流媒体服务连接成功, 开始推送视频流", MessageProcessor.Method.INVITE,subscribeKey);
-                    RedisUtil.StringOps.set(key, JsonUtils.toCompressJson(new SipTransactionInfo(item)));
-                    RedisUtil.StringOps.set(CacheUtil.getKey(key,"ssrc"), ssrc);
+                    RedisUtil.StringOps.set(key, JsonUtils.toCompressJson(new SipTransactionInfo(item,ssrc)));
                     result.setResult(JsonResponse.success(videoUrl(streamId)));
                     onComplete();
                 } else {
                     log.info("订阅 {} {} 连接流媒体服务时出现异常, 终止订阅", MessageProcessor.Method.INVITE,subscribeKey);
                     RedisUtil.KeyOps.delete(key);
-                    RedisUtil.KeyOps.delete(CacheUtil.getKey(key,"ssrc"));
                     result.setResult(JsonResponse.error("连接流媒体服务失败"));
                     ssrcService.releaseSsrc(zlmMediaConfig.getId(), ssrc);
                     onComplete();
@@ -182,7 +180,6 @@ public class PlayService {
 
         String streamId = MediaSdpHelper.getStreamId(deviceId,channelId);
         String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY.getAction(), deviceId, channelId);
-        String ssrcKey = CacheUtil.getKey(key,"ssrc");
         zlmMediaService.closeRtpServer(new CloseRtpServer(streamId));
         SipTransactionInfo transactionInfo = JsonUtils.parse(RedisUtil.StringOps.get(key), SipTransactionInfo.class);
         if(transactionInfo == null){
@@ -192,9 +189,8 @@ public class PlayService {
         String senderIp = device.getLocalIp();
         sender.send(senderIp, request);
 
-        String ssrc = RedisUtil.StringOps.get(ssrcKey);
+        String ssrc = transactionInfo.getSsrc();
         ssrcService.releaseSsrc(zlmMediaConfig.getId(),ssrc);
-        RedisUtil.KeyOps.delete(ssrcKey);
         RedisUtil.KeyOps.delete(key);
         return JsonResponse.success(null);
     }
@@ -265,14 +261,12 @@ public class PlayService {
                     subscription.request(1);
                 } else if(statusCode>=Response.OK && statusCode < Response.MULTIPLE_CHOICES){
                     log.info("订阅 {} {} 流媒体服务连接成功, 开始推送视频流", MessageProcessor.Method.INVITE,subscribeKey);
-                    RedisUtil.StringOps.set(key, JsonUtils.toCompressJson(new SipTransactionInfo(item)));
-                    RedisUtil.StringOps.set(CacheUtil.getKey(key,"ssrc"), ssrc);
+                    RedisUtil.StringOps.set(key, JsonUtils.toCompressJson(new SipTransactionInfo(item, ssrc)));
                     result.setResult(JsonResponse.success(videoUrl(streamId)));
                     onComplete();
                 } else {
                     log.info("订阅 {} {} 连接流媒体服务时出现异常, 终止订阅", MessageProcessor.Method.INVITE,subscribeKey);
                     RedisUtil.KeyOps.delete(key);
-                    RedisUtil.KeyOps.delete(CacheUtil.getKey(key,"ssrc"));
                     result.setResult(JsonResponse.error("连接流媒体服务失败"));
                     ssrcService.releaseSsrc(zlmMediaConfig.getId(), ssrc);
                     onComplete();
@@ -310,7 +304,6 @@ public class PlayService {
         long end = endTime.toInstant().getEpochSecond();
         String streamId = MediaSdpHelper.getStreamId(deviceId,channelId,String.valueOf(start), String.valueOf(end));
         String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY_BACK.getAction(), deviceId, channelId);
-        String ssrcKey = CacheUtil.getKey(key,"ssrc");
         zlmMediaService.closeRtpServer(new CloseRtpServer(streamId));
         SipTransactionInfo transactionInfo = JsonUtils.parse(RedisUtil.StringOps.get(key), SipTransactionInfo.class);
         if(transactionInfo == null){
@@ -320,9 +313,8 @@ public class PlayService {
         String senderIp = device.getLocalIp();
         sender.send(senderIp, request);
 
-        String ssrc = RedisUtil.StringOps.get(ssrcKey);
+        String ssrc = transactionInfo.getSsrc();
         ssrcService.releaseSsrc(zlmMediaConfig.getId(),ssrc);
-        RedisUtil.KeyOps.delete(ssrcKey);
         RedisUtil.KeyOps.delete(key);
         return JsonResponse.success(null);
     }
