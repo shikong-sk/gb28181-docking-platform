@@ -40,6 +40,9 @@ public class JsonUtils {
     }
 
     public static <T> T parse(String json, Class<T> clazz) {
+        if(json == null){
+            return null;
+        }
         try {
             return mapper.readValue(json, clazz);
         } catch (Exception e) {
@@ -48,9 +51,12 @@ public class JsonUtils {
         }
     }
 
-    public static <T> T parse(String xml, TypeReference<T> clazz) {
+    public static <T> T parse(String json, TypeReference<T> clazz) {
+        if(json == null){
+            return null;
+        }
         try {
-            return mapper.readValue(xml, clazz);
+            return mapper.readValue(json, clazz);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
