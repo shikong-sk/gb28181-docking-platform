@@ -25,3 +25,9 @@ docker run --name gb28181 --rm \
   -v /mnt/sk-w/run/docker/maven/application.yml:/opt/gb28181-docking-platform/application.yml \
   skcks.cn/gb28181-docking-platform:0.0.1-SNAPSHOT
 ```
+
+### 打包到本地私仓
+```shell
+mvn deploy -DaltDeploymentRepository=amleixun-mvn-reop::default::file:H:/Repository/skcks.cn/gb28181-docking-platform-mvn-repo
+```
+git push 推送即可

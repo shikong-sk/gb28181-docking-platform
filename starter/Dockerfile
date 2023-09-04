@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-alpine
 
 MAINTAINER Shikong <919411476@qq.com>
 
