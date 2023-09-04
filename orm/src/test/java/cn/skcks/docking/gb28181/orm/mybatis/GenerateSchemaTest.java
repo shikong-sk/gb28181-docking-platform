@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 // 生成 schema 元数据 表
 @ActiveProfiles("pre-dev")
 @SpringBootTest(classes = {GenerateSchemaTest.class})
-@MapperScans(@MapperScan("cn.skcks.docking.gb28181.orm.mybatis"))
+@MapperScans(@MapperScan({"cn.skcks.docking.gb28181.orm.mybatis.dynamic","cn.skcks.docking.gb28181.orm.mybatis.operation"}))
 @SpringBootApplication
 public class GenerateSchemaTest {
     @Autowired
