@@ -186,7 +186,7 @@ public class PlayService {
 
             @Override
             public void onComplete() {
-                subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
+                subscribe.getInviteSubscribe().delPublisher(subscribeKey);
             }
         };
         subscribe.getInviteSubscribe().addSubscribe(subscribeKey, subscriber);
