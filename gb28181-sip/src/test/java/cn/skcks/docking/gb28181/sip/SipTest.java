@@ -52,10 +52,12 @@ public class SipTest {
         CallIdHeader callIdHeader = SipBuilder.createCallIdHeader(MessageFormat.format("{0}@{1}", "123456", localIp));
         List<ViaHeader> viaHeaders = SipBuilder.createViaHeaders(localIp, localPort, GB28181Constant.TransPort.TCP, "z9hG4bK" + "0000000001");
         MaxForwardsHeader maxForwardsHeader = SipBuilder.createMaxForwardsHeader(70);
+        ExpiresHeader expiresHeader = SipBuilder.createExpiresHeader(3600);
 
         // 创建请求
         Request request = SipRequestBuilder.createRequest(remoteSipUri, method, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwardsHeader);
         request.addHeader(contactHeader);
+        request.addHeader(expiresHeader);
 
         log.info("构造请求\n{}", request);
 

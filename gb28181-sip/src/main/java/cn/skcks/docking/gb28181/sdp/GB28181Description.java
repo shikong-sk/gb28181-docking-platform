@@ -3,6 +3,7 @@ package cn.skcks.docking.gb28181.sdp;
 import cn.skcks.docking.gb28181.sdp.field.ssrc.SsrcField;
 import gov.nist.javax.sdp.SessionDescriptionImpl;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,12 @@ public class GB28181Description extends SessionDescriptionImpl implements Sessio
 
     public GB28181Description(){
         super();
+    }
+
+    @SuppressWarnings("CopyConstructorMissesField")
+    public GB28181Description(GB28181Description gb28181Description) throws SdpException {
+        super(gb28181Description);
+        ssrcField = gb28181Description.getSsrcField();
     }
 
     public GB28181Description(SessionDescription sessionDescription) throws SdpException {

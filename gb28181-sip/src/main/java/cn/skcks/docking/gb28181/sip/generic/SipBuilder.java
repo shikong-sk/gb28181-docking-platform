@@ -141,6 +141,11 @@ public class SipBuilder {
     }
 
     @SneakyThrows
+    public static ExpiresHeader createExpiresHeader(int expires){
+        return getHeaderFactory().createExpiresHeader(expires);
+    }
+
+    @SneakyThrows
     public static XGBVerHeader createXGBVerHeader(int m,int n){
         return new XGBVerHeaderImpl(m,n);
     }
