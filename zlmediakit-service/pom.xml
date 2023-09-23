@@ -6,7 +6,7 @@
     <parent>
         <groupId>cn.skcks.docking</groupId>
         <artifactId>gb28181</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>zlmediakit-service</artifactId>
@@ -21,13 +21,11 @@
         <dependency>
             <groupId>cn.skcks.docking.gb28181</groupId>
             <artifactId>annotation</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>cn.skcks.docking.gb28181</groupId>
             <artifactId>common</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>

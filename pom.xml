@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>cn.skcks.docking</groupId>
 	<artifactId>gb28181</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>gb28181-docking-platform</name>
 	<description>GB28181 Docking Platform</description>
@@ -85,6 +85,42 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>cn.skcks.docking.gb28181</groupId>
+				<artifactId>api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.skcks.docking.gb28181</groupId>
+				<artifactId>gb28181-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.skcks.docking.gb28181</groupId>
+				<artifactId>annotation</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.skcks.docking.gb28181</groupId>
+				<artifactId>common</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.skcks.docking</groupId>
+				<artifactId>zlmediakit-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>cn.skcks.docking.gb28181</groupId>
+				<artifactId>orm</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
 			<!--MapStruct-->
 			<dependency>
 				<groupId>org.mapstruct</groupId>

@@ -28,6 +28,6 @@ docker run --name gb28181 --rm \
 
 ### 打包到本地私仓
 ```shell
-mvn deploy -DaltDeploymentRepository=amleixun-mvn-reop::default::file:H:/Repository/skcks.cn/gb28181-docking-platform-mvn-repo
+mvn deploy -s settings.xml -DaltDeploymentRepository=amleixun-mvn-reop::default::file:H:/Repository/skcks.cn/gb28181-docking-platform-mvn-repo
 ```
 git push 推送即可
