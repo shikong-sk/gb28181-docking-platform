@@ -10,6 +10,7 @@ import javax.sip.address.Address;
 import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
 import javax.sip.header.*;
+import javax.sip.message.MessageFactory;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,12 +21,17 @@ public class SipBuilder {
     }
 
     @SneakyThrows
-    public static AddressFactory createAddressFactory() {
+    public static MessageFactory getMessageFactory(){
+        return getSipFactory().createMessageFactory();
+    }
+
+    @SneakyThrows
+    public static AddressFactory getAddressFactory() {
         return getSipFactory().createAddressFactory();
     }
 
     @SneakyThrows
-    public static HeaderFactory createHeaderFactory() {
+    public static HeaderFactory getHeaderFactory() {
         return getSipFactory().createHeaderFactory();
     }
 
@@ -36,38 +42,38 @@ public class SipBuilder {
 
     @SneakyThrows
     public static SipURI createSipURI(String id, String address) {
-        return createAddressFactory().createSipURI(id, address);
+        return getAddressFactory().createSipURI(id, address);
     }
 
     @SneakyThrows
     public static Address createAddress(SipURI uri) {
-        return createAddressFactory().createAddress(uri);
+        return getAddressFactory().createAddress(uri);
     }
 
     @SneakyThrows
     public static ToHeader createToHeader(Address toAddress, String toTag) {
-        return createHeaderFactory().createToHeader(toAddress, toTag);
+        return getHeaderFactory().createToHeader(toAddress, toTag);
     }
 
     @SneakyThrows
     public static FromHeader createFromHeader(Address fromAddress, String fromTag) {
-        return createHeaderFactory().createFromHeader(fromAddress, fromTag);
+        return getHeaderFactory().createFromHeader(fromAddress, fromTag);
     }
 
     @SneakyThrows
     public static CSeqHeader createCSeqHeader(long cSeq, String method){
-        return createHeaderFactory().createCSeqHeader(cSeq, method);
+        return getHeaderFactory().createCSeqHeader(cSeq, method);
     }
 
 
     @SneakyThrows
     public static MaxForwardsHeader createMaxForwardsHeader(int maxForwards) {
-        return createHeaderFactory().createMaxForwardsHeader(maxForwards);
+        return getHeaderFactory().createMaxForwardsHeader(maxForwards);
     }
 
     @SneakyThrows
     public static ViaHeader createViaHeader(String ip, int port, String transport, String viaTag){
-        ViaHeader viaHeader = createHeaderFactory().createViaHeader(ip, port, transport, viaTag);
+        ViaHeader viaHeader = getHeaderFactory().createViaHeader(ip, port, transport, viaTag);
         viaHeader.setRPort();
         return viaHeader;
     }
@@ -80,17 +86,17 @@ public class SipBuilder {
 
     @SneakyThrows
     public static ContactHeader createContactHeader(Address address){
-        return createHeaderFactory().createContactHeader(address);
+        return getHeaderFactory().createContactHeader(address);
     };
 
     @SneakyThrows
     public static ContentTypeHeader createContentTypeHeader(String contentType, String subType){
-        return createHeaderFactory().createContentTypeHeader(contentType, subType);
+        return getHeaderFactory().createContentTypeHeader(contentType, subType);
     }
 
     @SneakyThrows
     public static ContentTypeHeader createSDPContentTypeHeader(){
-        return createHeaderFactory().createContentTypeHeader("APPLICATION", "SDP");
+        return getHeaderFactory().createContentTypeHeader("APPLICATION", "SDP");
     }
 
     public static UserAgentHeader createUserAgentHeader(String userAgent){
@@ -99,11 +105,11 @@ public class SipBuilder {
 
     @SneakyThrows
     public static UserAgentHeader createUserAgentHeader(List<String> product){
-        return createHeaderFactory().createUserAgentHeader(product);
+        return getHeaderFactory().createUserAgentHeader(product);
     }
 
     @SneakyThrows
-    public static XGBVerHeader createUserAgentHeader(int m,int n){
+    public static XGBVerHeader createXGBVerHeader(int m,int n){
         return new XGBVerHeaderImpl(m,n);
     }
 }
