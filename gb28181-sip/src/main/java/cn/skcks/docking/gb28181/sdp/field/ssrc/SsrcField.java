@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.sdp;
+package cn.skcks.docking.gb28181.sdp.field.ssrc;
 
 import gov.nist.core.Separators;
 import gov.nist.javax.sdp.fields.SDPField;

@@ -1,5 +1,6 @@
 package cn.skcks.docking.gb28181.sdp;
 
+import cn.skcks.docking.gb28181.sdp.field.ssrc.SsrcField;
 import gov.nist.javax.sdp.SessionDescriptionImpl;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +34,6 @@ public class GB28181Description extends SessionDescriptionImpl implements Sessio
     public String toString() {
         StringBuilder sb = new StringBuilder(super.toString());
         sb.append(getSsrcField() == null ? "" : getSsrcField().toString());
-        // return "+";
         return sb.toString();
     }
 }

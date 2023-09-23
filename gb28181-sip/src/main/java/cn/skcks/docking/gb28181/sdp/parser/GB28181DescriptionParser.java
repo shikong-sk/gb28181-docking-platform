@@ -1,7 +1,8 @@
-package cn.skcks.docking.gb28181.sdp;
+package cn.skcks.docking.gb28181.sdp.parser;
 
+import cn.skcks.docking.gb28181.sdp.GB28181Description;
+import cn.skcks.docking.gb28181.sdp.field.ssrc.SsrcField;
 import gov.nist.core.ParserCore;
-import gov.nist.javax.sdp.SessionDescriptionImpl;
 import gov.nist.javax.sdp.fields.SDPField;
 import gov.nist.javax.sdp.parser.Lexer;
 import gov.nist.javax.sdp.parser.SDPParser;
