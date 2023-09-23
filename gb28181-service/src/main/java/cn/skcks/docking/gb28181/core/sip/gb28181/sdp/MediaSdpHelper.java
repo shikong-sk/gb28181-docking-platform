@@ -113,8 +113,8 @@ public class MediaSdpHelper {
     @SneakyThrows
     public static GB28181Description playback(String deviceId, String channelId, String netType, String rtpIp, int rtpPort, String ssrc, StreamMode streamMode, Date start, Date end) {
         TimeField timeField = new TimeField();
-        timeField.setStart(start);
-        timeField.setStop(end);
+        timeField.setStartTime(start.toInstant().getEpochSecond());
+        timeField.setStopTime(end.toInstant().getEpochSecond());
         TimeDescription timeDescription = SdpFactory.getInstance().createTimeDescription(timeField);
 
         GB28181Description description = build(Action.PLAY_BACK, deviceId, channelId, netType, rtpIp, rtpPort, ssrc, streamMode, timeDescription);
