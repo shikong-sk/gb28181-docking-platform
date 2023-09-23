@@ -28,7 +28,7 @@ public class XmlUtils {
         // 大驼峰 (首字母大写)
         mapper.setPropertyNamingStrategy(new PropertyNamingStrategies.UpperCamelCaseStrategy());
         // 添加 xml 头部声明
-        mapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
+        mapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, false);
     }
 
     public static String toXml(Object obj) {
