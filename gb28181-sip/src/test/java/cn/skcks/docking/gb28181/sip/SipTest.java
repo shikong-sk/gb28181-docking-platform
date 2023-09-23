@@ -1,5 +1,6 @@
 package cn.skcks.docking.gb28181.sip;
 
+import cn.skcks.docking.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
 import cn.skcks.docking.gb28181.sip.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.sip.response.SipResponseBuilder;
@@ -49,7 +50,7 @@ public class SipTest {
         CSeqHeader cSeqHeader = SipBuilder.createCSeqHeader(1, method);
         // CallId @ 后面可以是地址也可以为 域 id
         CallIdHeader callIdHeader = SipBuilder.createCallIdHeader(MessageFormat.format("{0}@{1}", "123456", localIp));
-        List<ViaHeader> viaHeaders = SipBuilder.createViaHeaders(localIp, localPort, ListeningPoint.UDP, "z9hG4bK" + "0000000001");
+        List<ViaHeader> viaHeaders = SipBuilder.createViaHeaders(localIp, localPort, GB28181Constant.TransPort.TCP, "z9hG4bK" + "0000000001");
         MaxForwardsHeader maxForwardsHeader = SipBuilder.createMaxForwardsHeader(70);
 
         // 创建请求
