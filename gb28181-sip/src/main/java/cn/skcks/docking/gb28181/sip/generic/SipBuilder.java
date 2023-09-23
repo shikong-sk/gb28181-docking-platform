@@ -1,8 +1,11 @@
 package cn.skcks.docking.gb28181.sip.generic;
 
+import cn.skcks.docking.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
 import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
+import gov.nist.javax.sip.message.MessageFactoryImpl;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sip.SipFactory;
@@ -11,18 +14,32 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
 import javax.sip.header.*;
 import javax.sip.message.MessageFactory;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 public class SipBuilder {
+    public static String DEFAULT_CHARSET = GB28181Constant.CHARSET;
     public static SipFactory getSipFactory(){
         return SipFactory.getInstance();
     }
 
     @SneakyThrows
     public static MessageFactory getMessageFactory(){
-        return getSipFactory().createMessageFactory();
+        MessageFactoryImpl messageFactory = (MessageFactoryImpl)getSipFactory().createMessageFactory();
+        messageFactory.setDefaultContentEncodingCharset(DEFAULT_CHARSET);
+        log.debug("将使用 {} 编码 sip 消息", DEFAULT_CHARSET);
+        return messageFactory;
+    }
+
+    @SneakyThrows
+    public static MessageFactory getMessageFactory(String charset){
+        MessageFactoryImpl messageFactory = (MessageFactoryImpl)getSipFactory().createMessageFactory();
+        messageFactory.setDefaultContentEncodingCharset(charset);
+        log.debug("将使用 {} 编码 sip 消息", charset);
+        return messageFactory;
     }
 
     @SneakyThrows
@@ -56,8 +73,18 @@ public class SipBuilder {
     }
 
     @SneakyThrows
+    public static ToHeader createToHeader(Address toAddress) {
+        return createToHeader(toAddress, null);
+    }
+
+    @SneakyThrows
     public static FromHeader createFromHeader(Address fromAddress, String fromTag) {
         return getHeaderFactory().createFromHeader(fromAddress, fromTag);
+    }
+
+    @SneakyThrows
+    public static FromHeader createFromHeader(Address fromAddress) {
+        return createFromHeader(fromAddress, null);
     }
 
     @SneakyThrows
@@ -106,6 +133,11 @@ public class SipBuilder {
     @SneakyThrows
     public static UserAgentHeader createUserAgentHeader(List<String> product){
         return getHeaderFactory().createUserAgentHeader(product);
+    }
+
+    @SneakyThrows
+    public static CallIdHeader createCallIdHeader(String callId){
+        return getHeaderFactory().createCallIdHeader(callId);
     }
 
     @SneakyThrows
