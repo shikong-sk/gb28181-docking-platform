@@ -43,7 +43,7 @@ public class MANSCDPTest {
                 .build();
         log.info("\n{}", MANSCDPUtils.toXml(catalogQueryDTO));
 
-        MANSCDPUtils.XMLBuilder<CatalogQueryDTO> query = new MANSCDPUtils.XMLBuilder(catalogQueryDTO);
+        MANSCDPUtils.XMLBuilder<CatalogQueryDTO> query = new MANSCDPUtils.XMLBuilder<>(catalogQueryDTO);
         String serialize = MANSCDPUtils.toXml(query);
         log.info("\n{}", serialize);
 
