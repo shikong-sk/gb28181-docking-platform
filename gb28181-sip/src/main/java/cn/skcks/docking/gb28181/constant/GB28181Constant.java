@@ -7,6 +7,8 @@ public class GB28181Constant {
     public static final String CHARSET = "GB2312";
     public static final String GEO_COORD_SYS = "WGS84";
 
+    public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
     public static class TransPort {
         public static final String UDP = ListeningPoint.UDP;
         public static final String TCP = ListeningPoint.TCP;
