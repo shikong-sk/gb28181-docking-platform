@@ -9,7 +9,6 @@ import cn.skcks.docking.gb28181.sip.response.SipResponseBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-import javax.sip.ListeningPoint;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 import javax.sip.header.*;
