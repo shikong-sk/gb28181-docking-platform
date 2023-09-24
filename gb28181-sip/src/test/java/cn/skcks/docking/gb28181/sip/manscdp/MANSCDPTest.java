@@ -4,14 +4,14 @@ import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogDeviceListDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogItemDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
-import cn.skcks.docking.gb28181.sip.manscdp.keepalive.KeepaliveNotifyDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.deviceinfo.request.DeviceInfoRequestDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify.KeepaliveNotifyDTO;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -85,5 +85,15 @@ public class MANSCDPTest {
         log.info("\n{}", serialize);
         responseDTO = MANSCDPUtils.parse(serialize, CatalogResponseDTO.class);
         log.info("{}",responseDTO);
+    }
+
+    @Test
+    public void deviceInfo(){
+        DeviceInfoRequestDTO deviceInfoRequestDTO = DeviceInfoRequestDTO.builder()
+                .deviceId(deviceId)
+                .sn(sn)
+                .build();
+        MANSCDPUtils.XMLBuilder<DeviceInfoRequestDTO> xmlBuilder = MANSCDPUtils.build(deviceInfoRequestDTO);
+        log.info("\n{}", MANSCDPUtils.toXml(xmlBuilder));
     }
 }

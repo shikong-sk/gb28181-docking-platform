@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.sip.manscdp.keepalive;
+package cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify;
 
 import cn.skcks.docking.gb28181.constant.CmdType;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
