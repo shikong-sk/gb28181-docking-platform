@@ -2,6 +2,8 @@ package cn.skcks.docking.gb28181.sip;
 
 import cn.skcks.docking.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
+import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
+import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
 import cn.skcks.docking.gb28181.sip.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.sip.response.SipResponseBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -58,11 +60,15 @@ public class SipTest {
         Request request = SipRequestBuilder.createRequest(remoteSipUri, method, callIdHeader, cSeqHeader, fromHeader, toHeader, viaHeaders, maxForwardsHeader);
         request.addHeader(contactHeader);
         request.addHeader(expiresHeader);
+        request.addHeader(XGBVerHeaderImpl.GB28181_2016);
 
         log.info("构造请求\n{}", request);
+        XGBVerHeaderImpl xgbVerHeader = (XGBVerHeaderImpl) request.getHeader(XGBVerHeader.NAME);
+        log.info("协议版本 {}", xgbVerHeader);
 
         // 创建响应
         Response response = SipResponseBuilder.createResponse(Response.OK, request);
+        response.addHeader(XGBVerHeaderImpl.GB28181_2016);
         log.info("构造响应\n{}", response);
     }
 }
