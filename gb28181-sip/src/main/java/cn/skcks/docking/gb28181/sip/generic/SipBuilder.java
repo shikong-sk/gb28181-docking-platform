@@ -14,7 +14,6 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
 import javax.sip.header.*;
 import javax.sip.message.MessageFactory;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -143,6 +142,11 @@ public class SipBuilder {
     @SneakyThrows
     public static ExpiresHeader createExpiresHeader(int expires){
         return getHeaderFactory().createExpiresHeader(expires);
+    }
+
+    @SneakyThrows
+    public static EventHeader createExpiresHeader(String event){
+        return getHeaderFactory().createEventHeader(event);
     }
 
     @SneakyThrows
