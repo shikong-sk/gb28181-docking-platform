@@ -31,7 +31,7 @@ public class MANSCDPTest {
     public static String sn = String.valueOf(1);
 
     @Test
-    public void keepalive(){
+    public void keepalive() {
         KeepaliveNotifyDTO keepaliveNotifyDTO = KeepaliveNotifyDTO.builder()
                 .deviceId(deviceId)
                 .sn(sn)
@@ -41,11 +41,11 @@ public class MANSCDPTest {
                 .data(keepaliveNotifyDTO)
                 .build();
 
-        log.info("\n{}",MANSCDPUtils.toXml(xmlBuilder));
+        log.info("\n{}", MANSCDPUtils.toXml(xmlBuilder));
     }
 
     @Test
-    public void catalog(){
+    public void catalog() {
 
         // 创建 目录查询 请求
         CatalogQueryDTO catalogQueryDTO = CatalogQueryDTO.builder()
@@ -59,7 +59,7 @@ public class MANSCDPTest {
         log.info("\n{}", serialize);
 
         CatalogQueryDTO queryDTO = MANSCDPUtils.parse(serialize, CatalogQueryDTO.class);
-        log.info("\n{}",queryDTO);
+        log.info("\n{}", queryDTO);
 
         // 创建 目录 查询响应
         CatalogItemDTO catalogItemDTO = CatalogItemDTO.builder()
@@ -84,7 +84,7 @@ public class MANSCDPTest {
         serialize = MANSCDPUtils.toXml(response);
         log.info("\n{}", serialize);
         CatalogResponseDTO responseDTO = MANSCDPUtils.parse(serialize, CatalogResponseDTO.class);
-        log.info("{}",responseDTO);
+        log.info("{}", responseDTO);
         // UTF8 编码
         response = MANSCDPUtils.XMLBuilder.<CatalogResponseDTO>builder()
                 .encoding(StandardCharsets.UTF_8.name())
@@ -93,11 +93,11 @@ public class MANSCDPTest {
         serialize = MANSCDPUtils.toXml(response);
         log.info("\n{}", serialize);
         responseDTO = MANSCDPUtils.parse(serialize, CatalogResponseDTO.class);
-        log.info("{}",responseDTO);
+        log.info("{}", responseDTO);
     }
 
     @Test
-    public void deviceInfo(){
+    public void deviceInfo() {
         DeviceInfoRequestDTO deviceInfoRequestDTO = DeviceInfoRequestDTO.builder()
                 .deviceId(deviceId)
                 .sn(sn)
@@ -123,7 +123,7 @@ public class MANSCDPTest {
     }
 
     @Test
-    public void recordInfo(){
+    public void recordInfo() {
         RecordInfoRequestDTO recordInfoRequestDTO = RecordInfoRequestDTO.builder()
                 .type("all")
                 .startTime(new Date())
@@ -132,7 +132,7 @@ public class MANSCDPTest {
                 .sn(sn)
                 .build();
         MANSCDPUtils.XMLBuilder<RecordInfoRequestDTO> recordInfoRequestDTOXMLBuilder = MANSCDPUtils.build(recordInfoRequestDTO);
-        log.info("\n{}",MANSCDPUtils.toXml(recordInfoRequestDTOXMLBuilder));
+        log.info("\n{}", MANSCDPUtils.toXml(recordInfoRequestDTOXMLBuilder));
 
 
         RecordInfoItemDTO recordInfoItemDTO = RecordInfoItemDTO.builder()
@@ -155,7 +155,11 @@ public class MANSCDPTest {
                         .recordList(recordInfoItemDTOList)
                         .build())
                 .build();
-        MANSCDPUtils.XMLBuilder<RecordInfoResponseDTO> recordInfoResponseDTOXMLBuilder = MANSCDPUtils.build(recordInfoResponseDTO,"UTF8");
-        log.info("\n{}", MANSCDPUtils.toXml(recordInfoResponseDTOXMLBuilder));
+        MANSCDPUtils.XMLBuilder<RecordInfoResponseDTO> recordInfoResponseDTOXMLBuilder = MANSCDPUtils.build(recordInfoResponseDTO, "UTF8");
+        String xml = MANSCDPUtils.toXml(recordInfoResponseDTOXMLBuilder);
+        log.info("\n{}", xml);
+
+        MessageDTO messageDTO = MANSCDPUtils.parse(xml.getBytes(), MessageDTO.class);
+        log.info("{}", messageDTO);
     }
 }
