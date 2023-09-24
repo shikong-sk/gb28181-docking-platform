@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.sip.manscdp.catalog.query;
+package cn.skcks.docking.gb28181.sip.manscdp.catalog.response;
 
 
 import cn.skcks.docking.gb28181.constant.GB28181Constant;

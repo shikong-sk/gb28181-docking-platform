@@ -1,6 +1,7 @@
-package cn.skcks.docking.gb28181.sip.manscdp.catalog.response;
+package cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response;
 
 import cn.skcks.docking.gb28181.constant.CmdType;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.AllArgsConstructor;
@@ -8,14 +9,23 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@JacksonXmlRootElement(localName = "Response")
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.List;
+
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class CatalogResponseDTO {
+@JacksonXmlRootElement(localName = "Response")
+public class RecordInfoResponseDTO {
+    /**
+     * 命令类型:设备信息查询(必选)
+     */
     @Builder.Default
-    private String cmdType = CmdType.CATALOG;
+    private String cmdType = CmdType.RECORD_INFO;
+
+    /**
+     * 命令序列号(必选)
+     */
     @JacksonXmlProperty(localName = "SN")
     private String sn;
 
@@ -25,7 +35,9 @@ public class CatalogResponseDTO {
     @JacksonXmlProperty(localName = "DeviceID")
     private String deviceId;
 
+    private String name;
+
     private Long sumNum;
 
-    private CatalogDeviceListDTO deviceList;
+    private RecordListDTO recordList;
 }

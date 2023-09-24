@@ -1,18 +1,23 @@
 package cn.skcks.docking.gb28181.sip.manscdp;
 
-import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogDeviceListDTO;
-import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogItemDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogDeviceListDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogItemDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.deviceinfo.request.DeviceInfoRequestDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.deviceinfo.response.DeviceInfoResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify.KeepaliveNotifyDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.request.RecordInfoRequestDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response.RecordInfoItemDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response.RecordInfoResponseDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response.RecordListDTO;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -115,5 +120,42 @@ public class MANSCDPTest {
         if (parse != null) {
             log.info("getDeviceName {}", parse.getDeviceName());
         }
+    }
+
+    @Test
+    public void recordInfo(){
+        RecordInfoRequestDTO recordInfoRequestDTO = RecordInfoRequestDTO.builder()
+                .type("all")
+                .startTime(new Date())
+                .endTime(new Date())
+                .deviceId(deviceId)
+                .sn(sn)
+                .build();
+        MANSCDPUtils.XMLBuilder<RecordInfoRequestDTO> recordInfoRequestDTOXMLBuilder = MANSCDPUtils.build(recordInfoRequestDTO);
+        log.info("\n{}",MANSCDPUtils.toXml(recordInfoRequestDTOXMLBuilder));
+
+
+        RecordInfoItemDTO recordInfoItemDTO = RecordInfoItemDTO.builder()
+                .deviceId(deviceId)
+                .startTime(new Date())
+                .endTime(new Date())
+                .name("record.mp4")
+                .fileSize(0L)
+                .build();
+        List<RecordInfoItemDTO> recordInfoItemDTOList = new ArrayList<>(2);
+        recordInfoItemDTOList.add(recordInfoItemDTO);
+        recordInfoItemDTOList.add(recordInfoItemDTO);
+        RecordInfoResponseDTO recordInfoResponseDTO = RecordInfoResponseDTO.builder()
+                .name(deviceName)
+                .deviceId(deviceId)
+                .sn(sn)
+                .sumNum(2L)
+                .recordList(RecordListDTO.builder()
+                        .num(2)
+                        .recordList(recordInfoItemDTOList)
+                        .build())
+                .build();
+        MANSCDPUtils.XMLBuilder<RecordInfoResponseDTO> recordInfoResponseDTOXMLBuilder = MANSCDPUtils.build(recordInfoResponseDTO,"UTF8");
+        log.info("\n{}", MANSCDPUtils.toXml(recordInfoResponseDTOXMLBuilder));
     }
 }

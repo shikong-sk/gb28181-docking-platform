@@ -58,6 +58,10 @@ public class MANSCDPUtils {
         return new XMLBuilder<>(data);
     }
 
+    public static <T> XMLBuilder<T> build(T data, String charset){
+        return new XMLBuilder<>(charset, data);
+    }
+
     @SneakyThrows
     public static byte[] writeXmlWithEncoding(Object obj, String charset){
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
