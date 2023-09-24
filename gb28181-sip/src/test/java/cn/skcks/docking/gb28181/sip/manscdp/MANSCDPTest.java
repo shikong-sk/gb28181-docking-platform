@@ -27,7 +27,7 @@ public class MANSCDPTest {
                 .build();
 
         MANSCDPUtils.XMLBuilder<KeepaliveNotifyDTO> xmlBuilder = MANSCDPUtils.XMLBuilder.<KeepaliveNotifyDTO>builder()
-                .notify(keepaliveNotifyDTO)
+                .data(keepaliveNotifyDTO)
                 .build();
 
         log.info("\n{}",MANSCDPUtils.toXml(xmlBuilder));
@@ -43,10 +43,8 @@ public class MANSCDPTest {
                 .build();
         log.info("\n{}", MANSCDPUtils.toXml(catalogQueryDTO));
 
-        MANSCDPUtils.XMLBuilder<CatalogQueryDTO> query = MANSCDPUtils.XMLBuilder.<CatalogQueryDTO>builder()
-                .query(catalogQueryDTO)
-                .build();
-        String serialize = MANSCDPUtils.toQuery(query);
+        MANSCDPUtils.XMLBuilder<CatalogQueryDTO> query = new MANSCDPUtils.XMLBuilder(catalogQueryDTO);
+        String serialize = MANSCDPUtils.toXml(query);
         log.info("\n{}", serialize);
 
         CatalogQueryDTO queryDTO = MANSCDPUtils.parse(serialize, CatalogQueryDTO.class);
@@ -66,18 +64,18 @@ public class MANSCDPTest {
                 .build();
         // 默认 GB2312 编码
         MANSCDPUtils.XMLBuilder<CatalogResponseDTO> response = MANSCDPUtils.XMLBuilder.<CatalogResponseDTO>builder()
-                .response(catalogResponseDTO)
+                .data(catalogResponseDTO)
                 .build();
-        serialize = MANSCDPUtils.toResponse(response);
+        serialize = MANSCDPUtils.toXml(response);
         log.info("\n{}", serialize);
         CatalogResponseDTO responseDTO = MANSCDPUtils.parse(serialize, CatalogResponseDTO.class);
         log.info("{}",responseDTO);
         // UTF8 编码
         response = MANSCDPUtils.XMLBuilder.<CatalogResponseDTO>builder()
                 .encoding(StandardCharsets.UTF_8.name())
-                .response(catalogResponseDTO)
+                .data(catalogResponseDTO)
                 .build();
-        serialize = MANSCDPUtils.toResponse(response);
+        serialize = MANSCDPUtils.toXml(response);
         log.info("\n{}", serialize);
         responseDTO = MANSCDPUtils.parse(serialize, CatalogResponseDTO.class);
         log.info("{}",responseDTO);

@@ -46,14 +46,12 @@ public class MANSCDPUtils {
         @Builder.Default
         @JsonIgnore
         private String encoding = GB28181Constant.CHARSET;
+        private T data;
 
-        private T query;
-
-        private T response;
-
-        private T notify;
-
-        private T control;
+        public XMLBuilder(T data){
+            this.data = data;
+            this.encoding = GB28181Constant.CHARSET;
+        }
     }
 
     @SneakyThrows
@@ -65,20 +63,8 @@ public class MANSCDPUtils {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public static <T> String toQuery(XMLBuilder<T> wrapper){
-        return MANSCDPUtils.toXml(wrapper.getQuery(), wrapper.encoding);
-    }
-
-    public static <T> String toResponse(XMLBuilder<T> wrapper){
-        return MANSCDPUtils.toXml(wrapper.getResponse(), wrapper.encoding);
-    }
-
-    public static <T> String toNotify(XMLBuilder<T> wrapper){
-        return MANSCDPUtils.toXml(wrapper.getNotify(), wrapper.encoding);
-    }
-
-    public static <T> String toControl(XMLBuilder<T> wrapper){
-        return MANSCDPUtils.toXml(wrapper.getControl(), wrapper.encoding);
+    public static <T> String toXml(XMLBuilder<T> wrapper){
+        return MANSCDPUtils.toXml(wrapper.getData(), wrapper.encoding);
     }
 
     public static String toXml(Object obj, String inputCharset,String outputCharset) {
