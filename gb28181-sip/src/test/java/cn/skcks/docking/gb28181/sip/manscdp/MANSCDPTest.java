@@ -5,6 +5,7 @@ import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogItemDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.deviceinfo.request.DeviceInfoRequestDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.deviceinfo.response.DeviceInfoResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify.KeepaliveNotifyDTO;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,9 @@ public class MANSCDPTest {
     public static final String deviceId = "44050100001110000010";
     public static final String channelId = "44050100001310000010";
     public static final String deviceName = "模拟设备名称";
+
+    public static final Integer channel = 1;
+    public static final String manufacturer = "gb28181-docking-platform";
     public static String sn = String.valueOf(1);
 
     @Test
@@ -56,7 +60,7 @@ public class MANSCDPTest {
         CatalogItemDTO catalogItemDTO = CatalogItemDTO.builder()
                 .deviceId(channelId)
                 .name(deviceName)
-                .manufacturer("gb28181-docking-platform")
+                .manufacturer(manufacturer)
                 .build();
 
         List<CatalogItemDTO> itemDTOList = new ArrayList<>(2);
@@ -93,7 +97,23 @@ public class MANSCDPTest {
                 .deviceId(deviceId)
                 .sn(sn)
                 .build();
-        MANSCDPUtils.XMLBuilder<DeviceInfoRequestDTO> xmlBuilder = MANSCDPUtils.build(deviceInfoRequestDTO);
-        log.info("\n{}", MANSCDPUtils.toXml(xmlBuilder));
+        MANSCDPUtils.XMLBuilder<DeviceInfoRequestDTO> deviceInfoRequestDTOXMLBuilder = MANSCDPUtils.build(deviceInfoRequestDTO);
+        log.info("\n{}", MANSCDPUtils.toXml(deviceInfoRequestDTOXMLBuilder));
+
+
+        DeviceInfoResponseDTO deviceInfoResponseDTO = DeviceInfoResponseDTO.builder()
+                .deviceId(deviceId)
+                .channel(channel)
+                .deviceName(deviceName)
+                .manufacturer(manufacturer)
+                .build();
+
+        MANSCDPUtils.XMLBuilder<DeviceInfoResponseDTO> deviceInfoResponseDTOXMLBuilder = MANSCDPUtils.build(deviceInfoResponseDTO);
+        String xml = MANSCDPUtils.toXml(deviceInfoResponseDTOXMLBuilder);
+        log.info("\n{}", xml);
+        DeviceInfoResponseDTO parse = MANSCDPUtils.parse(xml, DeviceInfoResponseDTO.class);
+        if (parse != null) {
+            log.info("getDeviceName {}", parse.getDeviceName());
+        }
     }
 }

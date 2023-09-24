@@ -24,7 +24,7 @@ public class DeviceInfoResponseDTO {
     private String deviceName;
 
     @Builder.Default
-    private String Result = "OK";
+    private String result = "OK";
 
     /**
      * 设备生产商
