@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.sip.manscdp.catalog;
+package cn.skcks.docking.gb28181.sip.manscdp.catalog.query;
 
 
 import cn.skcks.docking.gb28181.constant.CmdType;

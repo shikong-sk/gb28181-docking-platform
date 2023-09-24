@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.sip.manscdp.catalog;
+package cn.skcks.docking.gb28181.sip.manscdp.catalog.query;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;

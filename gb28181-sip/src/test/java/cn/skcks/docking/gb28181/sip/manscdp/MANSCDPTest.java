@@ -1,16 +1,18 @@
 package cn.skcks.docking.gb28181.sip.manscdp;
 
-import cn.skcks.docking.gb28181.sip.manscdp.catalog.CatalogDeviceListDTO;
-import cn.skcks.docking.gb28181.sip.manscdp.catalog.CatalogItemDTO;
-import cn.skcks.docking.gb28181.sip.manscdp.catalog.CatalogQueryDTO;
-import cn.skcks.docking.gb28181.sip.manscdp.catalog.CatalogResponseDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogDeviceListDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogItemDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.keepalive.KeepaliveNotifyDTO;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 public class MANSCDPTest {
@@ -56,10 +58,14 @@ public class MANSCDPTest {
                 .name(deviceName)
                 .manufacturer("gb28181-docking-platform")
                 .build();
+
+        List<CatalogItemDTO> itemDTOList = new ArrayList<>(2);
+        itemDTOList.add(catalogItemDTO);
+        itemDTOList.add(catalogItemDTO);
         CatalogResponseDTO catalogResponseDTO = CatalogResponseDTO.builder()
                 .deviceId(deviceId)
                 .sn(sn)
-                .deviceList(new CatalogDeviceListDTO(1,Collections.singletonList(catalogItemDTO)))
+                .deviceList(new CatalogDeviceListDTO(itemDTOList.size(), itemDTOList))
                 .sumNum(0L)
                 .build();
         // 默认 GB2312 编码

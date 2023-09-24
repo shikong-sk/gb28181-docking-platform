@@ -1,6 +1,7 @@
-package cn.skcks.docking.gb28181.sip.manscdp.catalog;
+package cn.skcks.docking.gb28181.sip.manscdp.catalog.response;
 
 import cn.skcks.docking.gb28181.constant.CmdType;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogDeviceListDTO;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.AllArgsConstructor;
