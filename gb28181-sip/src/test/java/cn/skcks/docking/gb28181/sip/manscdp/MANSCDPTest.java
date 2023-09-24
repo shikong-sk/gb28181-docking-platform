@@ -75,7 +75,7 @@ public class MANSCDPTest {
                 .deviceId(deviceId)
                 .sn(sn)
                 .deviceList(new CatalogDeviceListDTO(itemDTOList.size(), itemDTOList))
-                .sumNum(0L)
+                .sumNum(2L)
                 .build();
         // 默认 GB2312 编码
         MANSCDPUtils.XMLBuilder<CatalogResponseDTO> response = MANSCDPUtils.XMLBuilder.<CatalogResponseDTO>builder()
