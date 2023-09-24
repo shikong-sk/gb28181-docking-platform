@@ -22,7 +22,7 @@ public class MANSCDPTest {
         String sn = String.valueOf(1);
         // 创建 目录查询 请求
         CatalogQueryDTO catalogQueryDTO = CatalogQueryDTO.builder()
-                .deviceId("时空旅行者")
+                .deviceId(deviceId)
                 .sn(sn)
                 .build();
         log.info("\n{}", MANSCDPUtils.toXml(catalogQueryDTO));
