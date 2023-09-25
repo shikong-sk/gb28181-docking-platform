@@ -2,6 +2,7 @@ package cn.skcks.docking.gb28181.sip.request;
 
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
 import cn.skcks.docking.gb28181.sip.generic.SipContentType;
+import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import lombok.SneakyThrows;
 
 import javax.sip.address.SipURI;

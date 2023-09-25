@@ -6,6 +6,7 @@ import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
 import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
 import cn.skcks.docking.gb28181.sip.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.sip.response.SipResponseBuilder;
+import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +22,8 @@ import java.util.List;
 public class SipTest {
     @Test
     public void test() {
+        SipUtil.setUserAgent("GB28181-Docking-Platform Beta");
+        SipUtil.setUserAgentVersion("0.1.0");
         // 发起方
         String localIp = "127.0.0.1";
         int localPort = 5060;

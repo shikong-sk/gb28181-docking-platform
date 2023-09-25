@@ -3,6 +3,7 @@ package cn.skcks.docking.gb28181.sip.generic;
 import cn.skcks.docking.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
 import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
+import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import gov.nist.javax.sip.message.MessageFactoryImpl;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,13 @@ public class SipBuilder {
         return SipFactory.getInstance();
     }
 
+    public static UserAgentHeader userAgentHeader = SipUtil.getUserAgentHeader();
+
     @SneakyThrows
     public static MessageFactory getMessageFactory(){
         MessageFactoryImpl messageFactory = (MessageFactoryImpl)getSipFactory().createMessageFactory();
         messageFactory.setDefaultContentEncodingCharset(DEFAULT_CHARSET);
+        messageFactory.setDefaultUserAgentHeader(userAgentHeader);
         log.debug("将使用 {} 编码 sip 消息", DEFAULT_CHARSET);
         return messageFactory;
     }

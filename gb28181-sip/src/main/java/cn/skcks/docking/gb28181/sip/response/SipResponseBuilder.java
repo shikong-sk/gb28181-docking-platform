@@ -2,6 +2,7 @@ package cn.skcks.docking.gb28181.sip.response;
 
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
 import cn.skcks.docking.gb28181.sip.generic.SipContentType;
+import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import lombok.SneakyThrows;
 
 import javax.sip.header.*;
@@ -10,9 +11,10 @@ import javax.sip.message.Response;
 import java.util.List;
 
 public class SipResponseBuilder {
+
     @SneakyThrows
-    public static <T> Response createResponse(int statusCode, Request request){
-        return SipBuilder.getMessageFactory().createResponse(statusCode,request);
+    public static Response createResponse(int statusCode, Request request){
+        return SipBuilder.getMessageFactory().createResponse(statusCode, request);
     }
 
     @SneakyThrows

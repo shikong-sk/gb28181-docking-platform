@@ -11,13 +11,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.sip.PeerUnavailableException;
 import javax.sip.SipFactory;
 import javax.sip.header.FromHeader;
 import javax.sip.header.Header;
 import javax.sip.header.UserAgentHeader;
 import javax.sip.message.Request;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +24,8 @@ import java.util.List;
 public class SipUtil {
     @Setter
     public static String UserAgent = "GB28181-Docking-Platform";
+    @Setter
+    public static String UserAgentVersion = "0.0.1";
 
     private static final char[] DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     public static String nanoId(){
@@ -59,11 +59,12 @@ public class SipUtil {
         return "z9hG4bK" + RandomStringUtils.randomNumeric(10);
     }
 
-    public static UserAgentHeader createUserAgentHeader() throws PeerUnavailableException, ParseException {
-        List<String> agentParam = new ArrayList<>();
-        agentParam.add("GB28181-Docking-Platform");
+    @SneakyThrows
+    public static UserAgentHeader getUserAgentHeader(){
+        List<String> agentParam = new ArrayList<>(3);
+        agentParam.add(UserAgent);
         agentParam.add(" ");
-        agentParam.add(StringUtils.replace(UserAgent,"-SNAPSHOT",""));
+        agentParam.add(StringUtils.replace(UserAgentVersion,"-SNAPSHOT",""));
         return SipFactory.getInstance().createHeaderFactory().createUserAgentHeader(agentParam);
     }
 
