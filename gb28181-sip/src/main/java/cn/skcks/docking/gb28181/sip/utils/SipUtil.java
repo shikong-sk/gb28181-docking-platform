@@ -1,6 +1,8 @@
 package cn.skcks.docking.gb28181.sip.utils;
 
+import cn.hutool.core.lang.id.NanoId;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Subject;
@@ -20,6 +22,7 @@ import javax.sip.header.FromHeader;
 import javax.sip.header.Header;
 import javax.sip.header.UserAgentHeader;
 import javax.sip.message.Request;
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,11 @@ import java.util.List;
 @Slf4j
 public class SipUtil {
     public static String UserAgent = "GB28181-Docking-Platform";
+
+    private static final char[] DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    public static String nanoId(){
+        return NanoId.randomNanoId(null,DEFAULT_ALPHABET,32);
+    }
 
     public static String getIdFromFromHeader(FromHeader fromHeader) {
         AddressImpl address = (AddressImpl)fromHeader.getAddress();
@@ -65,7 +73,7 @@ public class SipUtil {
     }
 
     public static String generateFromTag(){
-        return IdUtil.fastSimpleUUID();
+        return nanoId();
     }
 
     public static String generateTag(){
