@@ -49,7 +49,7 @@
 		<pagehelper.version>1.4.7</pagehelper.version>
 
 		<!--工具-->
-		<hutool.version>5.8.11</hutool.version>
+		<hutool.version>5.8.22</hutool.version>
 
 		<!--SpringDoc-->
 		<springdoc.version>2.2.0</springdoc.version>
