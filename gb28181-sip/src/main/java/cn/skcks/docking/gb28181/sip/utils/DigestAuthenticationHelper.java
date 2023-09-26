@@ -1,7 +1,6 @@
 package cn.skcks.docking.gb28181.sip.utils;
 
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
 import lombok.*;
@@ -274,7 +273,7 @@ public class DigestAuthenticationHelper {
         authorizationHeader.setNonce(nonce);
         authorizationHeader.setURI(sipURI);
         authorizationHeader.setResponse(response);
-        authorizationHeader.setAlgorithm(DigestAlgorithm.MD5.name());
+        authorizationHeader.setAlgorithm(DEFAULT_ALGORITHM);
         if (qop != null) {
             authorizationHeader.setQop(qop);
             authorizationHeader.setCNonce(cNonce);
