@@ -27,7 +27,7 @@ public class SipUtil {
     @Setter
     public static String UserAgentVersion = "0.0.1";
 
-    private static final char[] DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+    private static final char[] DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
     public static String nanoId(){
         return NanoId.randomNanoId(null,DEFAULT_ALPHABET,32);
     }
