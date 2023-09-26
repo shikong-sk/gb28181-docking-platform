@@ -19,6 +19,7 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -154,6 +155,10 @@ public class SipBuilder {
     @SneakyThrows
     public static ExpiresHeader createExpiresHeader(int expires){
         return getHeaderFactory().createExpiresHeader(expires);
+    }
+
+    public static DateHeader createDateHeader(Calendar date){
+        return getHeaderFactory().createDateHeader(date);
     }
 
     @SneakyThrows

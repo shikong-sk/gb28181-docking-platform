@@ -1,7 +1,10 @@
 package cn.skcks.docking.gb28181.sip;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
+import cn.skcks.docking.gb28181.sip.header.GBDateHeader;
 import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
 import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
 import cn.skcks.docking.gb28181.sip.generic.SipRequestBuilder;
@@ -22,6 +25,7 @@ import javax.sip.header.*;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.List;
 
 @Slf4j
@@ -44,6 +48,7 @@ public class SipTest {
         sipStack.deleteSipProvider(sipProvider);
         sipStack.deleteListeningPoint(listeningPoint);
     }
+
     @Test
     public void test() {
         SipUtil.setUserAgent("GB28181-Docking-Platform Beta");
@@ -87,10 +92,13 @@ public class SipTest {
         request.addHeader(contactHeader);
         request.addHeader(expiresHeader);
         request.addHeader(XGBVerHeaderImpl.GB28181_2016);
+        request.addHeader(new GBDateHeader(Calendar.getInstance()));
 
         log.info("构造请求\n{}", request);
         XGBVerHeaderImpl xgbVerHeader = (XGBVerHeaderImpl) request.getHeader(XGBVerHeader.NAME);
         log.info("协议版本 {}", xgbVerHeader);
+        GBDateHeader gbDateHeader = (GBDateHeader) request.getHeader(GBDateHeader.NAME);
+        log.info("服务器时间 {}", gbDateHeader);
 
         // 创建响应
         Response response = SipResponseBuilder.createResponse(Response.OK, request);

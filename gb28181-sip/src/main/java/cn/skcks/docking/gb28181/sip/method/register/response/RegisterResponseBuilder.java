@@ -1,7 +1,9 @@
 package cn.skcks.docking.gb28181.sip.method.register.response;
 
+import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
 import cn.skcks.docking.gb28181.sip.generic.SipResponseBuilder;
+import cn.skcks.docking.gb28181.sip.header.GBDateHeader;
 import cn.skcks.docking.gb28181.sip.method.register.RegisterBuilder;
 import cn.skcks.docking.gb28181.sip.utils.DigestAuthenticationHelper;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
@@ -36,14 +38,14 @@ public class RegisterResponseBuilder extends RegisterBuilder {
         return SipBuilder.addHeaders(
                 SipResponseBuilder.createResponse(Response.OK, request),
                 sipRequest.getContactHeader(),
-                sipRequest.getExpires());
+                sipRequest.getExpires(),
+                new GBDateHeader(DateUtil.calendar()));
     }
 
     public Response createAuthorzatioinResponse(Request request, String domain, String password){
         SIPRequest sipRequest = (SIPRequest) request;
         Authorization authorization = sipRequest.getAuthorization();
         if(authorization == null){
-            String realm = SipUtil.nanoId();
             WWWAuthenticateHeader wwwAuthenticateHeader = DigestAuthenticationHelper.generateChallenge(domain);
             return SipBuilder.addHeaders(
                     SipResponseBuilder.createResponse(Response.UNAUTHORIZED, request),
@@ -58,6 +60,7 @@ public class RegisterResponseBuilder extends RegisterBuilder {
         return SipBuilder.addHeaders(
                 SipResponseBuilder.createResponse(Response.OK, request),
                 sipRequest.getContactHeader(),
-                sipRequest.getExpires());
+                sipRequest.getExpires(),
+                new GBDateHeader(DateUtil.calendar()));
     }
 }
