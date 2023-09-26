@@ -3,6 +3,7 @@ package cn.skcks.docking.gb28181.sip.process;
 import cn.hutool.core.util.IdUtil;
 import cn.skcks.docking.gb28181.sip.method.register.request.RegisterRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.register.response.RegisterResponseBuilder;
+import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import gov.nist.javax.sip.message.SIPResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class RequestTest {
     @Test
     @SneakyThrows
     void test() {
+        SipUtil.setUserAgentVersion("0.1.0");
         String callId = IdUtil.fastSimpleUUID();
         RegisterRequestBuilder registerRequestBuilder = RegisterRequestBuilder.builder()
                 .localIp(localIp)

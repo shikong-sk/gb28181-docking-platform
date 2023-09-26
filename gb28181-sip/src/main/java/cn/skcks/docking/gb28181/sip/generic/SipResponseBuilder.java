@@ -15,6 +15,7 @@ public class SipResponseBuilder {
     public static Response createResponse(int statusCode, Request request) {
         return SipBuilder.addHeaders(
                 SipBuilder.getMessageFactory().createResponse(statusCode, request),
+                SipBuilder.userAgentHeader,
                 GB_VERSION);
     }
 
@@ -23,6 +24,7 @@ public class SipResponseBuilder {
                                           FromHeader from, ToHeader to, List<ViaHeader> via, MaxForwardsHeader maxForwards) {
         return SipBuilder.addHeaders(
                 SipBuilder.getMessageFactory().createResponse(statusCode, callId, cSeq, from, to, via, maxForwards),
+                SipBuilder.userAgentHeader,
                 GB_VERSION);
     }
 
@@ -30,6 +32,7 @@ public class SipResponseBuilder {
     public static <T> Response createResponse(int statusCode, Request request, ContentTypeHeader contentType, T content) {
         return SipBuilder.addHeaders(
                 SipBuilder.getMessageFactory().createResponse(statusCode, request, contentType, content),
+                SipBuilder.userAgentHeader,
                 GB_VERSION
         );
     }
@@ -38,6 +41,7 @@ public class SipResponseBuilder {
     public static <T> Response createXmlResponse(int statusCode, Request request, T content) {
         return SipBuilder.addHeaders(
                 SipBuilder.getMessageFactory().createResponse(statusCode, request, SipContentType.XML, content),
+                SipBuilder.userAgentHeader,
                 GB_VERSION
         );
     }
@@ -46,6 +50,7 @@ public class SipResponseBuilder {
     public static <T> Response createXmlResponse(int statusCode, Request request, T content, String charset) {
         return SipBuilder.addHeaders(
                 SipBuilder.getMessageFactory(charset).createResponse(statusCode, request, SipContentType.XML, content),
+                SipBuilder.userAgentHeader,
                 GB_VERSION);
     }
 }
