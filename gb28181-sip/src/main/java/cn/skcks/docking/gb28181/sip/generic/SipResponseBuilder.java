@@ -1,8 +1,5 @@
-package cn.skcks.docking.gb28181.sip.response;
+package cn.skcks.docking.gb28181.sip.generic;
 
-import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
-import cn.skcks.docking.gb28181.sip.generic.SipContentType;
-import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import lombok.SneakyThrows;
 
 import javax.sip.header.*;

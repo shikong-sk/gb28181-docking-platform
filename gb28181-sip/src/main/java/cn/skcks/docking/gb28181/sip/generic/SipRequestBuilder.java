@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.sip.request;
+package cn.skcks.docking.gb28181.sip.generic;
 
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
 import cn.skcks.docking.gb28181.sip.generic.SipContentType;
