@@ -7,31 +7,45 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.util.List;
 
+import static cn.skcks.docking.gb28181.sip.generic.SipBuilder.GB_VERSION;
+
 public class SipResponseBuilder {
 
     @SneakyThrows
-    public static Response createResponse(int statusCode, Request request){
-        return SipBuilder.getMessageFactory().createResponse(statusCode, request);
+    public static Response createResponse(int statusCode, Request request) {
+        return SipBuilder.addHeaders(
+                SipBuilder.getMessageFactory().createResponse(statusCode, request),
+                GB_VERSION);
     }
 
     @SneakyThrows
     public static Response createResponse(int statusCode, CallIdHeader callId, CSeqHeader cSeq,
-                                         FromHeader from, ToHeader to, List<ViaHeader> via, MaxForwardsHeader maxForwards){
-        return SipBuilder.getMessageFactory().createResponse(statusCode,callId,cSeq,from,to,via,maxForwards);
+                                          FromHeader from, ToHeader to, List<ViaHeader> via, MaxForwardsHeader maxForwards) {
+        return SipBuilder.addHeaders(
+                SipBuilder.getMessageFactory().createResponse(statusCode, callId, cSeq, from, to, via, maxForwards),
+                GB_VERSION);
     }
 
     @SneakyThrows
-    public static <T> Response createResponse(int statusCode, Request request, ContentTypeHeader contentType, T content){
-        return SipBuilder.getMessageFactory().createResponse(statusCode,request,contentType,content);
+    public static <T> Response createResponse(int statusCode, Request request, ContentTypeHeader contentType, T content) {
+        return SipBuilder.addHeaders(
+                SipBuilder.getMessageFactory().createResponse(statusCode, request, contentType, content),
+                GB_VERSION
+        );
     }
 
     @SneakyThrows
-    public static <T> Response createXmlResponse(int statusCode, Request request, T content){
-        return SipBuilder.getMessageFactory().createResponse(statusCode,request, SipContentType.XML,content);
+    public static <T> Response createXmlResponse(int statusCode, Request request, T content) {
+        return SipBuilder.addHeaders(
+                SipBuilder.getMessageFactory().createResponse(statusCode, request, SipContentType.XML, content),
+                GB_VERSION
+        );
     }
 
     @SneakyThrows
     public static <T> Response createXmlResponse(int statusCode, Request request, T content, String charset) {
-        return SipBuilder.getMessageFactory(charset).createResponse(statusCode, request, SipContentType.XML, content);
+        return SipBuilder.addHeaders(
+                SipBuilder.getMessageFactory(charset).createResponse(statusCode, request, SipContentType.XML, content),
+                GB_VERSION);
     }
 }

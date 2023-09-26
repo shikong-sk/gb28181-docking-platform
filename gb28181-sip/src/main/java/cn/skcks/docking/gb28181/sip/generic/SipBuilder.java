@@ -4,6 +4,7 @@ import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
 import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import gov.nist.javax.sip.message.MessageFactoryImpl;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,8 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
 import javax.sip.header.*;
 import javax.sip.message.MessageFactory;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,7 +24,11 @@ import java.util.List;
 
 @Slf4j
 public class SipBuilder {
+    @Setter
     public static String DEFAULT_CHARSET = StandardCharsets.UTF_8.name();
+    @Setter
+    public static XGBVerHeader GB_VERSION = XGBVerHeaderImpl.GB28181_2016;
+
     public static SipFactory getSipFactory(){
         return SipFactory.getInstance();
     }
@@ -157,5 +164,19 @@ public class SipBuilder {
     @SneakyThrows
     public static XGBVerHeader createXGBVerHeader(int m,int n){
         return new XGBVerHeaderImpl(m,n);
+    }
+
+    public static Response addHeaders(Response response,Header ...headers){
+        for (Header header : headers) {
+            response.addHeader(header);
+        }
+        return response;
+    }
+
+    public static Request addHeaders(Request request, Header ...headers){
+        for (Header header : headers) {
+            request.addHeader(header);
+        }
+        return request;
     }
 }
