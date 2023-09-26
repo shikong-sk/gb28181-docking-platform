@@ -43,7 +43,7 @@ public class RequestTest {
         String callId = sipProvider.getNewCallId().getCallId();
 
         RegisterRequestBuilder registerRequestBuilder = new RegisterRequestBuilder(localIp, localPort, localId, remoteIp, remotePort, remoteId, ListeningPoint.UDP);
-        Request noAuthorizationRequest = registerRequestBuilder.createNoAuthorizationRequest(callId);
+        Request noAuthorizationRequest = registerRequestBuilder.createNoAuthorizationRequest(callId, 3600);
         log.info("\n{}",noAuthorizationRequest);
         sipStack.deleteSipProvider(sipProvider);
         sipStack.deleteListeningPoint(listeningPoint);
