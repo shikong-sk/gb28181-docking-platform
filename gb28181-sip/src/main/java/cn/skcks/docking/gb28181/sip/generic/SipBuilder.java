@@ -1,6 +1,5 @@
 package cn.skcks.docking.gb28181.sip.generic;
 
-import cn.skcks.docking.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
 import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
@@ -15,13 +14,14 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
 import javax.sip.header.*;
 import javax.sip.message.MessageFactory;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 @Slf4j
 public class SipBuilder {
-    public static String DEFAULT_CHARSET = GB28181Constant.CHARSET;
+    public static String DEFAULT_CHARSET = StandardCharsets.UTF_8.name();
     public static SipFactory getSipFactory(){
         return SipFactory.getInstance();
     }
@@ -41,6 +41,7 @@ public class SipBuilder {
     public static MessageFactory getMessageFactory(String charset){
         MessageFactoryImpl messageFactory = (MessageFactoryImpl)getSipFactory().createMessageFactory();
         messageFactory.setDefaultContentEncodingCharset(charset);
+        messageFactory.setDefaultUserAgentHeader(userAgentHeader);
         log.debug("将使用 {} 编码 sip 消息", charset);
         return messageFactory;
     }
