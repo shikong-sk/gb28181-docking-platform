@@ -1,19 +1,17 @@
 package cn.skcks.docking.gb28181.sip.process;
 
-import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
-import cn.skcks.docking.gb28181.sip.parser.GbStringMsgParserFactory;
-import cn.skcks.docking.gb28181.sip.property.DefaultProperties;
-import cn.skcks.docking.gb28181.sip.request.RegisterRequestBuilder;
-import cn.skcks.docking.gb28181.sip.utils.SipUtil;
-import gov.nist.javax.sip.SipStackImpl;
+import cn.hutool.core.util.IdUtil;
+import cn.skcks.docking.gb28181.sip.method.register.request.RegisterRequestBuilder;
+import cn.skcks.docking.gb28181.sip.method.register.response.RegisterResponseBuilder;
+import gov.nist.javax.sip.message.SIPResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import javax.sip.ListeningPoint;
-import javax.sip.SipProvider;
-import javax.sip.header.UserAgentHeader;
+import javax.sip.header.WWWAuthenticateHeader;
 import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 @Slf4j
 public class RequestTest {
@@ -27,25 +25,47 @@ public class RequestTest {
 
     @Test
     @SneakyThrows
-    void test(){
-        SipUtil.setUserAgentVersion("0.1.0");
-        UserAgentHeader userAgentHeader = SipBuilder.userAgentHeader;
-        log.info("\n{}",userAgentHeader);
+    void test() {
+        String callId = IdUtil.fastSimpleUUID();
+        RegisterRequestBuilder registerRequestBuilder = RegisterRequestBuilder.builder()
+                .localIp(localIp)
+                .localPort(localPort)
+                .localId(localId)
+                .targetIp(remoteIp)
+                .targetPort(remotePort)
+                .targetId(remoteId)
+                .transport(ListeningPoint.UDP)
+                .build();
 
-        SipStackImpl sipStack = (SipStackImpl) SipBuilder.getSipFactory()
-                .createSipStack(DefaultProperties.getProperties(
-                        SipUtil.UserAgent,
-                        "cn.skcks.docking.gb28181.sip.logger.StackLoggerImpl",
-                        "cn.skcks.docking.gb28181.sip.logger.ServerLoggerImpl"));
-        sipStack.setMessageParserFactory(new GbStringMsgParserFactory());
-        ListeningPoint listeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, ListeningPoint.UDP);
-        SipProvider sipProvider = sipStack.createSipProvider(listeningPoint);
-        String callId = sipProvider.getNewCallId().getCallId();
+        RegisterResponseBuilder registerResponseBuilder = RegisterResponseBuilder.builder()
+                .localIp(remoteIp)
+                .localPort(remotePort)
+                .localId(remoteId)
+                .targetIp(localIp)
+                .targetPort(localPort)
+                .targetId(localId)
+                .transport(ListeningPoint.UDP)
+                .build();
 
-        RegisterRequestBuilder registerRequestBuilder = new RegisterRequestBuilder(localIp, localPort, localId, remoteIp, remotePort, remoteId, ListeningPoint.UDP);
+        log.info("无密码的认证");
         Request noAuthorizationRequest = registerRequestBuilder.createNoAuthorizationRequest(callId, 3600);
-        log.info("\n{}",noAuthorizationRequest);
-        sipStack.deleteSipProvider(sipProvider);
-        sipStack.deleteListeningPoint(listeningPoint);
+        log.info("\n{}", noAuthorizationRequest);
+        // 服务端不设置无密码直接通过
+        Response passedAuthorzatioinResponse = registerResponseBuilder.createPassedAuthorzatioinResponse(noAuthorizationRequest);
+        log.info("\n{}", passedAuthorzatioinResponse);
+
+        log.info("有密码的认证");
+        Response authorzatioinResponse = registerResponseBuilder.createAuthorzatioinResponse(noAuthorizationRequest, "123456");
+        log.info("\n{}", noAuthorizationRequest);
+        // 401 响应
+        log.info("\n{}", authorzatioinResponse);
+        SIPResponse sipResponse = (SIPResponse)authorzatioinResponse;
+        WWWAuthenticateHeader wwwAuthenticateHeader = (WWWAuthenticateHeader)sipResponse.getHeader(WWWAuthenticateHeader.NAME);
+        // 重新发起带有认证信息的请求
+        Request authorizationRequest = registerRequestBuilder.createAuthorizationRequest(callId, 3600, localId, "123456", wwwAuthenticateHeader);
+        log.info("\n{}", authorizationRequest);
+        authorzatioinResponse = registerResponseBuilder.createAuthorzatioinResponse(authorizationRequest, "123456");
+        // 注册成功
+        log.info("\n{}", authorzatioinResponse);
     }
 }

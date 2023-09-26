@@ -6,10 +6,16 @@ import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
 import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
 import cn.skcks.docking.gb28181.sip.generic.SipRequestBuilder;
 import cn.skcks.docking.gb28181.sip.generic.SipResponseBuilder;
+import cn.skcks.docking.gb28181.sip.parser.GbStringMsgParserFactory;
+import cn.skcks.docking.gb28181.sip.property.DefaultProperties;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
+import gov.nist.javax.sip.SipStackImpl;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import javax.sip.ListeningPoint;
+import javax.sip.SipProvider;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 import javax.sip.header.*;
@@ -20,6 +26,24 @@ import java.util.List;
 
 @Slf4j
 public class SipTest {
+    @Test
+    @SneakyThrows
+    public void stackTest(){
+        // 创建 sip
+        SipStackImpl sipStack = (SipStackImpl) SipBuilder.getSipFactory()
+                .createSipStack(DefaultProperties.getProperties(
+                        SipUtil.UserAgent,
+                        "cn.skcks.docking.gb28181.sip.logger.StackLoggerImpl",
+                        "cn.skcks.docking.gb28181.sip.logger.ServerLoggerImpl"));
+        sipStack.setMessageParserFactory(new GbStringMsgParserFactory());
+        ListeningPoint listeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, ListeningPoint.UDP);
+        SipProvider sipProvider = sipStack.createSipProvider(listeningPoint);
+        // 各种操作...
+        Thread.sleep(1000);
+        // 关闭 sip
+        sipStack.deleteSipProvider(sipProvider);
+        sipStack.deleteListeningPoint(listeningPoint);
+    }
     @Test
     public void test() {
         SipUtil.setUserAgent("GB28181-Docking-Platform Beta");
