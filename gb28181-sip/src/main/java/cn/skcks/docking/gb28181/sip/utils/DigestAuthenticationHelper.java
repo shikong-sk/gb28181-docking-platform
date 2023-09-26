@@ -220,7 +220,7 @@ public class DigestAuthenticationHelper {
     }
 
     @SneakyThrows
-    public static AuthorizationHeader createAuthorization(String serverIp, int serverPort, String serverId, String deviceId,String password, WWWAuthenticateHeader www){
+    public static AuthorizationHeader createAuthorization(String method,String serverIp, int serverPort, String serverId, String deviceId,String password, WWWAuthenticateHeader www){
         String hostAddress = SipBuilder.createHostAddress(serverIp, serverPort);
         SipURI sipURI = SipBuilder.createSipURI(serverId, hostAddress);
         if (www == null) {
@@ -249,7 +249,7 @@ public class DigestAuthenticationHelper {
             }
         }
         String HA1 = DigestUtil.md5Hex((deviceId + ":" + realm + ":" + password).getBytes());
-        String HA2= DigestUtil.md5Hex((Request.REGISTER + ":" + sipURI.toString()).getBytes());
+        String HA2= DigestUtil.md5Hex((method.toUpperCase() + ":" + sipURI.toString()).getBytes());
 
         StringBuilder reStr = new StringBuilder();
         reStr.append(HA1);
