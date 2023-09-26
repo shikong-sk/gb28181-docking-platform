@@ -10,11 +10,4 @@ import javax.sip.message.Request;
 public class RegisterBuilder {
     @Getter
     private static final String method = Request.REGISTER;
-    private String localIp;
-    private int localPort;
-    private String localId;
-    private String targetIp;
-    private int targetPort;
-    private String targetId;
-    private String transport;
 }

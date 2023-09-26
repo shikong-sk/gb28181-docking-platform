@@ -25,6 +25,14 @@ import javax.sip.message.Request;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class RegisterRequestBuilder extends RegisterBuilder {
+    private String localIp;
+    private int localPort;
+    private String localId;
+    private String targetIp;
+    private int targetPort;
+    private String targetId;
+    private String transport;
+
     public Request createNoAuthorizationRequest(String callId, int expires) {
         String local = SipBuilder.createHostAddress(getLocalIp(), getLocalPort());
         Address localAddress = SipBuilder.createAddress(SipBuilder.createSipURI(getLocalId(), local));

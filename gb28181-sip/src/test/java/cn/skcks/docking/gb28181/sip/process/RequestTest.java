@@ -41,15 +41,7 @@ public class RequestTest {
                 .transport(ListeningPoint.UDP)
                 .build();
 
-        RegisterResponseBuilder registerResponseBuilder = RegisterResponseBuilder.builder()
-                .localIp(remoteIp)
-                .localPort(remotePort)
-                .localId(remoteId)
-                .targetIp(localIp)
-                .targetPort(localPort)
-                .targetId(localId)
-                .transport(ListeningPoint.UDP)
-                .build();
+        RegisterResponseBuilder registerResponseBuilder = RegisterResponseBuilder.builder().build();
 
         log.info("无密码的认证");
         Request noAuthorizationRequest = registerRequestBuilder.createNoAuthorizationRequest(callId, 3600);
