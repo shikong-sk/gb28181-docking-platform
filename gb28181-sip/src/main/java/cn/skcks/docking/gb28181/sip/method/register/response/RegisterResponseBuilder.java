@@ -7,9 +7,7 @@ import cn.skcks.docking.gb28181.sip.utils.DigestAuthenticationHelper;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import gov.nist.javax.sip.header.Authorization;
 import gov.nist.javax.sip.message.SIPRequest;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -41,12 +39,12 @@ public class RegisterResponseBuilder extends RegisterBuilder {
                 sipRequest.getExpires());
     }
 
-    public Response createAuthorzatioinResponse(Request request, String password){
+    public Response createAuthorzatioinResponse(Request request, String domain, String password){
         SIPRequest sipRequest = (SIPRequest) request;
         Authorization authorization = sipRequest.getAuthorization();
         if(authorization == null){
             String realm = SipUtil.nanoId();
-            WWWAuthenticateHeader wwwAuthenticateHeader = DigestAuthenticationHelper.generateChallenge(realm);
+            WWWAuthenticateHeader wwwAuthenticateHeader = DigestAuthenticationHelper.generateChallenge(domain);
             return SipBuilder.addHeaders(
                     SipResponseBuilder.createResponse(Response.UNAUTHORIZED, request),
                     sipRequest.getContactHeader(),
@@ -55,7 +53,7 @@ public class RegisterResponseBuilder extends RegisterBuilder {
         boolean passed = DigestAuthenticationHelper.doAuthenticatePlainTextPassword(request,password);
         if(!passed){
             sipRequest.removeHeader(Authorization.NAME);
-            return createAuthorzatioinResponse(request, password);
+            return createAuthorzatioinResponse(request, domain, password);
         }
         return SipBuilder.addHeaders(
                 SipResponseBuilder.createResponse(Response.OK, request),

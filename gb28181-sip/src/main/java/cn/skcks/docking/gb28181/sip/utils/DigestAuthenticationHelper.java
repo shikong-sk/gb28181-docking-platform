@@ -219,7 +219,7 @@ public class DigestAuthenticationHelper {
     }
 
     @SneakyThrows
-    public static AuthorizationHeader createAuthorization(String method,String serverIp, int serverPort, String serverId, String deviceId,String password, WWWAuthenticateHeader www){
+    public static AuthorizationHeader createAuthorization(String method,String serverIp, int serverPort, String serverId, String deviceId,String password, int nonceCount, WWWAuthenticateHeader www){
         String hostAddress = SipBuilder.createHostAddress(serverIp, serverPort);
         SipURI sipURI = SipBuilder.createSipURI(serverId, hostAddress);
         if (www == null) {
@@ -235,8 +235,7 @@ public class DigestAuthenticationHelper {
         String qop = www.getQop();
 
         String cNonce = null;
-        int nc = 1;
-        String ncStr = String.format("%08x", nc).toUpperCase();
+        String ncStr = String.format("%08x", nonceCount).toUpperCase();
         if (qop != null) {
             if ("auth".equalsIgnoreCase(qop)) {
                 // 客户端随机数，这是一个不透明的字符串值，由客户端提供，并且客户端和服务器都会使用，以避免用明文文本。
@@ -277,7 +276,7 @@ public class DigestAuthenticationHelper {
         if (qop != null) {
             authorizationHeader.setQop(qop);
             authorizationHeader.setCNonce(cNonce);
-            authorizationHeader.setNonceCount(nc);
+            authorizationHeader.setNonceCount(nonceCount);
         }
         return authorizationHeader;
     }

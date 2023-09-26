@@ -17,13 +17,13 @@ public class AuthenticationTest {
 
     @Test
     void test() {
-        AuthorizationHeader authorization = DigestAuthenticationHelper.createAuthorization(Request.REGISTER, serverIp, serverPort, serverId, deviceId, "123456", null);
+        AuthorizationHeader authorization = DigestAuthenticationHelper.createAuthorization(Request.REGISTER, serverIp, serverPort, serverId, deviceId, "123456", 1,null);
         log.info("\n{}", authorization);
 
         WWWAuthenticateHeader wwwAuthenticateHeader = DigestAuthenticationHelper.generateChallenge(domain);
         log.info("\n{}", wwwAuthenticateHeader);
 
-        authorization = DigestAuthenticationHelper.createAuthorization(Request.REGISTER, serverIp, serverPort, serverId, deviceId, "123456", wwwAuthenticateHeader);
+        authorization = DigestAuthenticationHelper.createAuthorization(Request.REGISTER, serverIp, serverPort, serverId, deviceId, "123456", 1, wwwAuthenticateHeader);
         log.info("\n{}", authorization);
 
         boolean passed = DigestAuthenticationHelper.doAuthenticatePlainTextPassword(Request.REGISTER, authorization, "123456");

@@ -23,6 +23,8 @@ public class RequestTest {
     int remotePort = 5060;
     String remoteId = "00000000000000000002";
 
+    public static final String domain = "4405010000";
+
     @Test
     @SneakyThrows
     void test() {
@@ -55,16 +57,17 @@ public class RequestTest {
         log.info("\n{}", passedAuthorzatioinResponse);
 
         log.info("有密码的认证");
-        Response authorzatioinResponse = registerResponseBuilder.createAuthorzatioinResponse(noAuthorizationRequest, "123456");
+        Response authorzatioinResponse = registerResponseBuilder.createAuthorzatioinResponse(noAuthorizationRequest, domain, "123456");
         log.info("\n{}", noAuthorizationRequest);
         // 401 响应
         log.info("\n{}", authorzatioinResponse);
-        SIPResponse sipResponse = (SIPResponse)authorzatioinResponse;
-        WWWAuthenticateHeader wwwAuthenticateHeader = (WWWAuthenticateHeader)sipResponse.getHeader(WWWAuthenticateHeader.NAME);
+        SIPResponse sipResponse = (SIPResponse) authorzatioinResponse;
+        WWWAuthenticateHeader wwwAuthenticateHeader = (WWWAuthenticateHeader) sipResponse.getHeader(WWWAuthenticateHeader.NAME);
+        long cSeq = sipResponse.getCSeq().getSeqNumber();
         // 重新发起带有认证信息的请求
-        Request authorizationRequest = registerRequestBuilder.createAuthorizationRequest(callId, 3600, localId, "123456", wwwAuthenticateHeader);
+        Request authorizationRequest = registerRequestBuilder.createAuthorizationRequest(callId, 3600, localId, "123456", cSeq, wwwAuthenticateHeader);
         log.info("\n{}", authorizationRequest);
-        authorzatioinResponse = registerResponseBuilder.createAuthorzatioinResponse(authorizationRequest, "123456");
+        authorzatioinResponse = registerResponseBuilder.createAuthorzatioinResponse(authorizationRequest, domain, "123456");
         // 注册成功
         log.info("\n{}", authorzatioinResponse);
     }

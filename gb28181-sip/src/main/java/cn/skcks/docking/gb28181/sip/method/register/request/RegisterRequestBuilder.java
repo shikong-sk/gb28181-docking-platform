@@ -44,10 +44,10 @@ public class RegisterRequestBuilder extends RegisterBuilder {
     }
 
     @SneakyThrows
-    public Request createAuthorizationRequest(String callId, int expires, String id, String passwd, WWWAuthenticateHeader wwwAuthenticateHeader) {
+    public Request createAuthorizationRequest(String callId, int expires, String id, String passwd, long cSeq, WWWAuthenticateHeader wwwAuthenticateHeader) {
         SIPRequest request = (SIPRequest) createNoAuthorizationRequest(callId, expires);
-        request.getCSeq().setSeqNumber(2L);
-        AuthorizationHeader authorization = DigestAuthenticationHelper.createAuthorization(getMethod(), getTargetIp(), getTargetPort(), getTargetId(), id, passwd, wwwAuthenticateHeader);
+        request.getCSeq().setSeqNumber(cSeq + 1);
+        AuthorizationHeader authorization = DigestAuthenticationHelper.createAuthorization(getMethod(), getTargetIp(), getTargetPort(), getTargetId(), id, passwd, (int) cSeq,wwwAuthenticateHeader);
         return SipBuilder.addHeaders(request,authorization);
     }
 }
