@@ -29,7 +29,11 @@ public class SipUtil {
 
     private static final char[] DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
     public static String nanoId(){
-        return NanoId.randomNanoId(null,DEFAULT_ALPHABET,32);
+        return nanoId(32);
+    }
+
+    public static String nanoId(int size){
+        return NanoId.randomNanoId(null,DEFAULT_ALPHABET,size);
     }
 
     public static String getIdFromFromHeader(FromHeader fromHeader) {
@@ -56,7 +60,7 @@ public class SipUtil {
     }
 
     public static String generateViaTag() {
-        return "z9hG4bK" + RandomStringUtils.randomNumeric(10);
+        return "z9hG4bK" + nanoId(10);
     }
 
     @SneakyThrows
