@@ -1,7 +1,7 @@
-package cn.skcks.docking.gb28181.sip.method.event.request;
+package cn.skcks.docking.gb28181.sip.method.subscribe.request;
 
 import cn.skcks.docking.gb28181.sip.method.RequestBuilder;
-import cn.skcks.docking.gb28181.sip.method.event.SubscribeBuilder;
+import cn.skcks.docking.gb28181.sip.method.subscribe.SubscribeBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
