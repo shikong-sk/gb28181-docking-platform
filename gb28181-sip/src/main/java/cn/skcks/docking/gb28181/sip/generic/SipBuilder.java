@@ -162,7 +162,7 @@ public class SipBuilder {
     }
 
     @SneakyThrows
-    public static EventHeader createExpiresHeader(String event){
+    public static EventHeader createEventHeader(String event){
         return getHeaderFactory().createEventHeader(event);
     }
 

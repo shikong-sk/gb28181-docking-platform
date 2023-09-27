@@ -1,8 +1,11 @@
 package cn.skcks.docking.gb28181.sip.process;
 
 import cn.hutool.core.util.IdUtil;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
 import cn.skcks.docking.gb28181.sip.method.register.request.RegisterRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.register.response.RegisterResponseBuilder;
+import cn.skcks.docking.gb28181.sip.method.subscribe.request.SubscribeRequestBuilder;
+import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import gov.nist.javax.sip.message.SIPResponse;
 import lombok.SneakyThrows;
@@ -28,7 +31,31 @@ public class RequestTest {
 
     @Test
     @SneakyThrows
-    void test() {
+    void subscribeTest(){
+        // 服务端 向 客户端 发起订阅
+        SubscribeRequestBuilder subscribeRequestBuilder = SubscribeRequestBuilder.builder()
+                .localIp(remoteIp)
+                .localPort(remotePort)
+                .localId(remoteId)
+                .targetIp(localIp)
+                .targetPort(localPort)
+                .targetId(localId)
+                .transport(ListeningPoint.UDP)
+                .build();
+        String callId = SipUtil.nanoId(10);
+        CatalogQueryDTO catalogQueryDTO = CatalogQueryDTO.builder()
+                .deviceId(localId)
+                .sn(String.valueOf(1))
+                .build();
+
+        Request subscribeRequest = subscribeRequestBuilder.createSubscribeRequest(callId,
+                1, catalogQueryDTO.getCmdType(), MANSCDPUtils.toByteXml(catalogQueryDTO));
+        log.info("\n{}",subscribeRequest);
+    }
+
+    @Test
+    @SneakyThrows
+    void registerTest() {
         SipUtil.setUserAgentVersion("0.1.0");
         String callId = IdUtil.fastSimpleUUID();
         RegisterRequestBuilder registerRequestBuilder = RegisterRequestBuilder.builder()
