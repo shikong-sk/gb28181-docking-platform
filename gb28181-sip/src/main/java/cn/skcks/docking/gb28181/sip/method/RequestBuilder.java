@@ -12,6 +12,7 @@ import javax.sip.address.Address;
 import javax.sip.address.SipURI;
 import javax.sip.message.Request;
 
+@SuppressWarnings("Duplicates")
 @Data
 @SuperBuilder
 public class RequestBuilder {
@@ -28,12 +29,13 @@ public class RequestBuilder {
         Address localAddress = SipBuilder.createAddress(SipBuilder.createSipURI(getLocalId(), local));
         String target = SipBuilder.createHostAddress(getTargetIp(), getTargetPort());
         SipURI targetUri = SipBuilder.createSipURI(getTargetId(), target);
+        Address targetAddress = SipBuilder.createAddress(targetUri);
 
         return SipRequestBuilder.createRequest(targetUri, method,
                 SipBuilder.createCallIdHeader(callId),
                 SipBuilder.createCSeqHeader(cSeq, method),
                 SipBuilder.createFromHeader(localAddress, SipUtil.generateFromTag()),
-                SipBuilder.createToHeader(localAddress),
+                SipBuilder.createToHeader(targetAddress),
                 SipBuilder.createViaHeaders(getTargetIp(), getTargetPort(), getTransport(), SipUtil.generateViaTag()),
                 SipBuilder.createMaxForwardsHeader(70));
     }
@@ -43,12 +45,13 @@ public class RequestBuilder {
         Address localAddress = SipBuilder.createAddress(SipBuilder.createSipURI(getLocalId(), local));
         String target = SipBuilder.createHostAddress(getTargetIp(), getTargetPort());
         SipURI targetUri = SipBuilder.createSipURI(getTargetId(), target);
+        Address targetAddress = SipBuilder.createAddress(targetUri);
 
         return SipRequestBuilder.createRequest(targetUri, method,
                 SipBuilder.createCallIdHeader(callId),
                 SipBuilder.createCSeqHeader(cSeq, method),
                 SipBuilder.createFromHeader(localAddress, SipUtil.generateFromTag()),
-                SipBuilder.createToHeader(localAddress),
+                SipBuilder.createToHeader(targetAddress),
                 SipBuilder.createViaHeaders(getTargetIp(), getTargetPort(), getTransport(), SipUtil.generateViaTag()),
                 SipBuilder.createMaxForwardsHeader(70), SipContentType.XML, content);
     }
@@ -58,12 +61,13 @@ public class RequestBuilder {
         Address localAddress = SipBuilder.createAddress(SipBuilder.createSipURI(getLocalId(), local));
         String target = SipBuilder.createHostAddress(getTargetIp(), getTargetPort());
         SipURI targetUri = SipBuilder.createSipURI(getTargetId(), target);
+        Address targetAddress = SipBuilder.createAddress(targetUri);
 
         return SipRequestBuilder.createRequest(targetUri, method,
                 SipBuilder.createCallIdHeader(callId),
                 SipBuilder.createCSeqHeader(cSeq, method),
                 SipBuilder.createFromHeader(localAddress, SipUtil.generateFromTag()),
-                SipBuilder.createToHeader(localAddress),
+                SipBuilder.createToHeader(targetAddress),
                 SipBuilder.createViaHeaders(getTargetIp(), getTargetPort(), getTransport(), SipUtil.generateViaTag()),
                 SipBuilder.createMaxForwardsHeader(70), SipContentType.SDP, description.toString());
     }

@@ -1,11 +1,9 @@
 package cn.skcks.docking.gb28181.sip.method.register.request;
 
 import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
-import cn.skcks.docking.gb28181.sip.generic.SipRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.RequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.register.RegisterBuilder;
 import cn.skcks.docking.gb28181.sip.utils.DigestAuthenticationHelper;
-import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import gov.nist.javax.sip.message.SIPRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,7 +12,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import javax.sip.address.Address;
-import javax.sip.address.SipURI;
 import javax.sip.header.AuthorizationHeader;
 import javax.sip.header.WWWAuthenticateHeader;
 import javax.sip.message.Request;
@@ -30,7 +27,9 @@ public class RegisterRequestBuilder extends RequestBuilder implements RegisterBu
         String local = SipBuilder.createHostAddress(getLocalIp(), getLocalPort());
         Address localAddress = SipBuilder.createAddress(SipBuilder.createSipURI(getLocalId(), local));
 
-        Request request = createRequest(METHOD, callId, 1);
+        SIPRequest request = (SIPRequest) createRequest(METHOD, callId, 1);
+        Address address = request.getFromHeader().getAddress();
+        request.getToHeader().setAddress(address);
         return SipBuilder.addHeaders(request,
                 SipBuilder.createExpiresHeader(expires),
                 SipBuilder.createContactHeader(localAddress));

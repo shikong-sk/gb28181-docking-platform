@@ -40,7 +40,7 @@ public class RequestTest {
                 .targetIp(localIp)
                 .targetPort(localPort)
                 .targetId(localId)
-                .transport(ListeningPoint.UDP)
+                .transport(ListeningPoint.TCP)
                 .build();
         String callId = SipUtil.nanoId(10);
         CatalogQueryDTO catalogQueryDTO = CatalogQueryDTO.builder()
