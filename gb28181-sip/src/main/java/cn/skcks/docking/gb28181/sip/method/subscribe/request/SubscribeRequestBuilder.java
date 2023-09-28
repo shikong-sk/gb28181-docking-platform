@@ -19,4 +19,9 @@ public class SubscribeRequestBuilder extends RequestBuilder implements Subscribe
         return SipBuilder.addHeaders(createRequest(METHOD,callId,cSeq,content),
                 SipBuilder.createEventHeader(event));
     }
+
+    public Request createSubscribeRequest(String callId,long cSeq,String event,byte[] content, int expire){
+        return SipBuilder.addHeaders(createSubscribeRequest(callId,cSeq,event,content),
+                SipBuilder.createExpiresHeader(expire));
+    }
 }

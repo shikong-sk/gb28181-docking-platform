@@ -6,6 +6,7 @@ import cn.skcks.docking.gb28181.sip.generic.SipContentType;
 import cn.skcks.docking.gb28181.sip.generic.SipRequestBuilder;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import lombok.Data;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.sip.address.Address;
@@ -16,6 +17,8 @@ import javax.sip.message.Request;
 @Data
 @SuperBuilder
 public class RequestBuilder {
+    @Setter
+    public static int DEFAULT_MAX_FORWARD = 70;
     private String localIp;
     private int localPort;
     private String localId;
@@ -37,7 +40,7 @@ public class RequestBuilder {
                 SipBuilder.createFromHeader(localAddress, SipUtil.generateFromTag()),
                 SipBuilder.createToHeader(targetAddress),
                 SipBuilder.createViaHeaders(getTargetIp(), getTargetPort(), getTransport(), SipUtil.generateViaTag()),
-                SipBuilder.createMaxForwardsHeader(70));
+                SipBuilder.createMaxForwardsHeader(DEFAULT_MAX_FORWARD));
     }
 
     public Request createRequest(String method, String callId, long cSeq, byte[] content) {
@@ -53,7 +56,7 @@ public class RequestBuilder {
                 SipBuilder.createFromHeader(localAddress, SipUtil.generateFromTag()),
                 SipBuilder.createToHeader(targetAddress),
                 SipBuilder.createViaHeaders(getTargetIp(), getTargetPort(), getTransport(), SipUtil.generateViaTag()),
-                SipBuilder.createMaxForwardsHeader(70), SipContentType.XML, content);
+                SipBuilder.createMaxForwardsHeader(DEFAULT_MAX_FORWARD), SipContentType.XML, content);
     }
 
     public Request createRequest(String method, String callId, long cSeq, GB28181Description description) {
@@ -69,6 +72,6 @@ public class RequestBuilder {
                 SipBuilder.createFromHeader(localAddress, SipUtil.generateFromTag()),
                 SipBuilder.createToHeader(targetAddress),
                 SipBuilder.createViaHeaders(getTargetIp(), getTargetPort(), getTransport(), SipUtil.generateViaTag()),
-                SipBuilder.createMaxForwardsHeader(70), SipContentType.SDP, description.toString());
+                SipBuilder.createMaxForwardsHeader(DEFAULT_MAX_FORWARD), SipContentType.SDP, description.toString());
     }
 }

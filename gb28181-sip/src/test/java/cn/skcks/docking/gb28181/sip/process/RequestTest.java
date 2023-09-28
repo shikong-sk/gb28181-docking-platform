@@ -2,9 +2,11 @@ package cn.skcks.docking.gb28181.sip.process;
 
 import cn.hutool.core.util.IdUtil;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogSubscribeResponseDTO;
 import cn.skcks.docking.gb28181.sip.method.register.request.RegisterRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.register.response.RegisterResponseBuilder;
 import cn.skcks.docking.gb28181.sip.method.subscribe.request.SubscribeRequestBuilder;
+import cn.skcks.docking.gb28181.sip.method.subscribe.response.SubscribeResponseBuilder;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -51,6 +53,15 @@ public class RequestTest {
         Request subscribeRequest = subscribeRequestBuilder.createSubscribeRequest(callId,
                 1, catalogQueryDTO.getCmdType(), MANSCDPUtils.toByteXml(catalogQueryDTO));
         log.info("\n{}",subscribeRequest);
+
+        catalogQueryDTO = MANSCDPUtils.parse(subscribeRequest.getRawContent(), CatalogQueryDTO.class);
+        CatalogSubscribeResponseDTO catalogSubscribeResponseDTO = CatalogSubscribeResponseDTO.builder()
+                .sn(catalogQueryDTO.getSn())
+                .deviceId(catalogQueryDTO.getDeviceId())
+                .build();
+        SubscribeResponseBuilder subscribeResponseBuilder = SubscribeResponseBuilder.builder().build();
+        Response subscribeResponse = subscribeResponseBuilder.createSubscribeResponse(subscribeRequest, MANSCDPUtils.toByteXml(catalogSubscribeResponseDTO));
+        log.info("\n{}",subscribeResponse);
     }
 
     @Test
