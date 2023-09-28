@@ -1,14 +1,19 @@
 package cn.skcks.docking.gb28181.sip.process;
 
 import cn.hutool.core.util.IdUtil;
+import cn.skcks.docking.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogSubscribeResponseDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify.KeepaliveNotifyDTO;
+import cn.skcks.docking.gb28181.sip.method.notify.request.NotifyRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.register.request.RegisterRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.register.response.RegisterResponseBuilder;
 import cn.skcks.docking.gb28181.sip.method.subscribe.request.SubscribeRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.subscribe.response.SubscribeResponseBuilder;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
+import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +67,33 @@ public class RequestTest {
         SubscribeResponseBuilder subscribeResponseBuilder = SubscribeResponseBuilder.builder().build();
         Response subscribeResponse = subscribeResponseBuilder.createSubscribeResponse(subscribeRequest, MANSCDPUtils.toByteXml(catalogSubscribeResponseDTO));
         log.info("\n{}",subscribeResponse);
+
+        // 客户端向服务端发送 事件通知
+        NotifyRequestBuilder notifyRequestBuilder = NotifyRequestBuilder.builder()
+                .localIp(localIp)
+                .localPort(localPort)
+                .localId(localId)
+                .targetIp(remoteIp)
+                .targetPort(remotePort)
+                .targetId(remoteId)
+                .transport(ListeningPoint.TCP)
+                .build();
+
+        KeepaliveNotifyDTO keepaliveNotifyDTO = KeepaliveNotifyDTO.builder()
+                .sn(String.valueOf(2))
+                .deviceId(localId)
+                .build();
+        Request notifyRequest = notifyRequestBuilder.createNotifyRequest(callId, 2, CmdType.KEEPALIVE, MANSCDPUtils.toByteXml(keepaliveNotifyDTO), null);
+        log.info("\n{}", notifyRequest);
+
+        CatalogResponseDTO catalogResponseDTO = CatalogResponseDTO.builder()
+                .sn(String.valueOf(2))
+                .deviceId(localId)
+                .build();
+
+        String toTag = ((SIPRequest)subscribeRequest).getFromTag();
+        Request catalogNotifyRequest = notifyRequestBuilder.createNotifyRequest(callId, 3, CmdType.CATALOG, MANSCDPUtils.toByteXml(catalogResponseDTO), toTag);
+        log.info("\n{}", catalogNotifyRequest);
     }
 
     @Test

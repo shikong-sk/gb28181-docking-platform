@@ -1,5 +1,6 @@
 package cn.skcks.docking.gb28181.sip.generic;
 
+import cn.skcks.docking.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.sip.header.XGBVerHeader;
 import cn.skcks.docking.gb28181.sip.header.impl.XGBVerHeaderImpl;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
@@ -17,7 +18,6 @@ import javax.sip.header.*;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 public class SipBuilder {
     @Setter
-    public static String DEFAULT_CHARSET = StandardCharsets.UTF_8.name();
+    public static String DEFAULT_CHARSET = GB28181Constant.CHARSET;
     @Setter
     public static XGBVerHeader GB_VERSION = XGBVerHeaderImpl.GB28181_2016;
 
@@ -164,6 +164,11 @@ public class SipBuilder {
     @SneakyThrows
     public static EventHeader createEventHeader(String event){
         return getHeaderFactory().createEventHeader(event);
+    }
+
+    @SneakyThrows
+    public static SubscriptionStateHeader createSubscriptionStateHeader(String state){
+        return getHeaderFactory().createSubscriptionStateHeader(state);
     }
 
     @SneakyThrows
