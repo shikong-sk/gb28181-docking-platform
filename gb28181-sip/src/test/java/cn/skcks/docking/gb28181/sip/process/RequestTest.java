@@ -95,7 +95,7 @@ public class RequestTest {
         log.info("\n{}", authorzatioinResponse);
         SIPResponse sipResponse = (SIPResponse) authorzatioinResponse;
         WWWAuthenticateHeader wwwAuthenticateHeader = (WWWAuthenticateHeader) sipResponse.getHeader(WWWAuthenticateHeader.NAME);
-        long cSeq = sipResponse.getCSeq().getSeqNumber();
+        long cSeq = sipResponse.getCSeq().getSeqNumber() + 1;
         // 重新发起带有认证信息的请求
         Request authorizationRequest = registerRequestBuilder.createAuthorizationRequest(callId, 3600, localId, "123456", cSeq, wwwAuthenticateHeader);
         log.info("\n{}", authorizationRequest);

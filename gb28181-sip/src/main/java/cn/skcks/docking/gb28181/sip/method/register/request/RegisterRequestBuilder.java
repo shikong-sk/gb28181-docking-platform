@@ -38,7 +38,7 @@ public class RegisterRequestBuilder extends RequestBuilder implements RegisterBu
     @SneakyThrows
     public Request createAuthorizationRequest(String callId, int expires, String id, String passwd, long cSeq, WWWAuthenticateHeader wwwAuthenticateHeader) {
         SIPRequest request = (SIPRequest) createNoAuthorizationRequest(callId, expires);
-        request.getCSeq().setSeqNumber(cSeq + 1);
+        request.getCSeq().setSeqNumber(cSeq);
         AuthorizationHeader authorization = DigestAuthenticationHelper.createAuthorization(METHOD, getTargetIp(), getTargetPort(), getTargetId(), id, passwd, (int) cSeq, wwwAuthenticateHeader);
         return SipBuilder.addHeaders(request, authorization);
     }
