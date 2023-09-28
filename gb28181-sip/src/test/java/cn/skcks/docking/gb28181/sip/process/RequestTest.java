@@ -3,6 +3,7 @@ package cn.skcks.docking.gb28181.sip.process;
 import cn.hutool.core.util.IdUtil;
 import cn.skcks.docking.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogDeviceListDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogSubscribeResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify.KeepaliveNotifyDTO;
@@ -23,6 +24,7 @@ import javax.sip.ListeningPoint;
 import javax.sip.header.WWWAuthenticateHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
+import java.util.Collections;
 
 @Slf4j
 public class RequestTest {
@@ -86,9 +88,14 @@ public class RequestTest {
         Request notifyRequest = notifyRequestBuilder.createNotifyRequest(callId, 2, CmdType.KEEPALIVE, MANSCDPUtils.toByteXml(keepaliveNotifyDTO), null);
         log.info("\n{}", notifyRequest);
 
+        CatalogDeviceListDTO catalogDeviceListDTO = CatalogDeviceListDTO.builder()
+                .deviceList(Collections.emptyList())
+                .build();
         CatalogResponseDTO catalogResponseDTO = CatalogResponseDTO.builder()
                 .sn(String.valueOf(2))
                 .deviceId(localId)
+                .sumNum(0L)
+                .deviceList(catalogDeviceListDTO)
                 .build();
 
         String toTag = ((SIPRequest)subscribeRequest).getFromTag();
