@@ -21,6 +21,13 @@ import javax.sip.message.Request;
 @ToString(callSuper = true)
 public class NotifyRequestBuilder extends RequestBuilder implements NotifyBuilder {
     @SneakyThrows
+    public Request createNotifyRequest(String callId, long cSeq, String event, byte[] content, Request request){
+        SIPRequest sipRequest = (SIPRequest) request;
+        String toTag = sipRequest.getToTag();
+        int expires = sipRequest.getExpires().getExpires();
+        return createNotifyRequest(callId, cSeq, event, content, toTag, expires);
+    }
+                                       @SneakyThrows
     public Request createNotifyRequest(String callId, long cSeq, String event, byte[] content, String toTag, int expire) {
         SIPRequest notifyRequest = (SIPRequest) createNotifyRequest(callId, cSeq, event, content, toTag);
         SubscriptionState subscriptionState = (SubscriptionState) notifyRequest.getHeader(SubscriptionState.NAME);
@@ -28,10 +35,14 @@ public class NotifyRequestBuilder extends RequestBuilder implements NotifyBuilde
         return notifyRequest;
     }
 
+    public Request createNotifyRequest(String callId, long cSeq, String event, byte[] content) {
+        return createNotifyRequest(callId, cSeq, event, content, "");
+    }
+
     @SneakyThrows
     public Request createNotifyRequest(String callId, long cSeq, String event, byte[] content, String toTag) {
         SIPRequest request = (SIPRequest) createRequest(METHOD, callId, cSeq, content);
-        if(StringUtils.isNotBlank(toTag)){
+        if (StringUtils.isNotBlank(toTag)) {
             request.getToHeader().setTag(toTag);
         }
         return SipBuilder.addHeaders(request,

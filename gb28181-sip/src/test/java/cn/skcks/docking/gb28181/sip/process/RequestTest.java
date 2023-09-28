@@ -7,6 +7,8 @@ import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogDeviceListDT
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogSubscribeResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify.KeepaliveNotifyDTO;
+import cn.skcks.docking.gb28181.sip.method.message.request.MessageRequestBuilder;
+import cn.skcks.docking.gb28181.sip.method.message.response.MessageResponseBuilder;
 import cn.skcks.docking.gb28181.sip.method.notify.request.NotifyRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.register.request.RegisterRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.register.response.RegisterResponseBuilder;
@@ -39,6 +41,26 @@ public class RequestTest {
     public static final String domain = "4405010000";
 
     @Test
+    void messageTest(){
+        MessageRequestBuilder messageRequestBuilder = MessageRequestBuilder.builder()
+                .localIp(localIp)
+                .localPort(localPort)
+                .localId(localId)
+                .targetIp(remoteIp)
+                .targetPort(remotePort)
+                .targetId(remoteId)
+                .transport(ListeningPoint.TCP)
+                .build();
+        String callId = IdUtil.fastSimpleUUID();
+        Request messageRequest = messageRequestBuilder.createMessageRequest(callId, 1, new byte[]{});
+        log.info("\n{}", messageRequest);
+
+        MessageResponseBuilder messageResponseBuilder = MessageResponseBuilder.builder().build();
+        Response messageResponse = messageResponseBuilder.createMessageResponse(messageRequest,  new byte[]{}, SipUtil.nanoId());
+        log.info("\n{}", messageResponse);
+    }
+
+    @Test
     @SneakyThrows
     void subscribeTest(){
         // 服务端 向 客户端 发起订阅
@@ -58,7 +80,7 @@ public class RequestTest {
                 .build();
 
         Request subscribeRequest = subscribeRequestBuilder.createSubscribeRequest(callId,
-                1, catalogQueryDTO.getCmdType(), MANSCDPUtils.toByteXml(catalogQueryDTO));
+                1, catalogQueryDTO.getCmdType(), MANSCDPUtils.toByteXml(catalogQueryDTO),90);
         log.info("\n{}",subscribeRequest);
 
         catalogQueryDTO = MANSCDPUtils.parse(subscribeRequest.getRawContent(), CatalogQueryDTO.class);
@@ -85,7 +107,7 @@ public class RequestTest {
                 .sn(String.valueOf(2))
                 .deviceId(localId)
                 .build();
-        Request notifyRequest = notifyRequestBuilder.createNotifyRequest(callId, 2, CmdType.KEEPALIVE, MANSCDPUtils.toByteXml(keepaliveNotifyDTO), null);
+        Request notifyRequest = notifyRequestBuilder.createNotifyRequest(callId, 2, CmdType.KEEPALIVE, MANSCDPUtils.toByteXml(keepaliveNotifyDTO));
         log.info("\n{}", notifyRequest);
 
         CatalogDeviceListDTO catalogDeviceListDTO = CatalogDeviceListDTO.builder()
@@ -99,7 +121,8 @@ public class RequestTest {
                 .build();
 
         String toTag = ((SIPRequest)subscribeRequest).getFromTag();
-        Request catalogNotifyRequest = notifyRequestBuilder.createNotifyRequest(callId, 3, CmdType.CATALOG, MANSCDPUtils.toByteXml(catalogResponseDTO), toTag);
+        int expires = subscribeRequest.getExpires().getExpires();
+        Request catalogNotifyRequest = notifyRequestBuilder.createNotifyRequest(callId, 3, CmdType.CATALOG, MANSCDPUtils.toByteXml(catalogResponseDTO), toTag,expires);
         log.info("\n{}", catalogNotifyRequest);
     }
 
