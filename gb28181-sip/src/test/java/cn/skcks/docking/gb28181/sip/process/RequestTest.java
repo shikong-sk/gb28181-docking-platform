@@ -1,5 +1,6 @@
 package cn.skcks.docking.gb28181.sip.process;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.skcks.docking.gb28181.constant.CmdType;
@@ -30,6 +31,7 @@ import javax.sip.header.WWWAuthenticateHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.util.Collections;
+import java.util.Date;
 
 @Slf4j
 public class RequestTest {
@@ -67,8 +69,20 @@ public class RequestTest {
         String playSsrc = "0" + ssrc;
         // 1 开头的为历史
         String playBackSsrc = "1" + ssrc;
+        // 实时点播请求
         Request playInviteRequest = inviteRequestBuilder.createPlayInviteRequest(callId, 1, localId, rtpIp, rtpPort, playSsrc, MediaStreamMode.TCP_ACTIVE);
         log.info("\n{}", playInviteRequest);
+
+        Date now = DateUtil.date();
+        Date startTime = DateUtil.beginOfDay(DateUtil.offsetDay(now,-1));
+        Date endTime = DateUtil.endOfDay(DateUtil.offsetDay(now,-1));
+        // 回放请求
+        Request playbackInviteRequest = inviteRequestBuilder.createPlaybackInviteRequest(callId, 1, localId, rtpIp, rtpPort, playBackSsrc, MediaStreamMode.TCP_ACTIVE,startTime,endTime);
+        log.info("\n{}", playbackInviteRequest);
+
+        // 下载请求
+        Request downloadInviteRequest = inviteRequestBuilder.createDownloadInviteRequest(callId, 1, localId, rtpIp, rtpPort, playBackSsrc, MediaStreamMode.TCP_ACTIVE,startTime,endTime,4.0);
+        log.info("\n{}", downloadInviteRequest);
     }
 
 
