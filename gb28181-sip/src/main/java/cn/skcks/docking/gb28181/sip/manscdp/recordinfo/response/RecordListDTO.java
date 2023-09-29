@@ -1,6 +1,5 @@
 package cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response;
 
-import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogItemDTO;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
