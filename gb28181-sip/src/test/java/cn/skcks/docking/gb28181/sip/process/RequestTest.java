@@ -5,12 +5,14 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.skcks.docking.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.sdp.media.MediaStreamMode;
+import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogDeviceListDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogSubscribeResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify.KeepaliveNotifyDTO;
 import cn.skcks.docking.gb28181.sip.method.invite.request.InviteRequestBuilder;
+import cn.skcks.docking.gb28181.sip.method.invite.response.InviteResponseBuilder;
 import cn.skcks.docking.gb28181.sip.method.message.request.MessageRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.message.response.MessageResponseBuilder;
 import cn.skcks.docking.gb28181.sip.method.notify.request.NotifyRequestBuilder;
@@ -45,8 +47,11 @@ public class RequestTest {
 
     public static final String domain = "4405010000";
 
-    public static final String rtpIp = "10.10.10.200";
-    public static int rtpPort = RandomUtil.randomInt(30000,50000);
+    public static final String receiveRtp = "10.10.10.200";
+    public static int receiveRtpPort = RandomUtil.randomInt(30000,40000);
+
+    public static final String senderRtp = "10.10.10.200";
+    public static int senderRtpPort = RandomUtil.randomInt(40000,50000);
 
     @Test
     void inviteTest(){
@@ -69,20 +74,28 @@ public class RequestTest {
         String playSsrc = "0" + ssrc;
         // 1 开头的为历史
         String playBackSsrc = "1" + ssrc;
+
+        InviteResponseBuilder inviteResponseBuilder = InviteResponseBuilder.builder().build();
         // 实时点播请求
-        Request playInviteRequest = inviteRequestBuilder.createPlayInviteRequest(callId, 1, localId, rtpIp, rtpPort, playSsrc, MediaStreamMode.TCP_ACTIVE);
+        Request playInviteRequest = inviteRequestBuilder.createPlayInviteRequest(callId, 1, localId, receiveRtp, receiveRtpPort, playSsrc, MediaStreamMode.TCP_ACTIVE);
         log.info("\n{}", playInviteRequest);
+        Response inviteResponse = inviteResponseBuilder.createInviteResponse(playInviteRequest, senderRtp, senderRtpPort, SipUtil.nanoId());
+        log.info("\n{}", inviteResponse);
 
         Date now = DateUtil.date();
         Date startTime = DateUtil.beginOfDay(DateUtil.offsetDay(now,-1));
         Date endTime = DateUtil.endOfDay(DateUtil.offsetDay(now,-1));
         // 回放请求
-        Request playbackInviteRequest = inviteRequestBuilder.createPlaybackInviteRequest(callId, 1, localId, rtpIp, rtpPort, playBackSsrc, MediaStreamMode.TCP_ACTIVE,startTime,endTime);
+        Request playbackInviteRequest = inviteRequestBuilder.createPlaybackInviteRequest(callId, 1, localId, receiveRtp, receiveRtpPort, playBackSsrc, MediaStreamMode.TCP_ACTIVE,startTime,endTime);
         log.info("\n{}", playbackInviteRequest);
+        inviteResponse = inviteResponseBuilder.createInviteResponse(playbackInviteRequest, senderRtp, senderRtpPort, SipUtil.nanoId());
+        log.info("\n{}", inviteResponse);
 
         // 下载请求
-        Request downloadInviteRequest = inviteRequestBuilder.createDownloadInviteRequest(callId, 1, localId, rtpIp, rtpPort, playBackSsrc, MediaStreamMode.TCP_ACTIVE,startTime,endTime,4.0);
+        Request downloadInviteRequest = inviteRequestBuilder.createDownloadInviteRequest(callId, 1, localId, receiveRtp, receiveRtpPort, playBackSsrc, MediaStreamMode.TCP_ACTIVE,startTime,endTime,4.0);
         log.info("\n{}", downloadInviteRequest);
+        inviteResponse = inviteResponseBuilder.createInviteResponse(downloadInviteRequest, senderRtp, senderRtpPort, SipUtil.nanoId());
+        log.info("\n{}", inviteResponse);
     }
 
 
