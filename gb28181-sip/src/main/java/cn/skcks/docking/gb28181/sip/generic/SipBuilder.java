@@ -134,6 +134,11 @@ public class SipBuilder {
     }
 
     @SneakyThrows
+    public static SubjectHeader createSubjectHeader(String subject){
+        return getHeaderFactory().createSubjectHeader(subject);
+    }
+
+    @SneakyThrows
     public static ContentTypeHeader createSDPContentTypeHeader(){
         return getHeaderFactory().createContentTypeHeader("APPLICATION", "SDP");
     }

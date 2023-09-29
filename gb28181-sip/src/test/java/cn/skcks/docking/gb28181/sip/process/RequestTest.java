@@ -1,12 +1,15 @@
 package cn.skcks.docking.gb28181.sip.process;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.skcks.docking.gb28181.constant.CmdType;
+import cn.skcks.docking.gb28181.sdp.media.MediaStreamMode;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogDeviceListDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogSubscribeResponseDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.keepalive.notify.KeepaliveNotifyDTO;
+import cn.skcks.docking.gb28181.sip.method.invite.request.InviteRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.message.request.MessageRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.message.response.MessageResponseBuilder;
 import cn.skcks.docking.gb28181.sip.method.notify.request.NotifyRequestBuilder;
@@ -39,6 +42,35 @@ public class RequestTest {
     String remoteId = "00000000000000000002";
 
     public static final String domain = "4405010000";
+
+    public static final String rtpIp = "10.10.10.200";
+    public static int rtpPort = RandomUtil.randomInt(30000,50000);
+
+    @Test
+    void inviteTest(){
+        // 服务端 向 客户端 发起 请求
+        InviteRequestBuilder inviteRequestBuilder = InviteRequestBuilder.builder()
+                .localIp(remoteIp)
+                .localPort(remotePort)
+                .localId(remoteId)
+                .targetIp(localIp)
+                .targetPort(localPort)
+                .targetId(localId)
+                .transport(ListeningPoint.TCP)
+                .build();
+        String callId = SipUtil.nanoId(10);
+        // 2~6位为 域 4~8位
+        String ssrcPrefix = domain.substring(3, 8);
+        // 7~10 为 流标识
+        String ssrc = String.format("%s%04d", ssrcPrefix, RandomUtil.randomInt(1,10000));
+        // 0 开头的为实时
+        String playSsrc = "0" + ssrc;
+        // 1 开头的为历史
+        String playBackSsrc = "1" + ssrc;
+        Request playInviteRequest = inviteRequestBuilder.createPlayInviteRequest(callId, 1, localId, rtpIp, rtpPort, playSsrc, MediaStreamMode.TCP_ACTIVE);
+        log.info("\n{}", playInviteRequest);
+    }
+
 
     @Test
     void messageTest(){
