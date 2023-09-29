@@ -25,7 +25,7 @@ public class SipUtil {
     @Setter
     public static String UserAgent = "GB28181-Docking-Platform";
     @Setter
-    public static String UserAgentVersion = "0.0.1";
+    public static String UserAgentVersion = "";
 
     private static final char[] DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
     public static String nanoId(){
@@ -67,8 +67,10 @@ public class SipUtil {
     public static UserAgentHeader getUserAgentHeader(){
         List<String> agentParam = new ArrayList<>(3);
         agentParam.add(UserAgent);
-        agentParam.add(" ");
-        agentParam.add(StringUtils.replace(UserAgentVersion,"-SNAPSHOT",""));
+        if(StringUtils.isNotBlank(UserAgentVersion)){
+            agentParam.add(" ");
+            agentParam.add(StringUtils.replace(UserAgentVersion,"-SNAPSHOT",""));
+        }
         return SipFactory.getInstance().createHeaderFactory().createUserAgentHeader(agentParam);
     }
 
