@@ -98,6 +98,11 @@ public class RequestTest {
         log.info("\n{}", tryingInviteResponse);
         inviteResponse = inviteResponseBuilder.createInviteResponse(downloadInviteRequest, senderRtp, senderRtpPort, SipUtil.nanoId());
         log.info("\n{}", inviteResponse);
+
+        Request byeRequest = inviteRequestBuilder.createByeRequest(callId, 2);
+        log.info("\n{}", byeRequest);
+        Response byeResponse = inviteResponseBuilder.createByeResponse(byeRequest, SipUtil.nanoId());
+        log.info("\n{}", byeResponse);
     }
 
 

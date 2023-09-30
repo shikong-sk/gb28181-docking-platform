@@ -58,4 +58,12 @@ public class InviteResponseBuilder implements InviteBuilder {
     public Response createTryingInviteResponse(Request request){
         return SipResponseBuilder.createResponse(Response.TRYING,request);
     }
+
+    public Response createByeResponse(Request request){
+        return createByeResponse(request,  "");
+    }
+
+    public Response createByeResponse(Request request, String toTag){
+        return addHeader(SipResponseBuilder.createResponse(Response.OK,request), toTag);
+    }
 }

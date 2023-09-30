@@ -24,7 +24,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class InviteRequestBuilder extends RequestBuilder implements InviteBuilder {
-    private SubjectHeader createSubject(String senderId, String senderStreamId, String receiveId, String receiveStreamId){
+    private SubjectHeader createSubject(String senderId, String senderStreamId, String receiveId, String receiveStreamId) {
         String subject = StringUtils.joinWith(",",
                 // 发送者 channelId:流序号
                 StringUtils.joinWith(":", senderId, senderStreamId),
@@ -33,8 +33,8 @@ public class InviteRequestBuilder extends RequestBuilder implements InviteBuilde
         return SipBuilder.createSubjectHeader(subject);
     }
 
-    public Request createPlayInviteRequest(String callId, long cSeq, String channelId, String rtpIp, int rtpPort, String ssrc, MediaStreamMode mediaStreamMode, String receiveId){
-        GB28181Description description = GB28181SDPBuilder.Receiver.play(getTargetId(), channelId, Connection.IP4,rtpIp,rtpPort,ssrc,mediaStreamMode);
+    public Request createPlayInviteRequest(String callId, long cSeq, String channelId, String rtpIp, int rtpPort, String ssrc, MediaStreamMode mediaStreamMode, String receiveId) {
+        GB28181Description description = GB28181SDPBuilder.Receiver.play(getTargetId(), channelId, Connection.IP4, rtpIp, rtpPort, ssrc, mediaStreamMode);
 
         SIPRequest request = (SIPRequest) createRequest(METHOD, callId, cSeq, description);
         Address address = request.getFrom().getAddress();
@@ -64,7 +64,7 @@ public class InviteRequestBuilder extends RequestBuilder implements InviteBuilde
     }
 
     public Request createDownloadInviteRequest(String callId, long cSeq, String channelId, String rtpIp, int rtpPort, String ssrc, MediaStreamMode mediaStreamMode, String receiveId, Date startTime, Date endTime, Double downloadSpeed) {
-        GB28181Description description = GB28181SDPBuilder.Receiver.download(getTargetId(), channelId, Connection.IP4, rtpIp, rtpPort, ssrc, mediaStreamMode, startTime, endTime,downloadSpeed);
+        GB28181Description description = GB28181SDPBuilder.Receiver.download(getTargetId(), channelId, Connection.IP4, rtpIp, rtpPort, ssrc, mediaStreamMode, startTime, endTime, downloadSpeed);
 
         SIPRequest request = (SIPRequest) createRequest(METHOD, callId, cSeq, description);
         Address address = request.getFrom().getAddress();
@@ -76,5 +76,9 @@ public class InviteRequestBuilder extends RequestBuilder implements InviteBuilde
 
     public Request createDownloadInviteRequest(String callId, long cSeq, String channelId, String rtpIp, int rtpPort, String ssrc, MediaStreamMode mediaStreamMode, Date startTime, Date endTime, Double downloadSpeed) {
         return createDownloadInviteRequest(callId, cSeq, channelId, rtpIp, rtpPort, ssrc, mediaStreamMode, String.valueOf(0), startTime, endTime, downloadSpeed);
+    }
+
+    public Request createByeRequest(String callId, long cSeq) {
+        return createRequest(Request.BYE, callId, cSeq);
     }
 }
