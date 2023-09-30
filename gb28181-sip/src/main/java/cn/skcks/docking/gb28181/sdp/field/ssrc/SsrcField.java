@@ -10,7 +10,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @AllArgsConstructor
 public class SsrcField extends SDPField {
-    private static final String SSRC_FIELD = "y=";
+    public static final String SSRC_FIELD_NAME = "y";
+    private static final String SSRC_FIELD = SSRC_FIELD_NAME + "=";
     public SsrcField() {
         super(SSRC_FIELD);
     }
