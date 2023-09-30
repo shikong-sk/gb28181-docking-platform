@@ -1,7 +1,5 @@
 package cn.skcks.docking.gb28181.sdp.field.ssrc;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import gov.nist.core.Separators;
 import gov.nist.javax.sdp.fields.SDPField;
 import lombok.AllArgsConstructor;
@@ -11,7 +9,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-@Slf4j
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
@@ -66,7 +63,6 @@ public class FormatField extends SDPField {
             stringBuilder.append(StringUtils.joinWith("/",video,audio));
         }
         stringBuilder.append(Separators.NEWLINE);
-        log.info("{}", new JsonMapper().writeValueAsString(this));
         return stringBuilder.toString();
     }
 
