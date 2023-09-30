@@ -54,4 +54,8 @@ public class InviteResponseBuilder implements InviteBuilder {
                 response,
                 SipBuilder.createContactHeader(sipResponse.getFromHeader().getAddress()));
     }
+
+    public Response createTryingInviteResponse(Request request){
+        return SipResponseBuilder.createResponse(Response.TRYING,request);
+    }
 }

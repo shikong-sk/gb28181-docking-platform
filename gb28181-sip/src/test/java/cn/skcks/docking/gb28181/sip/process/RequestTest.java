@@ -94,6 +94,8 @@ public class RequestTest {
         // 下载请求
         Request downloadInviteRequest = inviteRequestBuilder.createDownloadInviteRequest(callId, 1, localId, receiveRtp, receiveRtpPort, playBackSsrc, MediaStreamMode.TCP_ACTIVE,startTime,endTime,4.0);
         log.info("\n{}", downloadInviteRequest);
+        Response tryingInviteResponse = inviteResponseBuilder.createTryingInviteResponse(downloadInviteRequest);
+        log.info("\n{}", tryingInviteResponse);
         inviteResponse = inviteResponseBuilder.createInviteResponse(downloadInviteRequest, senderRtp, senderRtpPort, SipUtil.nanoId());
         log.info("\n{}", inviteResponse);
     }
