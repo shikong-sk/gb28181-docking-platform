@@ -7,7 +7,8 @@ import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sip.GbSipDate;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
-import cn.skcks.docking.gb28181.core.sip.message.auth.DigestServerAuthenticationHelper;
+import cn.skcks.docking.gb28181.sip.method.register.response.RegisterResponseBuilder;
+import cn.skcks.docking.gb28181.sip.utils.DigestAuthenticationHelper;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
 import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
@@ -81,18 +82,21 @@ public class RegisterRequestProcessor implements MessageProcessor {
             }
         }
 
+        RegisterResponseBuilder registerResponseBuilder = RegisterResponseBuilder.builder().build();
+
         String password = sipConfig.getPassword();
         Authorization authorization = request.getAuthorization();
         if(authorization == null && StringUtils.isNotBlank(password)){
-            Response response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
-            DigestServerAuthenticationHelper.generateChallenge(getHeaderFactory(),response,sipConfig.getDomain());
+            Response response = registerResponseBuilder.createAuthorzatioinResponse(request,sipConfig.getDomain(), password);
             sender.send(senderIp,response);
             return;
         }
 
+
+
         log.debug("认证信息 => {}", authorization);
         boolean authPass = StringUtils.isBlank(password) ||
-                DigestServerAuthenticationHelper.doAuthenticatePlainTextPassword(request,password);
+                DigestAuthenticationHelper.doAuthenticatePlainTextPassword(request,password);
         if(!authPass){
             Response response = getMessageFactory().createResponse(Response.FORBIDDEN, request);
             response.setReasonPhrase("认证失败");
