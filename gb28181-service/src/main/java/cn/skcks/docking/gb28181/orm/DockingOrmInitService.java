@@ -24,5 +24,6 @@ public class DockingOrmInitService {
     public void init() {
         log.info("[orm] 自动建表");
         mapper.createDeviceTable();
+        mapper.createDeviceChannelTable();
     }
 }

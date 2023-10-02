@@ -6,4 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface OperateTableMapper {
     // int createNewTable(@Param("tableName")String tableName);
     void createDeviceTable();
+
+    void createDeviceChannelTable();
 }

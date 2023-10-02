@@ -43,4 +43,17 @@
                                       UNIQUE KEY `uk_device_device` (`device_id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     </update>
+
+    <update id="createDeviceChannelTable">
+        CREATE TABLE IF NOT EXISTS  `docking_device_channel` (
+                                                  `id` bigint NOT NULL AUTO_INCREMENT,
+                                                  `gb_device_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                                  `gb_device_channel_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                                                  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                                  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                                  PRIMARY KEY (`id`),
+                                                  UNIQUE KEY `gb_device_id_2` (`gb_device_id`,`gb_device_channel_id`) USING BTREE,
+                                                  KEY `gb_device_id` (`gb_device_id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    </update>
 </mapper>

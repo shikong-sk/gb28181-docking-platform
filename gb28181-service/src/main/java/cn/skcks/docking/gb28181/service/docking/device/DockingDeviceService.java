@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.dynamic.sql.SqlBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sip.message.Response;
 
@@ -48,6 +49,7 @@ public class DockingDeviceService {
         return onlineCacheService.isOnline(deviceId);
     }
 
+    @Transactional
     public void online(DockingDevice device, Response response) {
         String deviceId = device.getDeviceId();
         log.info("[设备上线] deviceId => {}, {}://{}:{}", deviceId, device.getTransport(), device.getIp(), device.getPort());

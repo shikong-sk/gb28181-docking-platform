@@ -21,5 +21,6 @@ public class GenerateSchemaTest {
     @Test
     void contextLoads(){
         operateTableMapper.createDeviceTable();
+        operateTableMapper.createDeviceChannelTable();
     }
 }
