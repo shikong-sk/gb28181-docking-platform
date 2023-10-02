@@ -33,6 +33,10 @@ public class SipRequestSubscribe implements GenericTimeoutSubscribe<SIPRequest>,
         Helper.addSubscribe(publishers, key, subscribe);
     }
 
+    public void compile(String key){
+        delPublisher(key);
+    }
+
     @Override
     public void delPublisher(String key) {
         ScheduledFuture<?> schedule = scheduledFutureManager.remove(key);

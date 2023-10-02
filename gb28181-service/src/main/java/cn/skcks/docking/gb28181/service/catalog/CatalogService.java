@@ -85,7 +85,7 @@ public class CatalogService {
                 data.addAll(catalogResponseDTO.getDeviceList().getDeviceList());
                 if(curNum >= sumNum){
                     log.info("获取完成 {}", key);
-                    subscribe.getSipRequestSubscribe().delPublisher(key);
+                    subscribe.getSipRequestSubscribe().compile(key);
                 } else {
                     subscription.request(1);
                 }
@@ -100,6 +100,7 @@ public class CatalogService {
             @Override
             public void onComplete() {
                 log.info("{} 返回结果 {}", key, result.complete(data));
+                subscribe.getSipRequestSubscribe().delPublisher(key);
             }
         });
         provider.sendRequest(request);

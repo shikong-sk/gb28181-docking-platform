@@ -30,6 +30,10 @@ public class InviteSubscribe implements GenericSubscribe<SIPResponse> {
         Helper.addSubscribe(publishers, key, subscribe);
     }
 
+    public void compile(String key){
+        delPublisher(key);
+    }
+
     @Override
     public void delPublisher(String key) {
         Helper.delPublisher(publishers, key);
