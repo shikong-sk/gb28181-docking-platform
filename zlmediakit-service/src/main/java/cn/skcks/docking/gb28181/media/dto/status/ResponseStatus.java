@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ResponseStatus {
+    Unknown(-999, "未知异常"),
     Exception(-400,"代码抛异常"),
     InvalidArgs(-300, "参数不合法"),
     SqlFailed(-200, "sql执行失败"),
@@ -27,6 +28,6 @@ public enum ResponseStatus {
                 return status;
             }
         }
-        return null;
+        return Unknown;
     }
 }
