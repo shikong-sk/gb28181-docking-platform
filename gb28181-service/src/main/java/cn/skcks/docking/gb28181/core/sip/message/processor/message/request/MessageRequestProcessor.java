@@ -82,7 +82,8 @@ public class MessageRequestProcessor implements MessageProcessor {
                             () -> log.warn("对应订阅 {} 已结束, 异常数据 => {}", key, dto));
         }else if(messageDto.getCmdType().equalsIgnoreCase(CmdType.CATALOG)){
             CatalogResponseDTO catalogResponseDTO = MANSCDPUtils.parse(content, CatalogResponseDTO.class);
-            Optional.ofNullable(subscribe.getSipRequestSubscribe().getPublisher(catalogResponseDTO.getSn())).ifPresent(publisher->{
+            String key = GenericSubscribe.Helper.getKey(catalogResponseDTO.getDeviceId(), catalogResponseDTO.getSn());
+            Optional.ofNullable(subscribe.getSipRequestSubscribe().getPublisher(key)).ifPresent(publisher->{
                 publisher.submit(request);
             });
             response = ok;
