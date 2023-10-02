@@ -2,6 +2,7 @@ package cn.skcks.docking.gb28181.core.sip.message.subscribe;
 
 import cn.skcks.docking.gb28181.core.sip.executor.DefaultSipExecutor;
 import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoResponseDTO;
+import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Slf4j
 @Data
@@ -20,18 +23,28 @@ import java.util.concurrent.Executor;
 public class SipSubscribe {
     @Qualifier(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     private final Executor executor;
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private GenericSubscribe<RecordInfoResponseDTO> recordInfoSubscribe;
     private GenericSubscribe<SIPResponse> inviteSubscribe;
+    private GenericTimeoutSubscribe<SIPResponse> sipResponseSubscribe;
+    private GenericTimeoutSubscribe<SIPRequest> sipRequestSubscribe;
 
     @PostConstruct
     private void init() {
+        // TODO 准备废弃
         recordInfoSubscribe = new RecordInfoSubscribe(executor);
         inviteSubscribe = new InviteSubscribe(executor);
+        // 通用订阅器
+        sipResponseSubscribe = new SipResponseSubscribe(executor, scheduledExecutorService);
+        sipRequestSubscribe = new SipRequestSubscribe(executor, scheduledExecutorService);
     }
 
     @PreDestroy
     private void destroy() {
         inviteSubscribe.close();
         recordInfoSubscribe.close();
+
+        sipResponseSubscribe.close();
+        sipRequestSubscribe.close();
     }
 }

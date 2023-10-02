@@ -13,8 +13,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import javax.sip.*;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -65,6 +68,61 @@ public class SipServiceImpl implements SipService {
             ListeningPoint listeningPoint = sipProvider.getListeningPoint();
             return listeningPoint != null && listeningPoint.getIPAddress().equals(ip) && listeningPoint.getTransport().equalsIgnoreCase(transport);
         }).findFirst().orElse(null);
+    }
+
+    public List<SipProvider> getProviders(String transport) {
+        return sipConfig.getIp().stream().map(item -> getProvider(transport, item))
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    public void sendResponse(SipProvider sipProvider, SendResponse response) {
+        log.info("{}", sipProvider);
+        ListeningPoint[] listeningPoints = sipProvider.getListeningPoints();
+        if (listeningPoints == null || listeningPoints.length == 0) {
+            log.error("发送响应失败, 未找到有效的监听地址");
+            return;
+        }
+        ListeningPoint listeningPoint = listeningPoints[0];
+        String ip = listeningPoint.getIPAddress();
+        int port = listeningPoint.getPort();
+        try {
+            sipProvider.sendResponse(response.build(sipProvider, ip, port));
+        } catch (SipException e) {
+            log.error("向{} {}:{} 发送响应失败, 异常: {}", ip, listeningPoint.getPort(), listeningPoint.getTransport(), e.getMessage());
+        }
+    }
+
+    public void sendResponse(String senderIp,String transport, SendResponse response) {
+        SipProvider sipProvider = getProvider(transport, senderIp);
+        sendResponse(sipProvider, response);
+    }
+
+    public void sendRequest(String transport, SendRequest request) {
+        getProviders(transport).parallelStream().forEach(sipProvider -> {
+            log.info("{}", sipProvider);
+            ListeningPoint[] listeningPoints = sipProvider.getListeningPoints();
+            if (listeningPoints == null || listeningPoints.length == 0) {
+                log.error("发送请求失败, 未找到有效的监听地址");
+                return;
+            }
+            ListeningPoint listeningPoint = listeningPoints[0];
+            String ip = listeningPoint.getIPAddress();
+            int port = listeningPoint.getPort();
+            try {
+                sipProvider.sendRequest(request.build(sipProvider, ip, port));
+            } catch (SipException e) {
+                log.error("向{} {}:{} 发送请求失败, 异常: {}", ip, listeningPoint.getPort(), listeningPoint.getTransport(), e.getMessage());
+            }
+        });
+    }
+
+    public interface SendRequest {
+        Request build(SipProvider provider, String ip, int port);
+    }
+
+    public interface SendResponse {
+        Response build(SipProvider provider, String ip, int port);
     }
 
     public void listen(String ip, int port){

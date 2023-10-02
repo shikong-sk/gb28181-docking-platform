@@ -50,7 +50,7 @@ public class RegisterRequestProcessor implements MessageProcessor {
     @PostConstruct
     @Override
     public void init(){
-        sipListener.addRequestProcessor(Method.REGISTER,this);
+        sipListener.addRequestProcessor(Request.REGISTER,this);
     }
 
     @SneakyThrows
@@ -91,8 +91,6 @@ public class RegisterRequestProcessor implements MessageProcessor {
             sender.send(senderIp,response);
             return;
         }
-
-
 
         log.debug("认证信息 => {}", authorization);
         boolean authPass = StringUtils.isBlank(password) ||

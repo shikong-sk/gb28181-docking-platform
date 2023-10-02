@@ -47,6 +47,10 @@ public class SipUtil {
         return getIdFromFromHeader(fromHeader);
     }
 
+    public static String generateSn(){
+        return String.valueOf((int) (Math.random() * 9 + 1) * 100000);
+    }
+
     /**
      * 从subject读取channelId
      * */
