@@ -83,7 +83,7 @@ public class CatalogService {
                 data.addAll(catalogResponseDTO.getDeviceList().getDeviceList());
                 if(curNum >= sumNum){
                     log.info("获取完成");
-                    onComplete();
+                    subscribe.getSipRequestSubscribe().delPublisher(sn);
                 } else {
                     subscription.request(1);
                 }
@@ -91,17 +91,13 @@ public class CatalogService {
 
             @Override
             public void onError(Throwable throwable) {
-                if(throwable == null){
-                    return;
-                }
                 throwable.printStackTrace();
                 onComplete();
             }
 
             @Override
             public void onComplete() {
-                log.info("返回结果 {}",result.complete(data));
-                subscribe.getSipRequestSubscribe().delPublisher(callId);
+                log.info("返回结果 {} {}", result.complete(data),data);
             }
         });
         provider.sendRequest(request);
