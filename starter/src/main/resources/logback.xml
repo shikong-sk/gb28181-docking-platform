@@ -49,8 +49,17 @@
         <!--<appender-ref ref="file" />-->
     </root>
 
-    <logger name="cn.skcks.docking.gb28181.core.sip.logger" level="WARN" />
+    <!--Sip日志-->
+    <logger name="cn.skcks.docking.gb28181.core.sip.logger" level="DEBUG" />
+    <!--Sip Sender 日志-->
+    <logger name="cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender" level="WARN"/>
+    <!--Redis日志-->
     <logger name="cn.skcks.docking.gb28181.common.redis.RedisUtil" level="WARN"/>
+    <!--SQL日志-->
     <logger name="cn.skcks.docking.gb28181.orm.mybatis" level="WARN"/>
+    <!--设备认证日志-->
+    <logger name="cn.skcks.docking.gb28181.sip.utils.DigestAuthenticationHelper" level="WARN"/>
+    <!--设备上线-->
+    <logger name="cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService" level="OFF"/>
     <logger name="cn.skcks.docking.gb28181" level="DEBUG" />
 </configuration>
