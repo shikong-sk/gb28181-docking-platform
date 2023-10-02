@@ -4,6 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
@@ -31,7 +32,7 @@ public interface GenericSubscribe<T> {
 
         public static <T> void delPublisher(Map<String, SubmissionPublisher<T>> publishers, String key){
             SubmissionPublisher<T> publisher = publishers.remove(key);
-            publisher.close();
+            Optional.ofNullable(publisher).ifPresent(SubmissionPublisher::close);
         }
 
         public static <T> void addPublisher(Executor executor, Map<String, SubmissionPublisher<T>> publishers, String key){
