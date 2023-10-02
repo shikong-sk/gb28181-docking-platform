@@ -49,6 +49,8 @@
         <!--<appender-ref ref="file" />-->
     </root>
 
-    <logger name="cn.skcks.docking.gb28181.core.sip.logger" level="INFO" />
+    <logger name="cn.skcks.docking.gb28181.core.sip.logger" level="WARN" />
+    <logger name="cn.skcks.docking.gb28181.common.redis.RedisUtil" level="WARN"/>
+    <logger name="cn.skcks.docking.gb28181.orm.mybatis" level="WARN"/>
     <logger name="cn.skcks.docking.gb28181" level="DEBUG" />
 </configuration>
