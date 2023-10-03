@@ -5,7 +5,10 @@ import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
+import cn.skcks.docking.gb28181.orm.mybatis.dynamic.mapper.DockingDeviceChannelMapper;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
+import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDeviceChannel;
+import cn.skcks.docking.gb28181.service.device.DeviceChannelService;
 import cn.skcks.docking.gb28181.service.docking.device.cache.DockingDeviceCacheService;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogItemDTO;
@@ -37,6 +40,7 @@ public class CatalogService {
     private final DockingDeviceCacheService deviceCacheService;
     private final SipConfig sipConfig;
     private final SipSubscribe subscribe;
+    private final DeviceChannelService deviceChannelService;
 
     @SneakyThrows
     public CompletableFuture<List<CatalogItemDTO>> catalog(String gbDeviceId){
@@ -100,6 +104,16 @@ public class CatalogService {
             @Override
             public void onComplete() {
                 log.info("{} 返回结果 {}", key, result.complete(data));
+
+                data.stream().map(item->{
+                    DockingDeviceChannel model = new DockingDeviceChannel();
+                    model.setGbDeviceId(device.getDeviceId());
+                    model.setGbDeviceChannelId(item.getDeviceId());
+                    model.setName(item.getName());
+                    model.setAddress(item.getAddress());
+                    return model;
+                }).forEach(deviceChannelService::add);
+
                 subscribe.getSipRequestSubscribe().delPublisher(key);
             }
         });
