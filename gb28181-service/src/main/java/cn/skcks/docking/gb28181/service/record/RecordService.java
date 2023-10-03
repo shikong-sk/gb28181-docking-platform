@@ -138,7 +138,7 @@ public class RecordService {
             public void onComplete() {
                 result.setResult(JsonResponse.success(RecordConvertor.INSTANCE.dto2Vo(sortedRecordList(list))));
                 log.debug("订阅结束 => {}", key);
-                subscribe.getRecordInfoSubscribe().delPublisher(key);
+                subscribe.getSipRequestSubscribe().delPublisher(key);
             }
         };
         subscribe.getSipRequestSubscribe().addSubscribe(key, subscriber);
@@ -146,7 +146,7 @@ public class RecordService {
             result.setResult(JsonResponse.build(ResponseStatus.PARTIAL_CONTENT,
                     RecordConvertor.INSTANCE.dto2Vo(sortedRecordList(Collections.emptyList())),
                     "查询超时, 结果可能不完整"));
-            subscribe.getRecordInfoSubscribe().delPublisher(key);
+            subscribe.getSipRequestSubscribe().delPublisher(key);
         });
 
         provider.sendRequest(request);
