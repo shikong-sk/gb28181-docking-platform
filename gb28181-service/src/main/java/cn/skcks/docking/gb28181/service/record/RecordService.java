@@ -95,8 +95,8 @@ public class RecordService {
         subscribe.getSipRequestSubscribe().addPublisher(key);
         Flow.Subscriber<SIPRequest> subscriber = new Flow.Subscriber<>() {
             final List<RecordInfoItemDTO> list = new ArrayList<>();
-            AtomicLong atomicSum = new AtomicLong(0);
-            AtomicLong atomicNum = new AtomicLong(0);
+            final AtomicLong atomicSum = new AtomicLong(0);
+            final AtomicLong atomicNum = new AtomicLong(0);
             Flow.Subscription subscription;
 
             @Override
@@ -109,8 +109,8 @@ public class RecordService {
             @Override
             public void onNext(SIPRequest item) {
                 RecordInfoResponseDTO data = MANSCDPUtils.parse(item.getRawContent(), RecordInfoResponseDTO.class);
-                atomicSum.set(data.getSumNum());
-                atomicNum.getAndAdd(data.getRecordList().getNum());
+                atomicSum.set(Math.max(data.getSumNum(), atomicNum.get()));
+                atomicNum.addAndGet(data.getRecordList().getNum());
                 list.addAll(data.getRecordList().getRecordList());
                 long num = atomicNum.get();
                 long sum = atomicSum.get();
