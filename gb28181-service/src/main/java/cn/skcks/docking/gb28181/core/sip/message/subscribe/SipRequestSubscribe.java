@@ -33,7 +33,7 @@ public class SipRequestSubscribe implements GenericTimeoutSubscribe<SIPRequest>,
         Helper.addSubscribe(publishers, key, subscribe);
     }
 
-    public void compile(String key){
+    public void complete(String key){
         delPublisher(key);
     }
 

@@ -19,7 +19,7 @@ public interface GenericSubscribe<T> {
     void addSubscribe(String key,Flow.Subscriber<T> subscribe);
     void delPublisher(String key);
 
-    void compile(String key);
+    void complete(String key);
 
     class Helper {
         public final static String SEPARATOR = ":";

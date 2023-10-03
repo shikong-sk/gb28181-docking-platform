@@ -30,7 +30,7 @@ public class RecordInfoSubscribe implements GenericSubscribe<RecordInfoResponseD
         Helper.addSubscribe(publishers, key, subscribe);
     }
 
-    public void compile(String key){
+    public void complete(String key){
         delPublisher(key);
     }
 

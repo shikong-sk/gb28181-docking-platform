@@ -5,7 +5,6 @@ import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
-import cn.skcks.docking.gb28181.orm.mybatis.dynamic.mapper.DockingDeviceChannelMapper;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDeviceChannel;
 import cn.skcks.docking.gb28181.service.device.DeviceChannelService;
@@ -89,7 +88,7 @@ public class CatalogService {
                 data.addAll(catalogResponseDTO.getDeviceList().getDeviceList());
                 if(curNum >= sumNum){
                     log.info("获取完成 {}", key);
-                    subscribe.getSipRequestSubscribe().compile(key);
+                    subscribe.getSipRequestSubscribe().complete(key);
                 } else {
                     subscription.request(1);
                 }
