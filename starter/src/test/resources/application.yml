@@ -24,6 +24,9 @@ spring:
     username: root
     password: 12341234
     url: jdbc:mysql://10.10.10.200:3306/gb28181_docking_platform?createDatabaseIfNotExist=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+  mvc:
+    async:
+      request-timeout: 3m
 
 gb28181:
   # 作为28181服务器的配置
@@ -42,7 +45,7 @@ gb28181:
     # [可选]
     domain: 4405010000
     # [可选]
-    id: 44050100002000000002
+    id: 44050100002000000003
     # [可选] 默认设备认证密码，后续扩展使用设备单独密码, 移除密码将不进行校验
     password: 123456
     # 是否存储alarm信息
@@ -50,7 +53,7 @@ gb28181:
 
 media:
   ip: 10.10.10.200
-  url: 'http://10.10.10.200:5080'
+  url: 'http://10.10.10.200:5081'
   #  url: 'http://10.10.10.200:12580/anything/'
   id: amrWMKmbKqoBjRQ9
   secret: 4155cca6-2f9f-11ee-85e6-8de4ce2e7333

@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
 import java.util.Objects;
 
@@ -70,6 +71,12 @@ public class ExceptionAdvice {
     public JsonResponse<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e){
         log.warn("{}", e.getMessage());
         return JsonResponse.error("参数异常");
+    }
+
+    @ExceptionHandler(AsyncRequestTimeoutException.class)
+    public JsonResponse<String> exception(AsyncRequestTimeoutException e) {
+        e.printStackTrace();
+        return JsonResponse.error("请求超时");
     }
 
     @ExceptionHandler(Exception.class)

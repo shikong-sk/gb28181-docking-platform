@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,8 +23,12 @@ public class CatalogController {
 
     @SneakyThrows
     @GetJson
-    public JsonResponse<List<?>> catalog(String gbDeviceId){
+    public DeferredResult<JsonResponse<List<?>>> catalog(String gbDeviceId){
+        DeferredResult<JsonResponse<List<?>>> result = new DeferredResult<>();
         CompletableFuture<List<CatalogItemDTO>> catalog = catalogService.catalog(gbDeviceId);
-        return JsonResponse.success(catalog.get());
+        catalog.whenComplete((data,throwable)->{
+            result.setResult(JsonResponse.success(data));
+        });
+        return result;
     }
 }

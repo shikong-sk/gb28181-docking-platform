@@ -3,3 +3,7 @@ server:
 
 project:
   version: @project.version@
+spring:
+  mvc:
+    async:
+      request-timeout: 3m
