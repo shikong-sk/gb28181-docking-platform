@@ -64,7 +64,7 @@ public class CatalogService {
                 .deviceId(gbDeviceId)
                 .sn(sn)
                 .build();
-        Request request = requestBuilder.createMessageRequest(callId, cSeq, MANSCDPUtils.toByteXml(catalogQueryDTO));
+        Request request = requestBuilder.createMessageRequest(callId, cSeq, MANSCDPUtils.toByteXml(catalogQueryDTO, device.getCharset()));
         String key = GenericSubscribe.Helper.getKey(CmdType.CATALOG, gbDeviceId, sn);
         subscribe.getSipRequestSubscribe().addPublisher(key, 60, TimeUnit.SECONDS);
         subscribe.getSipRequestSubscribe().addSubscribe(key, new Flow.Subscriber<>() {

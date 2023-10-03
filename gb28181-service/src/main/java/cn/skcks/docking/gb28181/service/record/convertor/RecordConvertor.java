@@ -1,7 +1,7 @@
 package cn.skcks.docking.gb28181.service.record.convertor;
 
-import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoItemDTO;
 import cn.skcks.docking.gb28181.service.record.vo.RecordInfoItemVO;
+import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response.RecordInfoItemDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

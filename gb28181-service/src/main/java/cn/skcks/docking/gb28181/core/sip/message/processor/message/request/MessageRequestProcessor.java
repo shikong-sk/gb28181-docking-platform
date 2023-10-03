@@ -6,7 +6,6 @@ import cn.skcks.docking.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
-import cn.skcks.docking.gb28181.core.sip.message.processor.message.types.recordinfo.reponse.dto.RecordInfoResponseDTO;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
@@ -15,6 +14,7 @@ import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
 import cn.skcks.docking.gb28181.sip.manscdp.MessageDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response.RecordInfoResponseDTO;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -25,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.sip.RequestEvent;
-import javax.sip.header.CallIdHeader;
-import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.util.EventObject;
 import java.util.Optional;
@@ -77,8 +75,8 @@ public class MessageRequestProcessor implements MessageProcessor {
             response = ok;
             RecordInfoResponseDTO dto = XmlUtils.parse(content, RecordInfoResponseDTO.class, GB28181Constant.CHARSET);
             String key = GenericSubscribe.Helper.getKey(CmdType.RECORD_INFO, dto.getDeviceId(), dto.getSn());
-            Optional.ofNullable(subscribe.getRecordInfoSubscribe().getPublisher(key))
-                    .ifPresentOrElse(publisher -> publisher.submit(dto),
+            Optional.ofNullable(subscribe.getSipRequestSubscribe().getPublisher(key))
+                    .ifPresentOrElse(publisher -> publisher.submit(request),
                             () -> log.warn("对应订阅 {} 已结束, 异常数据 => {}", key, dto));
         }else if(messageDto.getCmdType().equalsIgnoreCase(CmdType.CATALOG)){
             CatalogResponseDTO catalogResponseDTO = MANSCDPUtils.parse(content, CatalogResponseDTO.class);

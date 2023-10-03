@@ -1,8 +1,8 @@
-package cn.skcks.docking.gb28181.api.record;
+package cn.skcks.docking.gb28181.api.gb28181.record;
 
 import cn.skcks.docking.gb28181.annotation.web.JsonMapping;
 import cn.skcks.docking.gb28181.annotation.web.methods.GetJson;
-import cn.skcks.docking.gb28181.api.record.dto.GetInfoDTO;
+import cn.skcks.docking.gb28181.api.gb28181.record.dto.GetRecordInfoDTO;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.config.SwaggerConfig;
 import cn.skcks.docking.gb28181.service.record.RecordService;
@@ -20,7 +20,7 @@ import java.util.List;
 
 @Tag(name="历史录像")
 @RestController
-@JsonMapping("/api/device/record")
+@JsonMapping("/api/gb28181/record")
 @RequiredArgsConstructor
 public class RecordController {
     private final RecordService recordService;
@@ -30,8 +30,8 @@ public class RecordController {
         return SwaggerConfig.api("Record", "/api/device/record");
     }
 
-    @GetJson("/getInfoList")
-    public DeferredResult<JsonResponse<List<RecordInfoItemVO>>> getInfo(@ParameterObject @Validated GetInfoDTO dto){
-        return recordService.requestRecordInfo(dto.getDeviceId(), dto.getTimeout(), dto.getDate());
+    @GetJson("/list")
+    public DeferredResult<JsonResponse<List<RecordInfoItemVO>>> getInfo(@ParameterObject @Validated GetRecordInfoDTO dto){
+        return recordService.requestRecordInfo(dto.getGbDeviceId(), dto.getGbDeviceChannelId(), dto.getTimeout(), dto.getDate());
     }
 }

@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.api.record.dto;
+package cn.skcks.docking.gb28181.api.gb28181.record.dto;
 
 import cn.hutool.core.date.DatePattern;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,10 +11,14 @@ import java.util.Date;
 
 @Schema(title = "查询历史录像")
 @Data
-public class GetInfoDTO {
+public class GetRecordInfoDTO {
     @NotBlank
-    @Schema(description = "设备id", example = "44050100001180000001")
-    private String deviceId;
+    @Schema(description = "设备id", example = "44050100002000000006")
+    private String gbDeviceId;
+
+    @NotBlank
+    @Schema(description = "通道id", example = "34020000001310000001")
+    private String gbDeviceChannelId;
 
     @Min(30)
     @Schema(description = "超时时间(秒)", example = "30")
