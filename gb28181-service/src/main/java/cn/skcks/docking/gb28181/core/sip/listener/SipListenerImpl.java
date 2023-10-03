@@ -1,8 +1,10 @@
 package cn.skcks.docking.gb28181.core.sip.listener;
 
 import cn.skcks.docking.gb28181.core.sip.executor.DefaultSipExecutor;
+import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
+import gov.nist.javax.sip.message.SIPResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -21,7 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 @Slf4j
 public class SipListenerImpl implements SipListener {
-    private final SipSubscribe sipSubscribe;
+    private final SipSubscribe subscribe;
     private final ConcurrentMap<String, MessageProcessor> requestProcessor = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, MessageProcessor> responseProcessor = new ConcurrentHashMap<>();
 
@@ -65,6 +67,11 @@ public class SipListenerImpl implements SipListener {
             // 增加其它无需回复的响应，如101、180等
         } else {
             log.warn("接收到失败的response响应！status：" + status + ",message:" + response.getReasonPhrase());
+            SIPResponse sipResponse = (SIPResponse) response;
+            String callId = sipResponse.getCallIdHeader().getCallId();
+            Optional.ofNullable(subscribe.getSipResponseSubscribe()
+                            .getPublisher(GenericSubscribe.Helper.getKey(MessageProcessor.Method.INVITE, callId)))
+                    .ifPresent(publisher->publisher.submit(sipResponse));
             if (responseEvent.getDialog() != null) {
                 responseEvent.getDialog().delete();
             }

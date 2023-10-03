@@ -1,5 +1,7 @@
 package cn.skcks.docking.gb28181.service.play;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.json.JsonUtils;
 import cn.skcks.docking.gb28181.common.redis.RedisUtil;
@@ -147,7 +149,7 @@ public class PlayService {
         CallIdHeader callId = provider.getNewCallId();
         Request request = SipRequestBuilder.createInviteRequest(device, channelId, description.toString(), SipUtil.generateViaTag(), SipUtil.generateFromTag(), null, ssrc, callId);
         String subscribeKey = GenericSubscribe.Helper.getKey(MessageProcessor.Method.INVITE, callId.getCallId());
-        subscribe.getInviteSubscribe().addPublisher(subscribeKey);
+        subscribe.getSipResponseSubscribe().addPublisher(subscribeKey);
         Flow.Subscriber<SIPResponse> subscriber = new Flow.Subscriber<>() {
             private Flow.Subscription subscription;
 
@@ -186,13 +188,13 @@ public class PlayService {
 
             @Override
             public void onComplete() {
-                subscribe.getInviteSubscribe().delPublisher(subscribeKey);
+                subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             }
         };
-        subscribe.getInviteSubscribe().addSubscribe(subscribeKey, subscriber);
+        subscribe.getSipResponseSubscribe().addSubscribe(subscribeKey, subscriber);
         sender.send(senderIp, request);
         result.onTimeout(() -> {
-            subscribe.getInviteSubscribe().delPublisher(subscribeKey);
+            subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             result.setResult(JsonResponse.error("点播超时"));
         });
         return result;
@@ -245,7 +247,7 @@ public class PlayService {
 
         Request request = SipRequestBuilder.createInviteRequest(device, channelId, description.toString(), SipUtil.generateViaTag(), SipUtil.generateFromTag(), null, ssrc, callId);
         String subscribeKey = GenericSubscribe.Helper.getKey(MessageProcessor.Method.INVITE, callId.getCallId());
-        subscribe.getInviteSubscribe().addPublisher(subscribeKey);
+        subscribe.getSipResponseSubscribe().addPublisher(subscribeKey);
         Flow.Subscriber<SIPResponse> subscriber = new Flow.Subscriber<>() {
             private Flow.Subscription subscription;
 
@@ -266,6 +268,7 @@ public class PlayService {
                 } else if (statusCode >= Response.OK && statusCode < Response.MULTIPLE_CHOICES) {
                     log.info("订阅 {} {} 流媒体服务连接成功, 开始推送视频流", MessageProcessor.Method.INVITE, subscribeKey);
                     RedisUtil.StringOps.set(key, JsonUtils.toCompressJson(new SipTransactionInfo(item, ssrc)));
+                    RedisUtil.KeyOps.expire(key, DateUtil.between(startTime, endTime, DateUnit.SECOND), TimeUnit.SECONDS);
                     result.setResult(JsonResponse.success(videoUrl(streamId)));
                     onComplete();
                 } else {
@@ -287,10 +290,10 @@ public class PlayService {
                 subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
             }
         };
-        subscribe.getInviteSubscribe().addSubscribe(subscribeKey, subscriber);
+        subscribe.getSipResponseSubscribe().addSubscribe(subscribeKey, subscriber);
         sender.send(senderIp, request);
         result.onTimeout(() -> {
-            subscribe.getInviteSubscribe().delPublisher(subscribeKey);
+            subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             result.setResult(JsonResponse.error("点播超时"));
         });
         return result;

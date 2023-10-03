@@ -53,13 +53,13 @@ public class InviteResponseProcessor implements MessageProcessor {
 
             // trying不会回复
             if (statusCode == Response.TRYING) {
-                subscribe.getInviteSubscribe().getPublisher(subscribeKey).submit(response);
+                subscribe.getSipResponseSubscribe().getPublisher(subscribeKey).submit(response);
                 return;
             }
             // 成功响应
             // 下发ack
             if (statusCode == Response.OK) {
-                Optional.ofNullable(subscribe.getInviteSubscribe().getPublisher(subscribeKey))
+                Optional.ofNullable(subscribe.getSipResponseSubscribe().getPublisher(subscribeKey))
                         .ifPresentOrElse(publisher-> publisher.submit(response),
                                 ()-> log.warn("对应订阅 {} 已结束",callId.getCallId()));
 
