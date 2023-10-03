@@ -1,6 +1,7 @@
 package cn.skcks.docking.gb28181.service.catalog;
 
 import cn.skcks.docking.gb28181.config.sip.SipConfig;
+import cn.skcks.docking.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
@@ -64,7 +65,7 @@ public class CatalogService {
                 .sn(sn)
                 .build();
         Request request = requestBuilder.createMessageRequest(callId, cSeq, MANSCDPUtils.toByteXml(catalogQueryDTO));
-        String key = GenericSubscribe.Helper.getKey(gbDeviceId,sn);
+        String key = GenericSubscribe.Helper.getKey(CmdType.CATALOG, gbDeviceId, sn);
         subscribe.getSipRequestSubscribe().addPublisher(key, 60, TimeUnit.SECONDS);
         subscribe.getSipRequestSubscribe().addSubscribe(key, new Flow.Subscriber<>() {
             private Flow.Subscription subscription;
