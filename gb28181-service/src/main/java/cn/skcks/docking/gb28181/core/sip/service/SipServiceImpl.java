@@ -156,7 +156,7 @@ public class SipServiceImpl implements SipService {
             }
         } catch (Exception e){
             log.error("[sip] {}:{} 监听失败, 请检查端口是否被占用, 错误信息 => {}",ip,port, e.getMessage());
+            Runtime.getRuntime().exit(-1);
         }
-
     }
 }
