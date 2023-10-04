@@ -7,9 +7,7 @@ import cn.skcks.docking.gb28181.common.json.JsonUtils;
 import cn.skcks.docking.gb28181.common.redis.RedisUtil;
 import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
 import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.GB28181Description;
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.MediaSdpHelper;
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.StreamMode;
+import cn.skcks.docking.gb28181.sdp.GB28181Description;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
 import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
@@ -25,6 +23,8 @@ import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServerResp;
 import cn.skcks.docking.gb28181.media.dto.status.ResponseStatus;
 import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
+import cn.skcks.docking.gb28181.sdp.GB28181SDPBuilder;
+import cn.skcks.docking.gb28181.sdp.media.MediaStreamMode;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
 import cn.skcks.docking.gb28181.service.ssrc.SsrcService;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -94,7 +94,7 @@ public class PlayService {
     }
 
     @SneakyThrows
-    private JsonResponse<Void> closeStream(String streamId, MediaSdpHelper.Action action, DockingDevice device, String channelId) {
+    private JsonResponse<Void> closeStream(String streamId, GB28181SDPBuilder.Action action, DockingDevice device, String channelId) {
         zlmMediaService.closeRtpServer(new CloseRtpServer(streamId));
         String key = CacheUtil.getKey(action.getAction(), device.getDeviceId(), channelId);
         SipTransactionInfo transactionInfo = JsonUtils.parse(RedisUtil.StringOps.get(key), SipTransactionInfo.class);
@@ -125,8 +125,8 @@ public class PlayService {
             return result;
         }
 
-        String streamId = MediaSdpHelper.getStreamId(deviceId, channelId);
-        String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY.getAction(), deviceId, channelId);
+        String streamId = GB28181SDPBuilder.getStreamId(deviceId, channelId);
+        String key = CacheUtil.getKey(GB28181SDPBuilder.Action.PLAY.getAction(), deviceId, channelId);
         if (RedisUtil.KeyOps.hasKey(key)) {
             result.setResult(JsonResponse.success(videoUrl(streamId)));
             return result;
@@ -141,7 +141,7 @@ public class PlayService {
         }
 
         String ssrc = ssrcService.getPlaySsrc();
-        GB28181Description description = MediaSdpHelper.play(deviceId, channelId, Connection.IP4, ip, port, ssrc, StreamMode.of(device.getStreamMode()));
+        GB28181Description description = GB28181SDPBuilder.Receiver.play(deviceId, channelId, Connection.IP4, ip, port, ssrc, MediaStreamMode.of(device.getStreamMode()));
 
         String transport = device.getTransport();
         String senderIp = device.getLocalIp();
@@ -208,8 +208,8 @@ public class PlayService {
             return JsonResponse.error(null, "未找到设备");
         }
 
-        String streamId = MediaSdpHelper.getStreamId(deviceId, channelId);
-        return closeStream(streamId, MediaSdpHelper.Action.PLAY, device, channelId);
+        String streamId = GB28181SDPBuilder.getStreamId(deviceId, channelId);
+        return closeStream(streamId, GB28181SDPBuilder.Action.PLAY, device, channelId);
     }
 
     @SneakyThrows
@@ -217,13 +217,13 @@ public class PlayService {
         DockingDevice device = deviceService.getDevice(deviceId);
         long start = startTime.toInstant().getEpochSecond();
         long end = endTime.toInstant().getEpochSecond();
-        String streamId = MediaSdpHelper.getStreamId(deviceId, channelId, String.valueOf(start), String.valueOf(end));
+        String streamId = GB28181SDPBuilder.getStreamId(deviceId, channelId, String.valueOf(start), String.valueOf(end));
         DeferredResult<JsonResponse<String>> result = makeResult(deviceId, channelId, timeout, device);
         if (result.hasResult()) {
             return result;
         }
 
-        String key = CacheUtil.getKey(MediaSdpHelper.Action.PLAY_BACK.getAction(), deviceId, channelId);
+        String key = CacheUtil.getKey(GB28181SDPBuilder.Action.PLAY_BACK.getAction(), deviceId, channelId);
         if (RedisUtil.KeyOps.hasKey(key)) {
             result.setResult(JsonResponse.success(videoUrl(streamId)));
             return result;
@@ -238,7 +238,7 @@ public class PlayService {
         }
 
         String ssrc = ssrcService.getPlaySsrc();
-        GB28181Description description = MediaSdpHelper.playback(deviceId, channelId, Connection.IP4, ip, port, ssrc, StreamMode.of(device.getStreamMode()), startTime, endTime);
+        GB28181Description description = GB28181SDPBuilder.Receiver.playback(deviceId, channelId, Connection.IP4, ip, port, ssrc, MediaStreamMode.of(device.getStreamMode()), startTime, endTime);
 
         String transport = device.getTransport();
         String senderIp = device.getLocalIp();
@@ -309,8 +309,8 @@ public class PlayService {
 
         long start = startTime.toInstant().getEpochSecond();
         long end = endTime.toInstant().getEpochSecond();
-        String streamId = MediaSdpHelper.getStreamId(deviceId, channelId, String.valueOf(start), String.valueOf(end));
-        return closeStream(streamId, MediaSdpHelper.Action.PLAY_BACK, device, channelId);
+        String streamId = GB28181SDPBuilder.getStreamId(deviceId, channelId, String.valueOf(start), String.valueOf(end));
+        return closeStream(streamId, GB28181SDPBuilder.Action.PLAY_BACK, device, channelId);
     }
 
 }

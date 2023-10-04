@@ -7,6 +7,7 @@ import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.core.sip.gb28181.sip.GbSipDate;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
+import cn.skcks.docking.gb28181.sdp.media.MediaStreamMode;
 import cn.skcks.docking.gb28181.sip.method.register.response.RegisterResponseBuilder;
 import cn.skcks.docking.gb28181.sip.utils.DigestAuthenticationHelper;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
@@ -139,14 +140,14 @@ public class RegisterRequestProcessor implements MessageProcessor {
 
         if (device == null) {
             device = new DockingDevice();
-            device.setStreamMode(ListeningPoint.UDP);
+            device.setStreamMode(MediaStreamMode.TCP_ACTIVE.getMode());
             device.setCharset(GB28181Constant.CHARSET);
             device.setGeoCoordSys(GB28181Constant.GEO_COORD_SYS);
             device.setDeviceId(deviceId);
             device.setOnLine(false);
         } else {
             if (ObjectUtils.isEmpty(device.getStreamMode())) {
-                device.setStreamMode(ListeningPoint.UDP);
+                device.setStreamMode(MediaStreamMode.TCP_ACTIVE.getMode());
             }
             if (ObjectUtils.isEmpty(device.getCharset())) {
                 device.setCharset(GB28181Constant.CHARSET);
