@@ -85,6 +85,8 @@ public class MessageRequestProcessor implements MessageProcessor {
                 publisher.submit(request);
             });
             response = ok;
+        } else if(messageDto.getCmdType().equalsIgnoreCase(CmdType.MEDIA_STATUS)){
+            response = ok;
         } else {
             response = response(request, Response.NOT_IMPLEMENTED, ResponseStatus.NOT_IMPLEMENTED.getMessage());
         }
