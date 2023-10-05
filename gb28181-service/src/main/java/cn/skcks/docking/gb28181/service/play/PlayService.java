@@ -204,7 +204,7 @@ public class PlayService {
                 subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             }
         };
-        byeSubscribe(callId,3600,()->{
+        byeSubscribe(inviteRequestBuilder,provider,callId,3600,()->{
             RedisUtil.KeyOps.delete(key);
         });
         subscribe.getSipResponseSubscribe().addSubscribe(subscribeKey, subscriber);
@@ -313,7 +313,7 @@ public class PlayService {
                 subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
             }
         };
-        byeSubscribe(callId,DateUtil.between(startTime,endTime,DateUnit.SECOND),()->{
+        byeSubscribe(inviteRequestBuilder,provider,callId,DateUtil.between(startTime,endTime,DateUnit.SECOND),()->{
             RedisUtil.KeyOps.delete(key);
         });
         subscribe.getSipResponseSubscribe().addSubscribe(subscribeKey, subscriber);
@@ -325,11 +325,12 @@ public class PlayService {
         return result;
     }
 
-    public void byeSubscribe(String callId, long seconds, Runnable cb){
+    public void byeSubscribe(InviteRequestBuilder inviteRequestBuilder,SipProvider provider, String callId, long seconds, Runnable cb){
         GenericTimeoutSubscribe<SIPRequest> sipRequestSubscribe = subscribe.getSipRequestSubscribe();
         String subscribeKey = GenericSubscribe.Helper.getKey(Request.BYE, callId);
         sipRequestSubscribe.addPublisher(subscribeKey,seconds + 30,TimeUnit.SECONDS);
         Flow.Subscriber<SIPRequest> subscriber = new Flow.Subscriber<>(){
+            SIPRequest request;
             @Override
             public void onSubscribe(Flow.Subscription subscription) {
                 subscription.request(1);
@@ -339,11 +340,7 @@ public class PlayService {
             @SneakyThrows
             public void onNext(SIPRequest item) {
                 subscribe.getRecordInfoSubscribe().delPublisher(GenericSubscribe.Helper.getKey(Request.INVITE, callId));
-                String transport = item.getTopmostViaHeader().getTransport();
-                String hostAddress = item.getLocalAddress().getHostAddress();
-                Response byeResponse = InviteResponseBuilder.builder().build().createByeResponse(item, SipUtil.nanoId());
-                sipService.getProvider(transport,hostAddress).sendResponse(byeResponse);
-                cb.run();
+                request = item;
                 subscribe.getRecordInfoSubscribe().complete(subscribeKey);
             }
 
@@ -352,8 +349,17 @@ public class PlayService {
 
             }
 
+            @SneakyThrows
             @Override
             public void onComplete() {
+                if(request != null){
+                    Response byeResponse = InviteResponseBuilder.builder().build().createByeResponse(request, SipUtil.nanoId());
+                    provider.sendResponse(byeResponse);
+                } else {
+                    Request byeRequest = inviteRequestBuilder.createByeRequest(callId, SipRequestBuilder.getCSeq());
+                    provider.sendRequest(byeRequest);
+                }
+                cb.run();
                 subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
             }
         };
