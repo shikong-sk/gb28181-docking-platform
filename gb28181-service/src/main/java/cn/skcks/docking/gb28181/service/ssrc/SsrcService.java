@@ -81,7 +81,7 @@ public class SsrcService {
     /**
      * 获取录像回放的SSRC值,第一位固定为1
      */
-    public String getPlayBackSsrc(String mediaServerI) {
+    public String getPlayBackSsrc() {
         return "1" + getSN();
     }
 

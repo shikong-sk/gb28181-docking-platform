@@ -5,14 +5,13 @@ import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.json.JsonUtils;
 import cn.skcks.docking.gb28181.common.redis.RedisUtil;
+import cn.skcks.docking.gb28181.config.sip.SipConfig;
 import cn.skcks.docking.gb28181.core.sip.dto.SipTransactionInfo;
 import cn.skcks.docking.gb28181.core.sip.gb28181.cache.CacheUtil;
-import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericTimeoutSubscribe;
-import cn.skcks.docking.gb28181.sdp.GB28181Description;
-import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
 import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
+import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericTimeoutSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import cn.skcks.docking.gb28181.media.config.ZlmMediaConfig;
@@ -23,10 +22,12 @@ import cn.skcks.docking.gb28181.media.dto.rtp.OpenRtpServerResp;
 import cn.skcks.docking.gb28181.media.dto.status.ResponseStatus;
 import cn.skcks.docking.gb28181.media.proxy.ZlmMediaService;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
+import cn.skcks.docking.gb28181.sdp.GB28181Description;
 import cn.skcks.docking.gb28181.sdp.GB28181SDPBuilder;
 import cn.skcks.docking.gb28181.sdp.media.MediaStreamMode;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
 import cn.skcks.docking.gb28181.service.ssrc.SsrcService;
+import cn.skcks.docking.gb28181.sip.method.invite.request.InviteRequestBuilder;
 import cn.skcks.docking.gb28181.sip.method.invite.response.InviteResponseBuilder;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
 import gov.nist.javax.sip.message.SIPRequest;
@@ -60,6 +61,7 @@ public class PlayService {
     private final SipService sipService;
     private final SipMessageSender sender;
     private final SipSubscribe subscribe;
+    private final SipConfig sipConfig;
 
     private String videoUrl(String streamId) {
         return StringUtils.joinWith("/", zlmMediaConfig.getUrl(), "rtp", streamId + ".live.flv");
@@ -144,14 +146,22 @@ public class PlayService {
         }
 
         String ssrc = ssrcService.getPlaySsrc();
-        GB28181Description description = GB28181SDPBuilder.Receiver.play(deviceId, channelId, Connection.IP4, ip, port, ssrc, MediaStreamMode.of(device.getStreamMode()));
-
         String transport = device.getTransport();
         String senderIp = device.getLocalIp();
         SipProvider provider = sipService.getProvider(transport, senderIp);
-        CallIdHeader callId = provider.getNewCallId();
-        Request request = SipRequestBuilder.createInviteRequest(device, channelId, description.toString(), SipUtil.generateViaTag(), SipUtil.generateFromTag(), null, ssrc, callId);
-        String subscribeKey = GenericSubscribe.Helper.getKey(Request.INVITE, callId.getCallId());
+        CallIdHeader callIdHeader = provider.getNewCallId();
+        String callId = callIdHeader.getCallId();
+        InviteRequestBuilder inviteRequestBuilder = InviteRequestBuilder.builder()
+                .localId(sipConfig.getId())
+                .localPort(sipConfig.getPort())
+                .localIp(device.getLocalIp())
+                .targetId(deviceId)
+                .targetIp(device.getIp())
+                .targetPort(device.getPort())
+                .transport(device.getTransport())
+                .build();
+        Request request = inviteRequestBuilder.createPlayInviteRequest(callId, SipRequestBuilder.getCSeq(),channelId,ip,port,ssrc,MediaStreamMode.of(device.getStreamMode()));
+        String subscribeKey = GenericSubscribe.Helper.getKey(Request.INVITE, callIdHeader.getCallId());
         subscribe.getSipResponseSubscribe().addPublisher(subscribeKey);
         Flow.Subscriber<SIPResponse> subscriber = new Flow.Subscriber<>() {
             private Flow.Subscription subscription;
@@ -194,7 +204,7 @@ public class PlayService {
                 subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             }
         };
-        byeSubscribe(callId.getCallId(),3600,()->{
+        byeSubscribe(callId,3600,()->{
             RedisUtil.KeyOps.delete(key);
         });
         subscribe.getSipResponseSubscribe().addSubscribe(subscribeKey, subscriber);
@@ -243,16 +253,23 @@ public class PlayService {
             return result;
         }
 
-        String ssrc = ssrcService.getPlaySsrc();
-        GB28181Description description = GB28181SDPBuilder.Receiver.playback(deviceId, channelId, Connection.IP4, ip, port, ssrc, MediaStreamMode.of(device.getStreamMode()), startTime, endTime);
-
+        String ssrc = ssrcService.getPlayBackSsrc();
         String transport = device.getTransport();
         String senderIp = device.getLocalIp();
         SipProvider provider = sipService.getProvider(transport, senderIp);
-        CallIdHeader callId = provider.getNewCallId();
-
-        Request request = SipRequestBuilder.createInviteRequest(device, channelId, description.toString(), SipUtil.generateViaTag(), SipUtil.generateFromTag(), null, ssrc, callId);
-        String subscribeKey = GenericSubscribe.Helper.getKey(Request.INVITE, callId.getCallId());
+        CallIdHeader callIdHeader = provider.getNewCallId();
+        String callId = callIdHeader.getCallId();
+        InviteRequestBuilder inviteRequestBuilder = InviteRequestBuilder.builder()
+                .localId(sipConfig.getId())
+                .localPort(sipConfig.getPort())
+                .localIp(device.getLocalIp())
+                .targetId(deviceId)
+                .targetIp(device.getIp())
+                .targetPort(device.getPort())
+                .transport(device.getTransport())
+                .build();
+        Request request = inviteRequestBuilder.createPlaybackInviteRequest(callId, SipRequestBuilder.getCSeq(),channelId,ip,port,ssrc,MediaStreamMode.of(device.getStreamMode()),startTime,endTime);
+        String subscribeKey = GenericSubscribe.Helper.getKey(Request.INVITE, callIdHeader.getCallId());
         subscribe.getSipResponseSubscribe().addPublisher(subscribeKey);
         Flow.Subscriber<SIPResponse> subscriber = new Flow.Subscriber<>() {
             private Flow.Subscription subscription;
@@ -296,7 +313,7 @@ public class PlayService {
                 subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
             }
         };
-        byeSubscribe(callId.getCallId(),DateUtil.between(startTime,endTime,DateUnit.SECOND),()->{
+        byeSubscribe(callId,DateUtil.between(startTime,endTime,DateUnit.SECOND),()->{
             RedisUtil.KeyOps.delete(key);
         });
         subscribe.getSipResponseSubscribe().addSubscribe(subscribeKey, subscriber);
@@ -327,6 +344,7 @@ public class PlayService {
                 Response byeResponse = InviteResponseBuilder.builder().build().createByeResponse(item, SipUtil.nanoId());
                 sipService.getProvider(transport,hostAddress).sendResponse(byeResponse);
                 cb.run();
+                subscribe.getRecordInfoSubscribe().complete(subscribeKey);
             }
 
             @Override
