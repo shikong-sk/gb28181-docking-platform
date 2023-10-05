@@ -24,16 +24,11 @@ public class SipSubscribe {
     @Qualifier(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     private final Executor executor;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-    private GenericSubscribe<RecordInfoResponseDTO> recordInfoSubscribe;
-    private GenericSubscribe<SIPResponse> inviteSubscribe;
     private GenericTimeoutSubscribe<SIPResponse> sipResponseSubscribe;
     private GenericTimeoutSubscribe<SIPRequest> sipRequestSubscribe;
 
     @PostConstruct
     private void init() {
-        // TODO 准备废弃
-        recordInfoSubscribe = new RecordInfoSubscribe(executor);
-        inviteSubscribe = new InviteSubscribe(executor);
         // 通用订阅器
         sipResponseSubscribe = new SipResponseSubscribe(executor, scheduledExecutorService);
         sipRequestSubscribe = new SipRequestSubscribe(executor, scheduledExecutorService);
@@ -41,9 +36,6 @@ public class SipSubscribe {
 
     @PreDestroy
     private void destroy() {
-        inviteSubscribe.close();
-        recordInfoSubscribe.close();
-
         sipResponseSubscribe.close();
         sipRequestSubscribe.close();
     }

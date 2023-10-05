@@ -310,7 +310,7 @@ public class PlayService {
 
             @Override
             public void onComplete() {
-                subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
+                subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             }
         };
         byeSubscribe(inviteRequestBuilder,provider,callId,DateUtil.between(startTime,endTime,DateUnit.SECOND),()->{
@@ -339,9 +339,9 @@ public class PlayService {
             @Override
             @SneakyThrows
             public void onNext(SIPRequest item) {
-                subscribe.getRecordInfoSubscribe().delPublisher(GenericSubscribe.Helper.getKey(Request.INVITE, callId));
+                sipRequestSubscribe.delPublisher(GenericSubscribe.Helper.getKey(Request.INVITE, callId));
                 request = item;
-                subscribe.getRecordInfoSubscribe().complete(subscribeKey);
+                sipRequestSubscribe.complete(subscribeKey);
             }
 
             @Override
@@ -360,7 +360,7 @@ public class PlayService {
                     provider.sendRequest(byeRequest);
                 }
                 cb.run();
-                subscribe.getRecordInfoSubscribe().delPublisher(subscribeKey);
+                sipRequestSubscribe.delPublisher(subscribeKey);
             }
         };
         sipRequestSubscribe.addSubscribe(subscribeKey,subscriber);
