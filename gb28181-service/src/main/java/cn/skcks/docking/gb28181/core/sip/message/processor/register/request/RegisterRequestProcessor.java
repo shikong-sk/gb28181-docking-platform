@@ -140,14 +140,14 @@ public class RegisterRequestProcessor implements MessageProcessor {
 
         if (device == null) {
             device = new DockingDevice();
-            device.setStreamMode(MediaStreamMode.TCP_ACTIVE.getMode());
+            device.setStreamMode(MediaStreamMode.TCP_PASSIVE.getMode());
             device.setCharset(GB28181Constant.CHARSET);
             device.setGeoCoordSys(GB28181Constant.GEO_COORD_SYS);
             device.setDeviceId(deviceId);
             device.setOnLine(false);
         } else {
             if (ObjectUtils.isEmpty(device.getStreamMode())) {
-                device.setStreamMode(MediaStreamMode.TCP_ACTIVE.getMode());
+                device.setStreamMode(MediaStreamMode.TCP_PASSIVE.getMode());
             }
             if (ObjectUtils.isEmpty(device.getCharset())) {
                 device.setCharset(GB28181Constant.CHARSET);
