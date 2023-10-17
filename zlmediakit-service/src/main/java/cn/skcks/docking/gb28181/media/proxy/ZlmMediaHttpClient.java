@@ -8,6 +8,7 @@ import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.rtp.*;
 import cn.skcks.docking.gb28181.media.dto.snap.Snap;
 import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
+import cn.skcks.docking.gb28181.media.feign.IgnoreSSLFeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name="zlmMediaServerProxy", url = "${media.url}")
+@FeignClient(name="zlmMediaServerProxy", url = "${media.url}", configuration = IgnoreSSLFeignClientConfig.class)
 public interface ZlmMediaHttpClient {
     @GetMapping("/index/api/getApiList")
     ZlmResponse<List<String>> getApiList(@RequestParam String secret);
