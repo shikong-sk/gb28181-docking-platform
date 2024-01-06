@@ -6,6 +6,7 @@ import cn.skcks.docking.gb28181.sip.generic.SipBuilder;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.sip.SipFactory;
 import javax.sip.address.SipURI;
@@ -154,7 +155,7 @@ public class DigestAuthenticationHelper {
     }
 
     public static boolean doAuthenticatePlainTextPassword(String method,AuthorizationHeader authorizationHeader, String password) {
-        if ( authorizationHeader == null || authorizationHeader.getRealm() == null) {
+        if(ObjectUtils.anyNull(authorizationHeader)){
             return false;
         }
 
@@ -183,7 +184,6 @@ public class DigestAuthenticationHelper {
         String ncStr = String.format("%08x", nc).toUpperCase();
         String A1 = String.join(":",username , realm , password);
         String A2 = String.join(":", method.toUpperCase() , uri.toString());
-
         byte[] mdbytes = messageDigest.digest(A1.getBytes());
         String HA1 = toHexString(mdbytes);
         log.debug("A1: " + A1);
@@ -213,15 +213,22 @@ public class DigestAuthenticationHelper {
         mdbytes = messageDigest.digest(KD.getBytes());
         String mdString = toHexString(mdbytes);
         log.debug("mdString: " + mdString);
+
+        String mdString2 = toHexString(messageDigest.digest(StringUtils.joinWith(":", HA1, nonce, nc, cnonce, qop, HA2).getBytes()));
+        log.debug("mdString2: " + mdString2);
+
+        String mdString3 = toHexString(messageDigest.digest(StringUtils.joinWith(":", HA1, nonce, nc, HA2).getBytes()));
+        log.debug("mdString3: " + mdString);
+
         String response = authorizationHeader.getResponse();
         log.debug("response: " + response);
-        return mdString.equals(response);
+
+
+        return mdString.equals(response) || mdString2.equals(response) || mdString3.equals(response);
     }
 
     @SneakyThrows
-    public static AuthorizationHeader createAuthorization(String method,String serverIp, int serverPort, String serverId, String deviceId,String password, int nonceCount, WWWAuthenticateHeader www){
-        String hostAddress = SipBuilder.createHostAddress(serverIp, serverPort);
-        SipURI sipURI = SipBuilder.createSipURI(serverId, hostAddress);
+    public static AuthorizationHeader createAuthorization(String method,SipURI sipURI, String deviceId,String password, int nonceCount, WWWAuthenticateHeader www){
         if (www == null) {
             AuthorizationHeader authorizationHeader = SipBuilder.getHeaderFactory().createAuthorizationHeader("Digest");
             authorizationHeader.setUsername(deviceId);
@@ -279,5 +286,18 @@ public class DigestAuthenticationHelper {
             authorizationHeader.setNonceCount(nonceCount);
         }
         return authorizationHeader;
+    }
+
+    @SneakyThrows
+    public static AuthorizationHeader createAuthorization(String method,String domain, String serverId, String deviceId,String password, int nonceCount, WWWAuthenticateHeader www){
+        SipURI sipURI = SipBuilder.createSipURI(serverId, domain);
+        return createAuthorization(method, sipURI, deviceId, password, nonceCount, www);
+    }
+
+    @SneakyThrows
+    public static AuthorizationHeader createAuthorization(String method,String serverIp, int serverPort, String serverId, String deviceId,String password, int nonceCount, WWWAuthenticateHeader www){
+        String hostAddress = SipBuilder.createHostAddress(serverIp, serverPort);
+        SipURI sipURI = SipBuilder.createSipURI(serverId, hostAddress);
+        return createAuthorization(method, sipURI, deviceId, password, nonceCount, www);
     }
 }
