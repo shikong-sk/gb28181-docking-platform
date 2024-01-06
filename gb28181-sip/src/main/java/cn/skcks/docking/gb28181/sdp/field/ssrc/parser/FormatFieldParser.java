@@ -34,7 +34,7 @@ public class FormatFieldParser extends SDPParser {
             log.info("{}", (Object) split);
             String video = split[0];
             String[] videoParams = StringUtils.split(video,"/");
-            log.info("{}", (Object) videoParams);
+            log.info("videoParams {}", (Object) videoParams);
             if(videoParams.length > 1){
                 formatField.setVideoFormat(videoParams[1]);
             }
@@ -55,6 +55,7 @@ public class FormatFieldParser extends SDPParser {
             }
             String audio = split[1];
             String[] audioParams = audio.split("/");
+            log.info("audioParams {}", (Object) audioParams);
             if(audioParams.length > 0){
                 formatField.setAudioFormat(audioParams[0]);
             }

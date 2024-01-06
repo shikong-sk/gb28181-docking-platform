@@ -1,23 +1,24 @@
 package cn.skcks.docking.gb28181.core.sip.message.event;
 
 import cn.hutool.core.util.RandomUtil;
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.GB28181Description;
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.MediaSdpHelper;
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.SsrcField;
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.StreamMode;
-import gov.nist.core.NameValue;
+import cn.skcks.docking.gb28181.sdp.GB28181Description;
+import cn.skcks.docking.gb28181.sdp.GB28181SDPBuilder;
+import cn.skcks.docking.gb28181.sdp.field.ssrc.SsrcField;
+import cn.skcks.docking.gb28181.sdp.media.MediaStreamMode;
 import gov.nist.core.Separators;
-import gov.nist.javax.sdp.MediaDescriptionImpl;
-import gov.nist.javax.sdp.SessionDescriptionImpl;
-import gov.nist.javax.sdp.fields.*;
+import gov.nist.javax.sdp.fields.AttributeField;
+import gov.nist.javax.sdp.fields.ConnectionField;
+import gov.nist.javax.sdp.fields.URIField;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import javax.sdp.*;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Vector;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -124,7 +125,8 @@ public class SipEventTest {
     @Test
     @SneakyThrows
     public void sdpTest() {
-        GB28181Description description = GB28181Description.Convertor.convert((SessionDescriptionImpl) SdpFactory.getInstance().createSessionDescription("Play"));
+
+        GB28181Description description = new GB28181Description(SdpFactory.getInstance().createSessionDescription("Play"));
 
         Version version = SdpFactory.getInstance().createVersion(0);
         description.setVersion(version);
@@ -132,10 +134,10 @@ public class SipEventTest {
         Connection connectionField = SdpFactory.getInstance().createConnection(ConnectionField.IN, Connection.IP4, "10.10.10.20");
         description.setConnection(connectionField);
 
-        MediaDescription mediaDescription = SdpFactory.getInstance().createMediaDescription("video", 6666, 0, SdpConstants.RTP_AVP, MediaSdpHelper.RTPMAP.keySet().toArray(new String[0]));
+        MediaDescription mediaDescription = SdpFactory.getInstance().createMediaDescription("video", 6666, 0, SdpConstants.RTP_AVP, GB28181SDPBuilder.RTPMAP.keySet().toArray(new String[0]));
         mediaDescription.addAttribute((AttributeField)SdpFactory.getInstance().createAttribute("recvonly",null));
-        MediaSdpHelper.RTPMAP.forEach((k, v)->{
-            Optional.ofNullable(MediaSdpHelper.FMTP.get(k)).ifPresent((f)->{
+        GB28181SDPBuilder.RTPMAP.forEach((k, v)->{
+            Optional.ofNullable(GB28181SDPBuilder.FMTP.get(k)).ifPresent((f)->{
                 mediaDescription.addAttribute((AttributeField) SdpFactory.getInstance().createAttribute(SdpConstants.FMTP.toLowerCase(), StringUtils.joinWith(Separators.SP,k,f)));
             });
             mediaDescription.addAttribute((AttributeField) SdpFactory.getInstance().createAttribute(SdpConstants.RTPMAP, StringUtils.joinWith(Separators.SP,k,v)));
@@ -181,7 +183,7 @@ public class SipEventTest {
         int rtpPort = 5080;
         String rtpIp = "10.10.10.20";
         long ssrc = RandomUtil.randomLong(10000000,100000000);
-        GB28181Description description = MediaSdpHelper.build(MediaSdpHelper.Action.PLAY, deviceId, channel, Connection.IP4, rtpIp, rtpPort, String.valueOf(ssrc), StreamMode.UDP, SdpFactory.getInstance().createTimeDescription());
-        log.info("\n{}", description);
+        GB28181Description gb28181Description = GB28181SDPBuilder.Sender.build(GB28181SDPBuilder.Action.PLAY, deviceId, channel, Connection.IP4, rtpIp, rtpPort, String.valueOf(ssrc), MediaStreamMode.UDP, SdpFactory.getInstance().createTimeDescription());
+        log.info("\n{}", gb28181Description);
     }
 }

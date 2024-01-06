@@ -5,7 +5,6 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.skcks.docking.gb28181.common.config.ProjectConfig;
 import cn.skcks.docking.gb28181.core.sip.dto.RemoteInfo;
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.Gb28181Sdp;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Subject;
@@ -19,9 +18,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import javax.sdp.SdpFactory;
-import javax.sdp.SdpParseException;
-import javax.sdp.SessionDescription;
 import javax.sip.PeerUnavailableException;
 import javax.sip.SipFactory;
 import javax.sip.header.FromHeader;
@@ -164,37 +160,6 @@ public class SipUtil implements ApplicationContextAware {
         strTmp = String.format("%02X", checkCode);
         builder.append(strTmp, 0, 2);
         return builder.toString();
-    }
-
-    public static Gb28181Sdp parseSDP(String sdpStr) throws SdpParseException {
-        // jainSip不支持y= f=字段， 移除以解析。
-        int ssrcIndex = sdpStr.indexOf("y=");
-        int mediaDescriptionIndex = sdpStr.indexOf("f=");
-        // 检查是否有y字段
-        SessionDescription sdp;
-        String ssrc = null;
-        String mediaDescription = null;
-        if (mediaDescriptionIndex == 0 && ssrcIndex == 0) {
-            sdp = SdpFactory.getInstance().createSessionDescription(sdpStr);
-        }else {
-            String[] lines = sdpStr.split("\\r?\\n");
-            StringBuilder sdpBuffer = new StringBuilder();
-            for (String line : lines) {
-                if (line.trim().startsWith("y=")) {
-                    ssrc = line.substring(2);
-                }else if (line.trim().startsWith("f=")) {
-                    mediaDescription = line.substring(2);
-                }else {
-                    sdpBuffer.append(line.trim()).append("\r\n");
-                }
-            }
-            sdp = SdpFactory.getInstance().createSessionDescription(sdpBuffer.toString());
-        }
-        return Gb28181Sdp.builder()
-                .baseSdb(sdp)
-                .ssrc(ssrc)
-                .mediaDescription(mediaDescription)
-                .build();
     }
 
     public static String getSsrcFromSdp(String sdpStr) {

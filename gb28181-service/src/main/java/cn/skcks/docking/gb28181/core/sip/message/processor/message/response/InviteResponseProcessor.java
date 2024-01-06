@@ -1,13 +1,14 @@
 package cn.skcks.docking.gb28181.core.sip.message.processor.message.response;
 
-import cn.skcks.docking.gb28181.core.sip.gb28181.sdp.Gb28181Sdp;
+
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
 import cn.skcks.docking.gb28181.core.sip.message.processor.MessageProcessor;
 import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
 import cn.skcks.docking.gb28181.core.sip.message.sender.SipMessageSender;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
-import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
+import cn.skcks.docking.gb28181.sdp.GB28181Description;
+import cn.skcks.docking.gb28181.sdp.parser.GB28181DescriptionParser;
 import gov.nist.javax.sip.ResponseEventExt;
 import gov.nist.javax.sip.message.SIPResponse;
 import jakarta.annotation.PostConstruct;
@@ -16,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.sdp.SdpParseException;
-import javax.sdp.SessionDescription;
 import javax.sip.InvalidArgumentException;
 import javax.sip.ResponseEvent;
 import javax.sip.SipException;
@@ -65,8 +65,8 @@ public class InviteResponseProcessor implements MessageProcessor {
 
                 ResponseEventExt event = (ResponseEventExt) requestEvent;
                 String contentString = new String(response.getRawContent());
-                Gb28181Sdp gb28181Sdp = SipUtil.parseSDP(contentString);
-                SessionDescription sdp = gb28181Sdp.getBaseSdb();
+                GB28181DescriptionParser gb28181DescriptionParser = new GB28181DescriptionParser(contentString);
+                GB28181Description sdp = gb28181DescriptionParser.parse();
                 SipURI requestUri = SipFactory.getInstance().createAddressFactory().createSipURI(sdp.getOrigin().getUsername(), event.getRemoteIpAddress() + ":" + event.getRemotePort());
                 Request reqAck = SipRequestBuilder.createAckRequest(response.getLocalAddress().getHostAddress(), requestUri, response);
 

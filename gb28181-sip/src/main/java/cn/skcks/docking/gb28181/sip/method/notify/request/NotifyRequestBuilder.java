@@ -27,7 +27,7 @@ public class NotifyRequestBuilder extends RequestBuilder implements NotifyBuilde
         int expires = sipRequest.getExpires().getExpires();
         return createNotifyRequest(callId, cSeq, event, content, toTag, expires);
     }
-                                       @SneakyThrows
+    @SneakyThrows
     public Request createNotifyRequest(String callId, long cSeq, String event, byte[] content, String toTag, int expire) {
         SIPRequest notifyRequest = (SIPRequest) createNotifyRequest(callId, cSeq, event, content, toTag);
         SubscriptionState subscriptionState = (SubscriptionState) notifyRequest.getHeader(SubscriptionState.NAME);
