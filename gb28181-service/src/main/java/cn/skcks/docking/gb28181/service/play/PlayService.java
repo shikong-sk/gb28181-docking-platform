@@ -204,6 +204,7 @@ public class PlayService {
                 subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             }
         };
+        // 1小时自动关闭
         byeSubscribe(inviteRequestBuilder,provider,callId,3600,()->{
             RedisUtil.KeyOps.delete(key);
         });
