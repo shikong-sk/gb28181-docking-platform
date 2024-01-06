@@ -133,6 +133,7 @@ public class RegisterRequestProcessor implements MessageProcessor {
 
     private void registerDevice(String deviceId, DockingDevice device, SIPRequest request, String senderIp, RemoteInfo remoteInfo) {
         Response response = generateRegisterResponse(request);
+        log.debug("response.getStatusCode {}", response.getStatusCode());
         if(response.getStatusCode() != Response.OK){
             sender.send(senderIp, response);
             return;
@@ -140,14 +141,14 @@ public class RegisterRequestProcessor implements MessageProcessor {
 
         if (device == null) {
             device = new DockingDevice();
-            device.setStreamMode(MediaStreamMode.TCP_PASSIVE.getMode());
+            device.setStreamMode(MediaStreamMode.UDP.getMode());
             device.setCharset(GB28181Constant.CHARSET);
             device.setGeoCoordSys(GB28181Constant.GEO_COORD_SYS);
             device.setDeviceId(deviceId);
             device.setOnLine(false);
         } else {
             if (ObjectUtils.isEmpty(device.getStreamMode())) {
-                device.setStreamMode(MediaStreamMode.TCP_PASSIVE.getMode());
+                device.setStreamMode(MediaStreamMode.UDP.getMode());
             }
             if (ObjectUtils.isEmpty(device.getCharset())) {
                 device.setCharset(GB28181Constant.CHARSET);
