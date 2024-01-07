@@ -10,11 +10,11 @@ public class FutureDeferredResult {
     public static <T> DeferredResult<JsonResponse<T>> toDeferredResultWithJson(CompletableFuture<T> future){
         DeferredResult<JsonResponse<T>> result = new DeferredResult<>();
         future.whenComplete((data,throwable)->{
+            if(throwable!= null){
+                result.setResult(JsonResponse.error(throwable.getMessage()));
+                return;
+            }
             result.setResult(JsonResponse.success(data));
-        });
-        future.exceptionally(e -> {
-            result.setResult(JsonResponse.error(e.getMessage()));
-           return null;
         });
         return result;
     }
@@ -22,13 +22,12 @@ public class FutureDeferredResult {
     public static <T> DeferredResult<JsonResponse<T>> toDeferredResultWithJsonAndTimeout(CompletableFuture<T> future, long time, TimeUnit timeUnit){
         DeferredResult<JsonResponse<T>> result = new DeferredResult<>(timeUnit.toMillis(time));
         result.onTimeout(()-> result.setResult(JsonResponse.error("请求超时")));
-
         future.whenComplete((data,throwable)->{
+            if(throwable!= null){
+                result.setResult(JsonResponse.error(throwable.getMessage()));
+                return;
+            }
             result.setResult(JsonResponse.success(data));
-        });
-        future.exceptionally(e -> {
-            result.setResult(JsonResponse.error(e.getMessage()));
-            return null;
         });
         return result;
     }

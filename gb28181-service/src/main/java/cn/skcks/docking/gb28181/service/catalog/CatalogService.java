@@ -7,16 +7,13 @@ import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
-import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDeviceChannel;
 import cn.skcks.docking.gb28181.service.device.DeviceChannelService;
 import cn.skcks.docking.gb28181.service.docking.device.cache.DockingDeviceCacheService;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogItemDTO;
-import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
 import cn.skcks.docking.gb28181.sip.method.message.request.MessageRequestBuilder;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import cn.skcks.docking.gb28181.sip.utils.SipUtil;
-import gov.nist.javax.sip.message.SIPRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +21,10 @@ import org.springframework.stereotype.Service;
 
 import javax.sip.SipProvider;
 import javax.sip.message.Request;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @Service
