@@ -355,7 +355,7 @@ public class PlayService {
             @SneakyThrows
             @Override
             public void onComplete() {
-                if(Objects.equals(request.getMethod(), Request.BYE)){
+                if(request != null && Objects.equals(request.getMethod(), Request.BYE)){
                     Response byeResponse = InviteResponseBuilder.builder().build().createByeResponse(request, SipUtil.nanoId());
                     provider.sendResponse(byeResponse);
                 } else {
