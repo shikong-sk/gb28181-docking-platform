@@ -93,58 +93,10 @@ public class RecordService {
         Request request = requestBuilder.createMessageRequest(callId,SipRequestBuilder.getCSeq(), MANSCDPUtils.toByteXml(dto, device.getCharset()));
         String key = GenericSubscribe.Helper.getKey(CmdType.RECORD_INFO, channelId, sn);
         subscribe.getSipRequestSubscribe().addPublisher(key);
-        Flow.Subscriber<SIPRequest> subscriber = new Flow.Subscriber<>() {
-            final List<RecordInfoItemDTO> list = new ArrayList<>();
-            final AtomicLong atomicSum = new AtomicLong(0);
-            final AtomicLong atomicNum = new AtomicLong(0);
-            Flow.Subscription subscription;
-
-            @Override
-            public void onSubscribe(Flow.Subscription subscription) {
-                this.subscription = subscription;
-                log.debug("建立订阅 => {}", key);
-                subscription.request(1);
-            }
-
-            @Override
-            public void onNext(SIPRequest item) {
-                RecordInfoResponseDTO data = MANSCDPUtils.parse(item.getRawContent(), RecordInfoResponseDTO.class);
-                atomicSum.set(Math.max(data.getSumNum(), atomicNum.get()));
-                atomicNum.addAndGet(data.getRecordList().getNum());
-                list.addAll(data.getRecordList().getRecordList());
-                long num = atomicNum.get();
-                long sum = atomicSum.get();
-                if(num > sum){
-                    log.warn("检测到 设备 => {}, 未按规范实现, 订阅 => {}, 期望总数为 => {}, 已接收数量 => {}", deviceId, key, atomicSum.get(), atomicNum.get());
-                } else {
-                    log.info("获取订阅 => {}, {}/{}", key, atomicNum.get(), atomicSum.get());
-                }
-
-                if (num >= sum) {
-                    // 针对某些不按规范的设备
-                    // 如果已获取数量 >= 约定的总数
-                    // 就执行定时任务, 若 500ms 内未收到新的数据视为已结束
-                    subscribe.getSipRequestSubscribe().refreshPublisher(key,500, TimeUnit.MILLISECONDS);
-                }
-                subscription.request(1);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-
-            @Override
-            public void onComplete() {
-                result.setResult(JsonResponse.success(RecordConvertor.INSTANCE.dto2Vo(sortedRecordList(list))));
-                log.debug("订阅结束 => {}", key);
-                subscribe.getSipRequestSubscribe().delPublisher(key);
-            }
-        };
-        subscribe.getSipRequestSubscribe().addSubscribe(key, subscriber);
+        subscribe.getSipRequestSubscribe().addSubscribe(key, new RecordSubscriber(subscribe, key, result, deviceId));
         result.onTimeout(() -> {
             result.setResult(JsonResponse.build(ResponseStatus.PARTIAL_CONTENT,
-                    RecordConvertor.INSTANCE.dto2Vo(sortedRecordList(Collections.emptyList())),
+                    RecordConvertor.INSTANCE.dto2Vo(Collections.emptyList()),
                     "查询超时, 结果可能不完整"));
             subscribe.getSipRequestSubscribe().delPublisher(key);
         });

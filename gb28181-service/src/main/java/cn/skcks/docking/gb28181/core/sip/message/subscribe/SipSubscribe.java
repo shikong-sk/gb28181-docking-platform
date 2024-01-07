@@ -23,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public class SipSubscribe {
     @Qualifier(DefaultSipExecutor.EXECUTOR_BEAN_NAME)
     private final Executor executor;
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
     private GenericTimeoutSubscribe<SIPResponse> sipResponseSubscribe;
     private GenericTimeoutSubscribe<SIPRequest> sipRequestSubscribe;
 

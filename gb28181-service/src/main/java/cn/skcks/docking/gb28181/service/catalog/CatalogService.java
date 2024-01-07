@@ -67,56 +67,7 @@ public class CatalogService {
         Request request = requestBuilder.createMessageRequest(callId, cSeq, MANSCDPUtils.toByteXml(catalogQueryDTO, device.getCharset()));
         String key = GenericSubscribe.Helper.getKey(CmdType.CATALOG, gbDeviceId, sn);
         subscribe.getSipRequestSubscribe().addPublisher(key, 60, TimeUnit.SECONDS);
-        subscribe.getSipRequestSubscribe().addSubscribe(key, new Flow.Subscriber<>() {
-            private Flow.Subscription subscription;
-            private final AtomicLong num = new AtomicLong(0);
-            private long sumNum = 0;
-
-            private final List<CatalogItemDTO> data = new ArrayList<>();
-
-            @Override
-            public void onSubscribe(Flow.Subscription subscription) {
-                this.subscription = subscription;
-                subscription.request(1);
-            }
-
-            @Override
-            public void onNext(SIPRequest item) {
-                CatalogResponseDTO catalogResponseDTO = MANSCDPUtils.parse(item.getRawContent(), CatalogResponseDTO.class);
-                sumNum = Math.max(sumNum,catalogResponseDTO.getSumNum());
-                long curNum = num.addAndGet(catalogResponseDTO.getDeviceList().getNum());
-                log.debug("当前获取数量: {}/{}", curNum, sumNum);
-                data.addAll(catalogResponseDTO.getDeviceList().getDeviceList());
-                if(curNum >= sumNum){
-                    log.info("获取完成 {}", key);
-                    subscribe.getSipRequestSubscribe().complete(key);
-                } else {
-                    subscription.request(1);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                throwable.printStackTrace();
-                onComplete();
-            }
-
-            @Override
-            public void onComplete() {
-                log.info("{} 返回结果 {}", key, result.complete(data));
-
-                data.stream().map(item->{
-                    DockingDeviceChannel model = new DockingDeviceChannel();
-                    model.setGbDeviceId(device.getDeviceId());
-                    model.setGbDeviceChannelId(item.getDeviceId());
-                    model.setName(item.getName());
-                    model.setAddress(item.getAddress());
-                    return model;
-                }).forEach(deviceChannelService::add);
-
-                subscribe.getSipRequestSubscribe().delPublisher(key);
-            }
-        });
+        subscribe.getSipRequestSubscribe().addSubscribe(key, new CatalogSubscriber(subscribe, key, result, device.getDeviceId(), deviceChannelService::add));
         provider.sendRequest(request);
         return result;
     }

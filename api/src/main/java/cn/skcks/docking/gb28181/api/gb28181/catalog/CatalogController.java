@@ -5,6 +5,7 @@ import cn.skcks.docking.gb28181.annotation.web.methods.GetJson;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.service.catalog.CatalogService;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogItemDTO;
+import cn.skcks.docking.gb28181.utils.FutureDeferredResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -23,12 +24,8 @@ public class CatalogController {
 
     @SneakyThrows
     @GetJson
-    public DeferredResult<JsonResponse<List<?>>> catalog(String gbDeviceId){
-        DeferredResult<JsonResponse<List<?>>> result = new DeferredResult<>();
+    public DeferredResult<JsonResponse<List<CatalogItemDTO>>> catalog(String gbDeviceId){
         CompletableFuture<List<CatalogItemDTO>> catalog = catalogService.catalog(gbDeviceId);
-        catalog.whenComplete((data,throwable)->{
-            result.setResult(JsonResponse.success(data));
-        });
-        return result;
+        return FutureDeferredResult.toDeferredResultWithJson(catalog);
     }
 }
