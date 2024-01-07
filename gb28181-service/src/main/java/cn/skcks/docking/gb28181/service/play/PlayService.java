@@ -47,6 +47,7 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 
@@ -272,6 +273,7 @@ public class PlayService {
         Request request = inviteRequestBuilder.createPlaybackInviteRequest(callId, SipRequestBuilder.getCSeq(),channelId,ip,port,ssrc,MediaStreamMode.of(device.getStreamMode()),startTime,endTime);
         String subscribeKey = GenericSubscribe.Helper.getKey(Request.INVITE, callIdHeader.getCallId());
         subscribe.getSipResponseSubscribe().addPublisher(subscribeKey);
+
         Flow.Subscriber<SIPResponse> subscriber = new Flow.Subscriber<>() {
             private Flow.Subscription subscription;
 
@@ -292,7 +294,7 @@ public class PlayService {
                 } else if (statusCode >= Response.OK && statusCode < Response.MULTIPLE_CHOICES) {
                     log.info("订阅 {} {} 流媒体服务连接成功, 开始推送视频流", Request.INVITE, subscribeKey);
                     RedisUtil.StringOps.set(key, JsonUtils.toCompressJson(new SipTransactionInfo(item, ssrc)));
-                    RedisUtil.KeyOps.expire(key, DateUtil.between(startTime, endTime, DateUnit.SECOND), TimeUnit.SECONDS);
+                    RedisUtil.KeyOps.expire(key, DateUtil.between(startTime, endTime, DateUnit.SECOND) + 30, TimeUnit.SECONDS);
                     result.setResult(JsonResponse.success(videoUrl(streamId)));
                     onComplete();
                 } else {
@@ -353,7 +355,7 @@ public class PlayService {
             @SneakyThrows
             @Override
             public void onComplete() {
-                if(request != null){
+                if(Objects.equals(request.getMethod(), Request.BYE)){
                     Response byeResponse = InviteResponseBuilder.builder().build().createByeResponse(request, SipUtil.nanoId());
                     provider.sendResponse(byeResponse);
                 } else {

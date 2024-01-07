@@ -2,6 +2,7 @@ package cn.skcks.docking.gb28181.core.sip.message.processor.message.request;
 
 import cn.skcks.docking.gb28181.common.json.ResponseStatus;
 import cn.skcks.docking.gb28181.common.xml.XmlUtils;
+import cn.skcks.docking.gb28181.config.sip.SipConfig;
 import cn.skcks.docking.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.core.sip.gb28181.constant.GB28181Constant;
 import cn.skcks.docking.gb28181.core.sip.listener.SipListener;
@@ -12,9 +13,12 @@ import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.utils.SipUtil;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
+import cn.skcks.docking.gb28181.service.notify.MediaStatusService;
 import cn.skcks.docking.gb28181.sip.manscdp.MessageDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.response.CatalogResponseDTO;
+import cn.skcks.docking.gb28181.sip.manscdp.mediastatus.notify.MediaStatusRequestDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response.RecordInfoResponseDTO;
+import cn.skcks.docking.gb28181.sip.method.invite.request.InviteRequestBuilder;
 import cn.skcks.docking.gb28181.sip.utils.MANSCDPUtils;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -22,9 +26,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.sip.RequestEvent;
+import javax.sip.address.SipURI;
 import javax.sip.message.Response;
 import java.util.EventObject;
 import java.util.Optional;
@@ -37,6 +43,9 @@ public class MessageRequestProcessor implements MessageProcessor {
     private final DockingDeviceService deviceService;
     private final SipMessageSender sender;
     private final SipSubscribe subscribe;
+    private final SipConfig sipConfig;
+
+    private final MediaStatusService mediaStatusService;
 
     @PostConstruct
     @Override
@@ -87,6 +96,12 @@ public class MessageRequestProcessor implements MessageProcessor {
             response = ok;
         } else if(messageDto.getCmdType().equalsIgnoreCase(CmdType.MEDIA_STATUS)){
             response = ok;
+            sender.send(senderIp, response);
+            MediaStatusRequestDTO mediaStatusRequestDTO = MANSCDPUtils.parse(content, MediaStatusRequestDTO.class);
+            if(StringUtils.equalsIgnoreCase(mediaStatusRequestDTO.getNotifyType(),"121")){
+                mediaStatusService.process(request, mediaStatusRequestDTO);
+                return;
+            }
         } else {
             response = response(request, Response.NOT_IMPLEMENTED, ResponseStatus.NOT_IMPLEMENTED.getMessage());
         }
