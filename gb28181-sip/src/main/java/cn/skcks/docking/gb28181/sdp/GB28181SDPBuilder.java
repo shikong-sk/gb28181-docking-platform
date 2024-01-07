@@ -11,6 +11,7 @@ import gov.nist.javax.sdp.fields.ConnectionField;
 import gov.nist.javax.sdp.fields.TimeField;
 import gov.nist.javax.sdp.fields.URIField;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,53 @@ public class GB28181SDPBuilder {
         put("126", "profile-level-id=42e01e");
         put("125", "profile-level-id=42e01e");
     }};
+
+    public static class StreamType {
+        public interface Attribute<T> {
+            AttributeField stream();
+        }
+
+        public static AttributeField getAttribute(Attribute<?> attribute) {
+            return attribute.stream();
+        }
+
+        @AllArgsConstructor
+        public static class TPLink implements Attribute<String>{
+            private String stream;
+            public static final TPLink MAIN = new TPLink("main");
+
+            public static final TPLink SUB = new TPLink("sub");
+            public AttributeField stream() {
+                return (AttributeField) SdpFactory.getInstance().createAttribute("streamMode", stream);
+            }
+        }
+
+        @AllArgsConstructor
+        public static class StreamProfile implements Attribute<Integer> {
+            private Integer stream;
+            public static final StreamProfile MAIN = new StreamProfile(0);
+            public static final StreamProfile SUB = new StreamProfile(1);
+
+            @Override
+            public AttributeField stream() {
+                return (AttributeField) SdpFactory.getInstance().createAttribute("streamprofile", String.valueOf(stream));
+            }
+        }
+
+        @AllArgsConstructor
+        public static class GB2022 implements Attribute<Integer> {
+            private Integer stream;
+            public static final GB2022 MAIN = new GB2022(0);
+            public static final GB2022 SUB = new GB2022(1);
+
+            public AttributeField stream(){
+                return (AttributeField) SdpFactory.getInstance().createAttribute("streamnumber", String.valueOf(stream));
+            }
+        }
+
+        public static final GB2022 DEFAULT_GB_2022 = GB2022.MAIN;
+        public static final StreamProfile DEFAULT = StreamProfile.MAIN;
+    }
 
     @AllArgsConstructor
     @Getter
@@ -168,6 +216,26 @@ public class GB28181SDPBuilder {
         public static GB28181Description play(String deviceId, String channelId, String netType, String rtpIp, int rtpPort, String ssrc, MediaStreamMode streamMode) {
             TimeDescription timeDescription = SdpFactory.getInstance().createTimeDescription();
             return build(Action.PLAY, deviceId, channelId, netType, rtpIp, rtpPort, ssrc, streamMode, timeDescription);
+        }
+
+        /**
+         *
+         * @param deviceId 设备id
+         * @param channelId 通道id
+         * @param netType 网络类型
+         * @param rtpIp rtp服务器ip
+         * @param rtpPort rtp端口
+         * @param ssrc ssrc
+         * @param streamMode 网络类型
+         * @param streamType 流类型 (主/子码流)
+         * @return GB28181Description sdp
+         */
+        @SneakyThrows
+        public static GB28181Description play(String deviceId, String channelId, String netType, String rtpIp, int rtpPort, String ssrc, MediaStreamMode streamMode, StreamType.Attribute<?> streamType) {
+            GB28181Description play = play(deviceId, channelId, netType, rtpIp, rtpPort, ssrc, streamMode);
+            MediaDescription m = (MediaDescription)play.getMediaDescriptions(false).get(0);
+            m.addAttribute(StreamType.getAttribute(streamType));
+            return play;
         }
 
         @SneakyThrows

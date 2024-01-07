@@ -70,4 +70,14 @@ public class SdpTest {
         GB28181Description resp = GB28181SDPBuilder.Sender.build(play, sendRtpIp, sendRtpPort,respRtpMap,null);
         log.info("sdp 响应\n{}", resp);
     }
+
+    @Test
+    public void streamType() {
+        log.info("{}", GB28181SDPBuilder.StreamType.getAttribute(GB28181SDPBuilder.StreamType.TPLink.MAIN));
+        log.info("{}", GB28181SDPBuilder.StreamType.getAttribute(GB28181SDPBuilder.StreamType.TPLink.SUB));
+
+        log.info("{}", GB28181SDPBuilder.StreamType.getAttribute(GB28181SDPBuilder.StreamType.GB2022.MAIN));
+        log.info("{}", GB28181SDPBuilder.StreamType.getAttribute(GB28181SDPBuilder.StreamType.GB2022.SUB));
+        log.info("{}", GB28181SDPBuilder.StreamType.getAttribute(new GB28181SDPBuilder.StreamType.GB2022(5)));
+    }
 }
