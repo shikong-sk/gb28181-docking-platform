@@ -1,5 +1,7 @@
 package cn.skcks.docking.gb28181.service.catalog;
 
+import cn.skcks.docking.gb28181.common.json.JsonException;
+import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.config.sip.SipConfig;
 import cn.skcks.docking.gb28181.constant.CmdType;
 import cn.skcks.docking.gb28181.core.sip.message.request.SipRequestBuilder;
@@ -7,6 +9,7 @@ import cn.skcks.docking.gb28181.core.sip.message.subscribe.GenericSubscribe;
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.core.sip.service.SipService;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDevice;
+import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDeviceChannel;
 import cn.skcks.docking.gb28181.service.device.DeviceChannelService;
 import cn.skcks.docking.gb28181.service.docking.device.cache.DockingDeviceCacheService;
 import cn.skcks.docking.gb28181.sip.manscdp.catalog.query.CatalogQueryDTO;
@@ -23,6 +26,7 @@ import javax.sip.SipProvider;
 import javax.sip.message.Request;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +45,11 @@ public class CatalogService {
         CompletableFuture<List<CatalogItemDTO>> result = new CompletableFuture<>();
         result.completeOnTimeout(Collections.emptyList(), 60, TimeUnit.SECONDS);
         DockingDevice device = deviceCacheService.getDevice(gbDeviceId);
+        if (device == null) {
+            log.info("未能找到 编码为 => {} 的设备", gbDeviceId);
+            result.completeExceptionally(new JsonException("未找到设备 " + gbDeviceId));
+            return result;
+        }
         SipProvider provider = sipService.getProvider(device.getTransport(), device.getLocalIp());
         MessageRequestBuilder requestBuilder = MessageRequestBuilder.builder()
                 .localIp(device.getLocalIp())

@@ -55,17 +55,16 @@ public class RecordService {
     public DeferredResult<JsonResponse<List<RecordInfoItemVO>>> requestRecordInfo(String deviceId, String channelId, long timeout, Date date) {
         log.info("查询 设备 => {} {} 的历史媒体记录, 超时时间 {} 秒", deviceId, DateUtil.formatDate(date), timeout);
         DeferredResult<JsonResponse<List<RecordInfoItemVO>>> result = new DeferredResult<>(TimeUnit.SECONDS.toMillis(timeout));
-
         DockingDevice device = deviceService.getDevice(deviceId);
         if (device == null) {
             log.info("未能找到 编码为 => {} 的设备", deviceId);
-            result.setResult(JsonResponse.error(null, "未找到设备"));
+            result.setResult(JsonResponse.error("未找到设备"));
             return result;
         }
         Optional<DockingDeviceChannel> deviceChannel = deviceChannelService.getDeviceChannel(deviceId, channelId);
         if(deviceChannel.isEmpty()){
             log.info("未能找到 设备编码为 => {}, 通道 => {} 的信息", deviceId, channelId);
-            result.setResult(JsonResponse.error(null, "未找到通道信息"));
+            result.setResult(JsonResponse.error("未找到通道信息"));
             return result;
         }
 
