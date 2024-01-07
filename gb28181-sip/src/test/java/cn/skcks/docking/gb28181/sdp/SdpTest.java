@@ -62,6 +62,9 @@ public class SdpTest {
         GB28181Description play = GB28181SDPBuilder.Receiver.play(deviceId, channelId, rtpNetType, rtpIp, rtpPort, ssrc, MediaStreamMode.TCP_ACTIVE);
         log.info("sdp play 请求\n{}",play);
 
+        play = GB28181SDPBuilder.Receiver.play(deviceId, channelId, rtpNetType, rtpIp, rtpPort, ssrc, MediaStreamMode.TCP_ACTIVE, GB28181SDPBuilder.StreamType.GB2022.MAIN);
+        log.info("sdp play 请求\n{}",play);
+
         final String psType = "96";
         Map<String,String> respRtpMap = new HashMap<>(){{
             put(psType, GB28181SDPBuilder.RTPMAP.get(psType));
