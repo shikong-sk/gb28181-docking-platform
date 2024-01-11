@@ -26,6 +26,13 @@ docker run --name gb28181 --rm \
   skcks.cn/gb28181-docking-platform:0.0.1-SNAPSHOT
 ```
 
+### 清理私仓
+切换到私仓目录
+例: cd H:/Repository/skcks.cn/gb28181-docking-platform-mvn-repo
+```shell
+rm -rf ./*/*/*/*/0.1.0-SNAPSHOT
+rm -rf ./*/*/*/*/*/0.1.0-SNAPSHOT
+```
 ### 打包到本地私仓
 ```shell
 mvn deploy -s settings.xml -DaltDeploymentRepository=local-repo::default::file:H:/Repository/skcks.cn/gb28181-docking-platform-mvn-repo
