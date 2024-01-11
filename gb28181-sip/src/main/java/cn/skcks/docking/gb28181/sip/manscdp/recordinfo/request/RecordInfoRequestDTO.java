@@ -47,7 +47,7 @@ public class RecordInfoRequestDTO {
     private String address;
 
     @Builder.Default
-    private Integer Secrecy = 0;
+    private Integer secrecy = 0;
 
     @Builder.Default
     private String type = "all";
@@ -63,5 +63,5 @@ public class RecordInfoRequestDTO {
      *
      * 1: 进行模糊查询,此时设备所在域应同时进行中心检索和前端检索并将结果统一返回
      */
-    private Integer IndistinctQuery;
+    private Integer indistinctQuery;
 }
