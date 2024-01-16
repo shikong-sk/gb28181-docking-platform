@@ -76,4 +76,11 @@ public interface ZlmMediaHttpClient {
 
     @GetMapping("/index/api/getRtpInfo")
     GetRtpInfoResp getRtpInfo(@RequestParam String secret,@RequestParam("stream_id") String streamId);
+
+    @PostMapping("/index/api/addFFmpegSource")
+    ZlmResponse<AddFFmpegSourceResp> addFFmpegSource(@RequestParam String secret,@RequestBody AddFFmpegSource params);
+
+    @GetMapping("/index/api/delFFmpegSource")
+    ZlmResponse<DelFFmpegSourceResp> delFFmpegSource(@RequestParam String secret, @RequestParam String key);
+
 }
