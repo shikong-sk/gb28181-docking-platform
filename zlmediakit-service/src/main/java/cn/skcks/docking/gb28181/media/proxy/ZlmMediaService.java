@@ -159,5 +159,19 @@ public class ZlmMediaService {
     public GetRtpInfoResp getRtpInfo(String streamId){
         return exchange.getRtpInfo(secret, streamId);
     }
+
+    /**
+     * 功能：通过 fork FFmpeg 进程的方式拉流代理，支持任意协议
+     */
+    public ZlmResponse<AddFFmpegSourceResp> addFfmpegSource(AddFFmpegSource params){
+        return exchange.addFFmpegSource(secret, params);
+    }
+
+    /**
+     * 功能：关闭 ffmpeg 拉流代理
+     */
+    public ZlmResponse<DelFFmpegSourceResp> delFfmpegSource(String key){
+        return exchange.delFFmpegSource(secret, key);
+    }
 }
 
