@@ -3,7 +3,7 @@ project:
 
 media:
   ip: 10.10.10.200
-  url: 'http://10.10.10.200:5080'
+  url: 'http://10.10.10.200:5081'
 #  url: 'http://10.10.10.200:12580/anything/'
   id: amrWMKmbKqoBjRQ9
   secret: 4155cca6-2f9f-11ee-85e6-8de4ce2e7333

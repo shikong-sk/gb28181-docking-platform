@@ -4,6 +4,7 @@ import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
 import cn.skcks.docking.gb28181.media.dto.media.GetMediaList;
 import cn.skcks.docking.gb28181.media.dto.media.MediaResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.*;
+import cn.skcks.docking.gb28181.media.dto.record.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.rtp.*;
 import cn.skcks.docking.gb28181.media.dto.snap.Snap;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @FeignClient(name="zlmMediaServerProxy", url = "${media.url}", configuration = IgnoreSSLFeignClientConfig.class)
 public interface ZlmMediaHttpClient {
@@ -83,4 +85,18 @@ public interface ZlmMediaHttpClient {
     @GetMapping("/index/api/delFFmpegSource")
     ZlmResponse<DelFFmpegSourceResp> delFFmpegSource(@RequestParam String secret, @RequestParam String key);
 
+    @PostMapping("/index/api/startRecord")
+    StartRecordResp startRecord(@RequestParam String secret, @RequestBody StartRecord params);
+
+    @PostMapping("/index/api/stopRecord")
+    StopRecordResp stopRecord(@RequestParam String secret, @RequestBody StopRecord params);
+
+    @PostMapping("/index/api/isRecording")
+    IsRecordingResp isRecording(@RequestParam String secret, @RequestBody IsRecording params);
+
+    @PostMapping("/index/api/getMp4RecordFile")
+    GetMp4RecordFileResp getMp4RecordFile(@RequestParam String secret, @RequestBody GetMp4RecordFile params);
+
+    @PostMapping("/index/api/deleteRecordDirectory")
+    DeleteRecordDirectoryResp deleteRecordDirectory(@RequestParam String secret, @RequestBody DeleteRecordDirectory params);
 }

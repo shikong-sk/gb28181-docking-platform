@@ -1,6 +1,7 @@
 package cn.skcks.docking.gb28181.test;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
 import cn.skcks.docking.gb28181.common.json.JsonUtils;
@@ -10,6 +11,7 @@ import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
 import cn.skcks.docking.gb28181.media.dto.media.GetMediaList;
 import cn.skcks.docking.gb28181.media.dto.media.MediaResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.*;
+import cn.skcks.docking.gb28181.media.dto.record.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponseConvertor;
 import cn.skcks.docking.gb28181.media.dto.rtp.*;
@@ -31,6 +33,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootTest
@@ -41,6 +47,7 @@ public class MediaServiceTest {
     private ZlmMediaService zlmMediaService;
     @Autowired
     private ZlmMediaConfig config;
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     @Test
     void test(){
@@ -211,5 +218,74 @@ public class MediaServiceTest {
     void getRtcInfo(){
         GetRtpInfoResp rtpInfo = zlmMediaService.getRtpInfo("test");
         log.info("{}", rtpInfo);
+    }
+
+    @SneakyThrows
+    @Test
+    void recordTest(){
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+
+        String customizedPath = "/tmp/record";
+
+        DeleteRecordDirectoryResp deleteRecordDirectoryResp = zlmMediaService.deleteRecordDirectory(DeleteRecordDirectory.builder()
+                .app("live")
+                .stream("test")
+                .period(DateUtil.formatDate(DateUtil.date()))
+                .customizedPath(customizedPath).build());
+        log.info("{}", deleteRecordDirectoryResp);
+        // ZlmResponse<AddStreamProxyResp> addedStreamProxy = zlmMediaService.addStreamProxy(AddStreamProxy.builder()
+        //         .app("live")
+        //         .stream("test")
+        //         .vhost("__defaultVhost__")
+        //         .url("rtsp://10.10.10.200:554/camera/121")
+        //         .build());
+        // log.info("addedStreamProxy {}", addedStreamProxy);
+        ZlmResponse<AddFFmpegSourceResp> addFFmpegSourceRespZlmResponse = zlmMediaService.addFfmpegSource(AddFFmpegSource.builder()
+                .dstUrl("rtmp://10.10.10.200:1936/live/test")
+                .srcUrl("http://10.10.10.200:18183/video")
+                .timeoutMs(30 * 1000L)
+                .enableHls(false)
+                .enableMp4(false)
+                .build());
+        log.info("addFfmpegSource {}", addFFmpegSourceRespZlmResponse);
+
+        ZlmResponse<List<MediaResp>> mediaList = zlmMediaService.getMediaList(GetMediaList.builder()
+                .schema("rtsp")
+                .app("live")
+                .stream("test")
+                .build());
+        log.info("mediaList {}", mediaList);
+
+
+        StartRecordResp startRecordResp = zlmMediaService.startRecord(StartRecord.builder()
+                .app("live")
+                .stream("test")
+                .vhost("__defaultVhost__")
+                .customizedPath(customizedPath)
+                .build());
+
+        log.info("startRecordResp {}", startRecordResp);
+
+        scheduledExecutorService.schedule(() -> {
+            zlmMediaService.delFfmpegSource(addFFmpegSourceRespZlmResponse.getData().getKey());
+            // log.info("{}", zlmMediaService.delStreamProxy(addedStreamProxy.getData().getKey()));
+
+            zlmMediaService.getMp4RecordFile(GetMp4RecordFile.builder()
+                    .app("live")
+                    .stream("test")
+                    .period(DateUtil.formatDate(DateUtil.date()))
+                    .customizedPath(customizedPath).build());
+
+            zlmMediaService.stopRecord(StopRecord.builder()
+                    .app("live")
+                    .stream("test")
+                    .vhost("__defaultVhost__")
+                    .build());
+            countDownLatch.countDown();
+        }, 15, TimeUnit.SECONDS);
+
+
+
+        countDownLatch.await();
     }
 }

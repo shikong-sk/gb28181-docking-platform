@@ -4,14 +4,19 @@ import cn.skcks.docking.gb28181.media.dto.config.ServerConfig;
 import cn.skcks.docking.gb28181.media.dto.media.GetMediaList;
 import cn.skcks.docking.gb28181.media.dto.media.MediaResp;
 import cn.skcks.docking.gb28181.media.dto.proxy.*;
+import cn.skcks.docking.gb28181.media.dto.record.*;
 import cn.skcks.docking.gb28181.media.dto.response.ZlmResponse;
 import cn.skcks.docking.gb28181.media.dto.rtp.*;
 import cn.skcks.docking.gb28181.media.dto.snap.Snap;
 import cn.skcks.docking.gb28181.media.dto.version.VersionResp;
 import lombok.Builder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @SuppressWarnings("unused")
@@ -172,6 +177,42 @@ public class ZlmMediaService {
      */
     public ZlmResponse<DelFFmpegSourceResp> delFfmpegSource(String key){
         return exchange.delFFmpegSource(secret, key);
+    }
+
+
+    /**
+     * 开始录制 hls 或 MP4
+     */
+    public StartRecordResp startRecord(@RequestBody StartRecord params){
+        return exchange.startRecord(secret, params);
+    }
+
+
+    /**
+     * 停止录制流
+     */
+    public StopRecordResp stopRecord(@RequestBody StopRecord params){
+        return exchange.stopRecord(secret, params);
+    }
+
+    /**
+     * 获取流录制状态
+     */
+    public IsRecordingResp isRecording(@RequestBody IsRecording params){
+        return exchange.isRecording(secret, params);
+    }
+
+
+    /**
+     * 搜索文件系统，获取流对应的录像文件列表或日期文件夹列表
+     */
+    public GetMp4RecordFileResp getMp4RecordFile(@RequestBody GetMp4RecordFile params){
+        return exchange.getMp4RecordFile(secret, params);
+    }
+
+
+    public DeleteRecordDirectoryResp deleteRecordDirectory(@RequestBody DeleteRecordDirectory params){
+        return exchange.deleteRecordDirectory(secret, params);
     }
 }
 
