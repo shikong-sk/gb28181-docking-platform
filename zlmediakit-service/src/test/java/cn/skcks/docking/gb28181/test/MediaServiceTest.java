@@ -265,26 +265,25 @@ public class MediaServiceTest {
                 .build());
 
         log.info("startRecordResp {}", startRecordResp);
-
         scheduledExecutorService.schedule(() -> {
-            zlmMediaService.delFfmpegSource(addFFmpegSourceRespZlmResponse.getData().getKey());
-            // log.info("{}", zlmMediaService.delStreamProxy(addedStreamProxy.getData().getKey()));
+            ZlmResponse<DelFFmpegSourceResp> delFFmpegSourceRespZlmResponse = zlmMediaService.delFfmpegSource(addFFmpegSourceRespZlmResponse.getData().getKey());
+            log.info("delFFmpegSourceRespZlmResponse {}", delFFmpegSourceRespZlmResponse);
 
-            zlmMediaService.getMp4RecordFile(GetMp4RecordFile.builder()
-                    .app("live")
-                    .stream("test")
-                    .period(DateUtil.formatDate(DateUtil.date()))
-                    .customizedPath(customizedPath).build());
-
-            zlmMediaService.stopRecord(StopRecord.builder()
+            StopRecordResp stopRecordResp = zlmMediaService.stopRecord(StopRecord.builder()
                     .app("live")
                     .stream("test")
                     .vhost("__defaultVhost__")
                     .build());
+            log.info("stopRecordResp {}", stopRecordResp);
+
+            GetMp4RecordFileResp mp4RecordFile = zlmMediaService.getMp4RecordFile(GetMp4RecordFile.builder()
+                    .app("live")
+                    .stream("test")
+                    .period(DateUtil.formatDate(DateUtil.date()))
+                    .customizedPath(customizedPath).build());
+            log.info("mp4RecordFile {}", mp4RecordFile);
             countDownLatch.countDown();
         }, 15, TimeUnit.SECONDS);
-
-
 
         countDownLatch.await();
     }
