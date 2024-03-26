@@ -79,10 +79,10 @@
 		<springdoc.version>2.2.0</springdoc.version>
 
 		<!--Docker打包配置-->
-<!--		<docker.repository.url>10.10.10.200:5000</docker.repository.url>-->
-<!--		<docker.registry.name>skcks.cn</docker.registry.name>-->
-<!--		<docker.registry.username>XXX</docker.registry.username>-->
-<!--		<docker.registry.password>XXX</docker.registry.password>-->
+		<!--		<docker.repository.url>10.10.10.200:5000</docker.repository.url>-->
+		<!--		<docker.registry.name>skcks.cn</docker.registry.name>-->
+		<!--		<docker.registry.username>XXX</docker.registry.username>-->
+		<!--		<docker.registry.password>XXX</docker.registry.password>-->
 		<docker.maven.plugin.version>1.4.13</docker.maven.plugin.version>
 
 		<jain-sip.version>1.3.0-91</jain-sip.version>
@@ -92,7 +92,7 @@
 		<profile>
 			<id>jar</id>
 			<properties>
-					<skip.docker>true</skip.docker>
+				<skip.docker>true</skip.docker>
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -107,6 +107,89 @@
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
+		</profile>
+
+		<profile>
+			<id>ossrh</id>
+			<properties>
+				<skip.docker>true</skip.docker>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>0.4.0</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>ossrh</publishingServerId>
+							<centralBaseUrl>https://central.sonatype.com</centralBaseUrl>
+							<tokenAuth>true</tokenAuth>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<keyname>2FA8C646FBB668DAF3E6B08CBD85FF18B373C341</keyname>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+
+			<distributionManagement>
+				<snapshotRepository>
+					<id>ossrh</id>
+					<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+				</snapshotRepository>
+				<repository>
+					<id>ossrh</id>
+					<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
 		</profile>
 	</profiles>
 
@@ -310,64 +393,6 @@
 
 		<plugins>
 			<plugin>
-				<groupId>org.sonatype.central</groupId>
-				<artifactId>central-publishing-maven-plugin</artifactId>
-				<version>0.4.0</version>
-				<extensions>true</extensions>
-				<configuration>
-					<publishingServerId>ossrh</publishingServerId>
-					<centralBaseUrl>https://central.sonatype.com</centralBaseUrl>
-					<tokenAuth>true</tokenAuth>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<additionalparam>-Xdoclint:none</additionalparam>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-						<configuration>
-							<keyname>2FA8C646FBB668DAF3E6B08CBD85FF18B373C341</keyname>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
@@ -443,15 +468,4 @@
 			</testResource>
 		</testResources>
 	</build>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 </project>
