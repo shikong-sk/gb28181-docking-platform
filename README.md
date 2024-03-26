@@ -38,3 +38,49 @@ rm -rf ./*/*/*/*/*/0.1.0-SNAPSHOT
 mvn deploy -s settings.xml -DaltDeploymentRepository=local-repo::default::file:H:/Repository/skcks.cn/gb28181-docking-platform-mvn-repo
 ```
 git push 推送即可
+
+### 公共仓库
+https://central.sonatype.com
+
+https://central.sonatype.org/publish/requirements/gpg/#signing-a-file
+
+gpg签名
+https://central.sonatype.org/publish/requirements/gpg/
+https://www.gpg4win.org/thanks-for-download.html
+
+gpg服务器
+- keyserver.ubuntu.com
+- keys.openpgp.org
+- pgp.mit.edu
+
+settings.xml
+```xml
+<settings>
+	<servers>
+		<server>
+			<id>ossrh</id>
+			<username><!-- your token username --></username>
+			<password><!-- your token password --></password>
+		</server>
+	</servers>
+    
+	<profiles>
+		<profile>
+			<id>ossrh</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<gpg.executable>gpg</gpg.executable>
+				<gpg.keyname>GPG KEY NAME</gpg.keyname>
+				<gpg.passphrase>GPG KEY PASSWORD</gpg.passphrase>
+			</properties>
+		</profile>
+	</profiles>
+</settings>
+```
+
+#### 解决idea 控制台乱码
+
+- 设置 > 构建/运行/部署 > 构建工具 > Maven > 运行程序 > VM options 
+- 添加 -Dfile.encoding=GBK
