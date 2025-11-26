@@ -1,4 +1,6 @@
 # gb28181-docking-platform
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fshikong-sk%2Fgb28181-docking-platform.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fshikong-sk%2Fgb28181-docking-platform?ref=badge_shield)
+
 
 gb28181 协议 对接平台
 gb28181-docking-platform
@@ -84,3 +86,7 @@ settings.xml
 
 - 设置 > 构建/运行/部署 > 构建工具 > Maven > 运行程序 > VM options 
 - 添加 -Dfile.encoding=GBK
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fshikong-sk%2Fgb28181-docking-platform.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fshikong-sk%2Fgb28181-docking-platform?ref=badge_large)
