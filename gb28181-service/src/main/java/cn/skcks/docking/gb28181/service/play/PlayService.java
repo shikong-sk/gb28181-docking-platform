@@ -197,11 +197,17 @@ public class PlayService {
 
             @Override
             public void onError(Throwable throwable) {
-
+                log.error("订阅发生错误: {}", subscribeKey, throwable);
+                result.setResult(JsonResponse.error("订阅发生错误: " + throwable.getMessage()));
+                RedisUtil.KeyOps.delete(key);
+                ssrcService.releaseSsrc(zlmMediaConfig.getId(), ssrc);
             }
 
             @Override
             public void onComplete() {
+                if (subscription != null) {
+                    subscription.cancel();
+                }
                 subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             }
         };
@@ -308,11 +314,17 @@ public class PlayService {
 
             @Override
             public void onError(Throwable throwable) {
-
+                log.error("订阅发生错误: {}", subscribeKey, throwable);
+                result.setResult(JsonResponse.error("订阅发生错误: " + throwable.getMessage()));
+                RedisUtil.KeyOps.delete(key);
+                ssrcService.releaseSsrc(zlmMediaConfig.getId(), ssrc);
             }
 
             @Override
             public void onComplete() {
+                if (subscription != null) {
+                    subscription.cancel();
+                }
                 subscribe.getSipResponseSubscribe().delPublisher(subscribeKey);
             }
         };
@@ -349,7 +361,9 @@ public class PlayService {
 
             @Override
             public void onError(Throwable throwable) {
-
+                log.error("订阅发生错误: {}", subscribeKey, throwable);
+                cb.run();
+                sipRequestSubscribe.delPublisher(subscribeKey);
             }
 
             @SneakyThrows

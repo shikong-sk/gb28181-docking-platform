@@ -54,8 +54,9 @@ public class CatalogSubscriber implements Flow.Subscriber<SIPRequest>{
 
     @Override
     public void onError(Throwable throwable) {
-        throwable.printStackTrace();
-        onComplete();
+        log.error("订阅发生错误: {}", key, throwable);
+        result.completeExceptionally(throwable);
+        cleanup();
     }
 
     @Override
@@ -71,6 +72,14 @@ public class CatalogSubscriber implements Flow.Subscriber<SIPRequest>{
             return model;
         }).forEach(addDeviceChannelFunc);
 
+        cleanup();
+    }
+
+    private void cleanup() {
+        if (subscription != null) {
+            subscription.cancel();
+            subscription = null;
+        }
         subscribe.getSipRequestSubscribe().delPublisher(key);
     }
 }

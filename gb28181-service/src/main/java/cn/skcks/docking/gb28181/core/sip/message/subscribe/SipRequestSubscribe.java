@@ -15,7 +15,7 @@ public class SipRequestSubscribe implements GenericTimeoutSubscribe<SIPRequest>,
     private final Executor executor;
     private final ScheduledExecutorService scheduledExecutorService;
     private final ConcurrentMap<String, ScheduledFuture<?>> scheduledFutureManager = new ConcurrentHashMap<>(0);
-    private static final Map<String, SubmissionPublisher<SIPRequest>> publishers = new ConcurrentHashMap<>();
+    private final Map<String, SubmissionPublisher<SIPRequest>> publishers = new ConcurrentHashMap<>();
 
     public void close() {
         Helper.close(publishers);

@@ -65,13 +65,23 @@ public class RecordSubscriber implements Flow.Subscriber<SIPRequest>{
 
     @Override
     public void onError(Throwable throwable) {
-
+        log.error("订阅发生错误: {}", key, throwable);
+        result.setErrorResult(JsonResponse.error(throwable.getMessage()));
+        cleanup();
     }
 
     @Override
     public void onComplete() {
         result.setResult(JsonResponse.success(RecordConvertor.INSTANCE.dto2Vo(sortedRecordList(list))));
         log.debug("订阅结束 => {}", key);
+        cleanup();
+    }
+
+    private void cleanup() {
+        if (subscription != null) {
+            subscription.cancel();
+            subscription = null;
+        }
         subscribe.getSipRequestSubscribe().delPublisher(key);
     }
 
