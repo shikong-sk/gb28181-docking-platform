@@ -27,7 +27,7 @@ public class RecordController {
 
     @Bean
     public GroupedOpenApi recordApi() {
-        return SwaggerConfig.api("Record", "/api/device/record");
+        return SwaggerConfig.api("Record", "/api/gb28181/record");
     }
 
     @GetJson("/list")
