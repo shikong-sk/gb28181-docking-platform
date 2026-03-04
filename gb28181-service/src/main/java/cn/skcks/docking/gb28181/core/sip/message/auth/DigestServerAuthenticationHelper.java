@@ -198,20 +198,15 @@ public class DigestServerAuthenticationHelper {
 
         byte[] mdbytes = messageDigest.digest(A1.getBytes());
         String HA1 = toHexString(mdbytes);
-        log.debug("A1: " + A1);
-        log.debug("A2: " + A2);
+        log.debug("认证参数: method={}, realm={}, qop={}, nonce={}", request.getMethod().toUpperCase(), realm, qop, nonce);
+        
+        // 计算HA2
         mdbytes = messageDigest.digest(A2.getBytes());
         String HA2 = toHexString(mdbytes);
-        log.debug("HA1: " + HA1);
-        log.debug("HA2: " + HA2);
-        // String cnonce = authHeader.getCNonce();
-        log.debug("nonce: " + nonce);
-        log.debug("nc: " + ncStr);
-        log.debug("cnonce: " + cnonce);
-        log.debug("qop: " + qop);
+        
+        // 计算响应
         String KD = HA1 + ":" + nonce;
-
-        if (qop != null && qop.equalsIgnoreCase("auth") ) {
+        if (qop != null && qop.equalsIgnoreCase("auth")) {
             if (nc != -1) {
                 KD += ":" + ncStr;
             }
@@ -221,12 +216,10 @@ public class DigestServerAuthenticationHelper {
             KD += ":" + qop;
         }
         KD += ":" + HA2;
-        log.debug("KD: " + KD);
         mdbytes = messageDigest.digest(KD.getBytes());
         String mdString = toHexString(mdbytes);
-        log.debug("mdString: " + mdString);
+        
         String response = authHeader.getResponse();
-        log.debug("response: " + response);
         return mdString.equals(response);
     }
 }

@@ -94,12 +94,35 @@ public class SipListenerImpl implements SipListener {
 
     @Override
     public void processIOException(IOExceptionEvent exceptionEvent) {
-
+        log.warn("[SIP IO异常] host: {}, port: {}", 
+            exceptionEvent.getHost(), exceptionEvent.getPort());
     }
 
     @Override
     public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
-
+        String callId = null;
+        try {
+            if (transactionTerminatedEvent.getClientTransaction() != null) {
+                Request request = transactionTerminatedEvent.getClientTransaction().getRequest();
+                if (request != null) {
+                    CallIdHeader callIdHeader = (CallIdHeader) request.getHeader(CallIdHeader.NAME);
+                    if (callIdHeader != null) {
+                        callId = callIdHeader.getCallId();
+                    }
+                }
+            } else if (transactionTerminatedEvent.getServerTransaction() != null) {
+                Request request = transactionTerminatedEvent.getServerTransaction().getRequest();
+                if (request != null) {
+                    CallIdHeader callIdHeader = (CallIdHeader) request.getHeader(CallIdHeader.NAME);
+                    if (callIdHeader != null) {
+                        callId = callIdHeader.getCallId();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.debug("获取CallId失败", e);
+        }
+        log.debug("[SIP事务终止] callId: {}", callId);
     }
 
     @Override

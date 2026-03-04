@@ -71,6 +71,7 @@ public class DockingDeviceService {
         setTransaction(deviceId, response);
     }
 
+    @Transactional
     public void offline(DockingDevice device){
         String deviceId = device.getDeviceId();
         dockingDeviceMapper.updateByPrimaryKey(device);

@@ -186,20 +186,15 @@ public class DigestAuthenticationHelper {
         String A2 = String.join(":", method.toUpperCase() , uri.toString());
         byte[] mdbytes = messageDigest.digest(A1.getBytes());
         String HA1 = toHexString(mdbytes);
-        log.debug("A1: " + A1);
-        log.debug("A2: " + A2);
+        log.debug("认证参数: method={}, realm={}, qop={}, nonce={}", method, realm, qop, nonce);
+        
+        // 计算HA2
         mdbytes = messageDigest.digest(A2.getBytes());
         String HA2 = toHexString(mdbytes);
-        log.debug("HA1: " + HA1);
-        log.debug("HA2: " + HA2);
-        // String cnonce = authorizationHeader.getCNonce();
-        log.debug("nonce: " + nonce);
-        log.debug("nc: " + ncStr);
-        log.debug("cnonce: " + cnonce);
-        log.debug("qop: " + qop);
+        
+        // 计算响应
         String KD = HA1 + ":" + nonce;
-
-        if (qop != null && qop.equalsIgnoreCase("auth") ) {
+        if (qop != null && qop.equalsIgnoreCase("auth")) {
             if (nc != -1) {
                 KD += ":" + ncStr;
             }
@@ -209,20 +204,14 @@ public class DigestAuthenticationHelper {
             KD += ":" + qop;
         }
         KD += ":" + HA2;
-        log.debug("KD: " + KD);
         mdbytes = messageDigest.digest(KD.getBytes());
         String mdString = toHexString(mdbytes);
-        log.debug("mdString: " + mdString);
-
+        
+        // 计算备选响应格式
         String mdString2 = toHexString(messageDigest.digest(StringUtils.joinWith(":", HA1, nonce, nc, cnonce, qop, HA2).getBytes()));
-        log.debug("mdString2: " + mdString2);
-
-        String mdString3 = toHexString(messageDigest.digest(StringUtils.joinWith(":", HA1, nonce, nc, HA2).getBytes()));
-        log.debug("mdString3: " + mdString);
-
+        String mdString3 = toHexString(messageDigest.digest(StringUtils.joinWith(":", HA1, nonce, HA2).getBytes()));
+        
         String response = authorizationHeader.getResponse();
-        log.debug("response: " + response);
-
 
         return mdString.equals(response) || mdString2.equals(response) || mdString3.equals(response);
     }

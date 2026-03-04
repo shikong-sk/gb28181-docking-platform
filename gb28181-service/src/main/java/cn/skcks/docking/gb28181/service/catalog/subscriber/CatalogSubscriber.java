@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.service.catalog;
+package cn.skcks.docking.gb28181.service.catalog.subscriber;
 
 import cn.skcks.docking.gb28181.core.sip.message.subscribe.SipSubscribe;
 import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDeviceChannel;

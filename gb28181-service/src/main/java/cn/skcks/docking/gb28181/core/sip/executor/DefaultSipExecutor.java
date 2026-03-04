@@ -1,5 +1,7 @@
 package cn.skcks.docking.gb28181.core.sip.executor;
 
+import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -11,6 +13,7 @@ import java.util.concurrent.*;
 @Configuration
 @Order(1)
 @EnableAsync(proxyTargetClass = true)
+@Slf4j
 public class DefaultSipExecutor {
     /**
      * cpu 核心数
@@ -35,10 +38,11 @@ public class DefaultSipExecutor {
 
     public static final String EXECUTOR_BEAN_NAME = "sipTaskExecutor";
 
+    private ThreadPoolTaskExecutor executor;
 
     @Bean(EXECUTOR_BEAN_NAME)
     public Executor sipTaskExecutor(){
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(CPU_NUM);
         executor.setMaxPoolSize(MAX_POOL_SIZE);
         executor.setQueueCapacity(TASK_NUM);
@@ -51,5 +55,25 @@ public class DefaultSipExecutor {
         // 初始化
         executor.initialize();
         return executor;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        if (executor != null) {
+            log.info("正在关闭SIP线程池...");
+            executor.shutdown();
+            try {
+                if (!executor.getThreadPoolExecutor().awaitTermination(30, TimeUnit.SECONDS)) {
+                    log.warn("SIP线程池未能在30秒内完成关闭，强制关闭");
+                    executor.getThreadPoolExecutor().shutdownNow();
+                } else {
+                    log.info("SIP线程池已成功关闭");
+                }
+            } catch (InterruptedException e) {
+                log.warn("SIP线程池关闭过程被中断，强制关闭");
+                executor.getThreadPoolExecutor().shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 }

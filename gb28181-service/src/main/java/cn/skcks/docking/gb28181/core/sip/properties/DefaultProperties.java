@@ -43,7 +43,18 @@ public class DefaultProperties {
         // 定义应用程序打算多久审计一次 SIP 堆栈，了解其内部线程的健康状况（该属性指定连续审计之间的时间（以毫秒为单位））
         properties.setProperty("gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS", "30000");
 
-//        properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", "gov.nist.javax.sip.stack.NioMessageProcessorFactory");
+        // ====== JAIN-SIP 线程池和连接配置 (缓解Issue #8: UDP死锁风险) ======
+        // 限制线程池大小，防止TCP线程爆炸
+        properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "16");
+        // 最大服务器事务数
+        properties.setProperty("gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS", "2000");
+        // 最大客户端事务数
+        properties.setProperty("gov.nist.javax.sip.MAX_CLIENT_TRANSACTIONS", "2000");
+        // 连接缓存
+        properties.setProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS", "true");
+        properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "true");
+        // 消息超时
+        properties.setProperty("gov.nist.javax.sip.READ_TIMEOUT", "1000");
 
         /**
          * sip_server_log.log 和 sip_debug_log.log ERROR, INFO, WARNING, OFF, DEBUG, TRACE

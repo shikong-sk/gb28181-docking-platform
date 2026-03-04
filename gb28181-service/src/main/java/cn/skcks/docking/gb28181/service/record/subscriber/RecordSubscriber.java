@@ -1,4 +1,4 @@
-package cn.skcks.docking.gb28181.service.record;
+package cn.skcks.docking.gb28181.service.record.subscriber;
 
 import cn.hutool.core.date.DateUtil;
 import cn.skcks.docking.gb28181.common.json.JsonResponse;

@@ -48,14 +48,11 @@ public class SsrcService {
     }
 
     private String getSN() {
-        String sn;
-        long size = RedisUtil.SetOps.sSize(ssrcKey);
-        if (size == 0) {
+        // 使用原子操作sPop，避免竞态条件
+        // sPop已经在移除元素的同时返回它，不需要再调用sRemove
+        String sn = RedisUtil.SetOps.sPop(ssrcKey);
+        if (sn == null || sn.isEmpty()) {
             throw new RuntimeException("ssrc已经用完");
-        } else {
-            // 在集合中移除并返回一个随机成员。
-            sn = RedisUtil.SetOps.sPop(ssrcKey);
-            RedisUtil.SetOps.sRemove(ssrcKey,sn);
         }
         return sn;
     }

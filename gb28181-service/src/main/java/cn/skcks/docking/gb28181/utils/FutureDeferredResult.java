@@ -1,11 +1,13 @@
 package cn.skcks.docking.gb28181.utils;
 
 import cn.skcks.docking.gb28181.common.json.JsonResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class FutureDeferredResult {
     public static <T> DeferredResult<JsonResponse<T>> toDeferredResultWithJson(CompletableFuture<T> future){
         DeferredResult<JsonResponse<T>> result = new DeferredResult<>();
@@ -34,8 +36,13 @@ public class FutureDeferredResult {
 
     public static <T> DeferredResult<T> toDeferredResult(CompletableFuture<T> future){
         DeferredResult<T> result = new DeferredResult<>();
-        future.whenComplete((data,throwable)->{
-            result.setResult(data);
+        future.whenComplete((data, throwable) -> {
+            if (throwable != null) {
+                log.error("CompletableFuture completed exceptionally", throwable);
+                result.setErrorResult(throwable);
+            } else {
+                result.setResult(data);
+            }
         });
         return result;
     }
@@ -44,7 +51,12 @@ public class FutureDeferredResult {
         DeferredResult<T> result = new DeferredResult<>(timeUnit.toMillis(time), timeoutResult);
         future.completeOnTimeout(timeoutResult,time,timeUnit);
         future.whenComplete((data, throwable) -> {
-            result.setResult(data);
+            if (throwable != null) {
+                log.error("CompletableFuture completed exceptionally", throwable);
+                result.setErrorResult(throwable);
+            } else {
+                result.setResult(data);
+            }
         });
         return result;
     }

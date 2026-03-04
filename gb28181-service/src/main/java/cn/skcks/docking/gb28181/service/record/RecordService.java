@@ -16,6 +16,7 @@ import cn.skcks.docking.gb28181.orm.mybatis.dynamic.model.DockingDeviceChannel;
 import cn.skcks.docking.gb28181.service.device.DeviceChannelService;
 import cn.skcks.docking.gb28181.service.docking.device.DockingDeviceService;
 import cn.skcks.docking.gb28181.service.record.convertor.RecordConvertor;
+import cn.skcks.docking.gb28181.service.record.subscriber.RecordSubscriber;
 import cn.skcks.docking.gb28181.service.record.vo.RecordInfoItemVO;
 import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.request.RecordInfoRequestDTO;
 import cn.skcks.docking.gb28181.sip.manscdp.recordinfo.response.RecordInfoItemDTO;
